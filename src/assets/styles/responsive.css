@@ -1,0 +1,34 @@
+.navbar-toggler:not(:disabled):not(.disabled) {
+    cursor: pointer;
+    background: none;
+}
+
+#index2 .navbar-light .navbar-toggler {
+    color: #fff;
+    outline: 0;
+}
+
+#index3 .navbar-light .navbar-toggler,
+#index4 .navbar-light .navbar-toggler {
+    color: #fff;
+    outline: 0;
+}
+
+.navbar-light .navbar-toggler {
+    color: #fff;
+    outline: 0;
+}
+
+.navbar-toggler i {
+    font-size: 28px;
+}
+
+.nav-bg i {
+    color: #fff;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+

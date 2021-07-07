@@ -1,0 +1,55 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IFundFactory",
+  "sourceName": "contracts/Interfaces/IFundFactory.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "_swapRouterContract",
+          "type": "address"
+        },
+        {
+          "internalType": "address payable",
+          "name": "_eFundToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address payable",
+          "name": "_fundOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "address payable",
+          "name": "_eFundPlatform",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_fundDurationInMonths",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address payable[]",
+          "name": "allowedTokens",
+          "type": "address[]"
+        }
+      ],
+      "name": "createFund",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
