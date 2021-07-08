@@ -2,7 +2,11 @@
   <ul class="list-group">
     <li class="list-group-item bg-dark rounded py-4 px-3 mt-3 text-white">
       Status: {{ fundContractStatus }}
-      <button v-if="fundContractIsManager && fundContractStatus === 'Opened'" @click="setFundStatusActive()">
+      <button
+        v-if="fundContractIsManager && fundContractStatus === 'Opened'"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusActive()"
+      >
         set Active
       </button>
     </li>
