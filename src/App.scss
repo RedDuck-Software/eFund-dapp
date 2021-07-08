@@ -1,0 +1,17 @@
+
+$theme-colors: (
+  "primary": #7EA8BE,
+  "secondary": #2c3e50,
+  dark: rgba(24, 36, 54, 0.6) // #182436
+
+);
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+@media (min-width: 992px){
+  .navbar-expand-lg .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+  }
+}
+

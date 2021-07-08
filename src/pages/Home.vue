@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <NewFundForm />
-  </div>
+  <NewFundForm />
 </template>
 
 <script>

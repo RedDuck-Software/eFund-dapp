@@ -1,15 +1,26 @@
 <template>
-  <div class="">
-    <div class="d-flex">
-      <input v-model="etherValue" type="number" class="form-control" />
-      <select v-model="month" class="form-control">
-        <option v-for="(item, index) in monthList" :key="index" :value="item">
-          {{ item }}
-        </option>
-      </select>
-      <button :disabled="!signerAddress" class="btn btn-primary" @click="createNewFund()">
-        Create New
-      </button>
+  <div class="d-flex flex-column align-content-center">
+    <div class="row">
+      <div class="col-auto">
+        <div class="card px-5 py-4 my-4">
+          <h5 class=" text-uppercase mb-3">Create fund <br /></h5>
+          <div class="d-flex">
+            <div class="form-input mr-3">
+              <input id="inputValue" v-model="etherValue" type="number" class="form-control" placeholder="Fund Value" />
+            </div>
+            <div class="form-input mr-3">
+              <select id="inputMonth" v-model="month" class="form-control pl-2 pr-4">
+                <option v-for="(item, index) in monthList" :key="index" :value="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+            <button :disabled="!signerAddress" class="btn btn-primary px-3" @click="createNewFund()">
+              Create New
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <FundList />
   </div>
@@ -65,4 +76,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.create-fund-form {
+  /*background-color: #333;*/
+}
+</style>

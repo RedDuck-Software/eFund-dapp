@@ -1,44 +1,99 @@
 <template>
-  <div class="w-50 mx-auto">
-    <div class="d-flex">
-      <label>
-        Amount for swap
-        <input
-          v-model="fromSwapValue"
-          type="number"
-          min="0"
-          name="from swap"
-          class="form-control"
-          @change="handleFromValueChange()"
-        />
-      </label>
-      <select v-model="fromSwapCurr" class="form-control" @change="handleFromValueChange()">
-        <option v-for="(item, index) in tokensList" :key="index" :value="item">
-          {{ item.label }}
-        </option>
-      </select>
-    </div>
+  <div class="py-3">
+    <!--    <div class="row">-->
+    <!--      <div class="col">-->
+    <div class="trade bg-dark rounded text-white px-5 py-4 my-4">
+      <h5 class="text-center text-uppercase mb-3">Trade</h5>
+      <div class="row justify-content-center">
+        <div class="form col-auto">
+          <div class="form-group d-flex justify-content-between">
+            <div class="form-input mr-2">
+              <input
+                v-model="fromSwapValue"
+                type="number"
+                min="0"
+                name="from swap"
+                class="form-control"
+                @change="handleFromValueChange()"
+              />
+            </div>
+            <div class="form-input">
+              <select v-model="fromSwapCurr" class="form-control pl-2 pr-4" @change="handleFromValueChange()">
+                <option v-for="(item, index) in tokensList" :key="index" :value="item">
+                  {{ item.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group d-flex justify-content-between">
+            <div class="form-input mr-2">
+              <input
+                v-model="toSwapValue"
+                type="number"
+                min="0"
+                name="to swap"
+                class="form-control"
+                @change="handleToValueChange()"
+              />
+            </div>
+            <div class="form-input">
+              <select v-model="fromSwapCurr" class="form-control pl-2 pr-4" @change="handleFromValueChange()">
+                <option v-for="(item, index) in tokensList" :key="index" :value="item">
+                  {{ item.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group d-flex flex-column">
+            <button :disabled="!toSwapValue" class="btn btn-primary px-3" @click="swap()">
+              Swap!
+            </button>
+          </div>
+        </div>
+      </div>
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--      <div class="d-flex">-->
+      <!--        <label>-->
+      <!--          Amount for swap-->
+      <!--          <input-->
+      <!--            v-model="fromSwapValue"-->
+      <!--            type="number"-->
+      <!--            min="0"-->
+      <!--            name="from swap"-->
+      <!--            class="form-control"-->
+      <!--            @change="handleFromValueChange()"-->
+      <!--          />-->
+      <!--        </label>-->
+      <!--        <select v-model="toSwapCurr" class="form-control" @change="handleFromValueChange()">-->
+      <!--          <option v-for="(item, index) in tokensList" :key="index" :value="item">-->
+      <!--            {{ item.label }}-->
+      <!--          </option>-->
+      <!--        </select>-->
+      <!--      </div>-->
+      <!--    </div>-->
 
-    <div class="d-flex">
-      <label>
-        Get after swap
-        <input
-          v-model="toSwapValue"
-          type="number"
-          min="0"
-          name="to swap"
-          class="form-control"
-          @change="handleToValueChange()"
-        />
-      </label>
-      <select v-model="toSwapCurr" class="form-control" @change="handleFromValueChange()">
-        <option v-for="(item, index) in tokensList" :key="index" :value="item">
-          {{ item.label }}
-        </option>
-      </select>
-    </div>
-    <div class="d-flex">
-      <button @click="swap()">Swap!</button>
+      <!--    <div class="d-flex">-->
+      <!--      <label>-->
+      <!--        Get after swap-->
+      <!--        <input-->
+      <!--          v-model="toSwapValue"-->
+      <!--          type="number"-->
+      <!--          min="0"-->
+      <!--          name="to swap"-->
+      <!--          class="form-control"-->
+      <!--          @change="handleToValueChange()"-->
+      <!--        />-->
+      <!--      </label>-->
+      <!--      <select v-model="toSwapCurr" class="form-control" @change="handleFromValueChange()">-->
+      <!--        <option v-for="(item, index) in tokensList" :key="index" :value="item">-->
+      <!--          {{ item.label }}-->
+      <!--        </option>-->
+      <!--      </select>-->
+      <!--    </div>-->
+      <!--    <div class="d-flex">-->
+      <!--      <button @click="swap()">Swap!</button>-->
+      <!--    </div>-->
     </div>
   </div>
 </template>
@@ -198,4 +253,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.trade {
+}
+
+input {
+  width: 320px;
+}
+</style>

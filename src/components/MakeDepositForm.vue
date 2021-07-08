@@ -1,7 +1,14 @@
 <template>
-  <div class="d-flex mt-3  py-3">
-    <input v-model="sendValue" type="number" />
-    <Button @click="makeDeposit()"> Make Deposit</Button>
+  <div class="py-4">
+    <div class="card px-5 py-4">
+      <h5 class=" text-uppercase mb-3">Deposit to fund <br /></h5>
+      <div class="d-flex">
+        <div class="form-input mr-3">
+          <input v-model="sendValue" type="number" class="form-control" placeholder="Deposit to fund" />
+        </div>
+        <button class="btn btn-primary px-3" @click="makeDeposit()">Make Deposit</button>
+      </div>
+    </div>
   </div>
 </template>
 

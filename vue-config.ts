@@ -6,6 +6,7 @@ module.exports = {
   publicPath: process.env.NODE_ENV === "production" ? "/production-sub-path/" : "/",
   css: { requireModuleExtension: false },
   lintOnSave: process.env.NODE_ENV !== "production",
+  configureWebpack: {},
 
   chainWebpack: config => {
     config.module
