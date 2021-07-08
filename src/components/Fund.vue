@@ -17,7 +17,6 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { getSignedFundContract } from "../services/fundService";
 import FundInfo from "./FundInfo";
 import MakeDepositForm from "./MakeDepositForm";
 import { ethers } from "ethers";
@@ -80,12 +79,6 @@ export default {
     this.updateFundStatus(fundStatus);
   },
   methods: {
-
-    async fetchFundContract() {
-      this.fundContract = await getSignedFundContract(this.fundContractAddress);
-      console.log(this.fundContract);
-    },
-
     async makeDepositToFund(value) {
       const overrides = {
         value: ethers.utils.parseEther(value),

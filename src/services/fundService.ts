@@ -15,17 +15,6 @@ export const ERC20_ABI = JSON.stringify(ERC20.abi);
 
 export let fundSignedContract;
 
-export const getSignedFundContract = async (address: string): Promise<Contract> => {
-  const { jsonSigner } = await getSigner();
-  fundSignedContract = new ethers.Contract(address, ABI, jsonSigner);
-  return fundSignedContract;
-};
-
-export const getReadOnlyFundContract = async (address: string): Promise<Contract> => {
-  return new ethers.Contract(address, ABI, currentProvider);
-};
-
-
 export class FundService {
   fundPlatfromAddress;
 

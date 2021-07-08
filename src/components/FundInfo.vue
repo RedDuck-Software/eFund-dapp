@@ -24,7 +24,7 @@
 <script>
 
 import { mapGetters } from "vuex";
-import { FundService, fundSignedContract, getSignedFundContract } from "../services/fundService";
+import { FundService, fundSignedContract } from "../services/fundService";
 import { ethers } from "ethers";
 import { currentProvider } from '../services/ether';
 
@@ -51,7 +51,7 @@ export default {
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
     console.log(this.fundSignedContract);
-    
+
     const allowedTokensAddresses = await this.fundSignedContract.getAllowedTokensAddresses();
     this.allowedTokens = []
 
