@@ -1,19 +1,6 @@
-import { Contract, ethers } from "ethers";
+import { ethers } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import FundAbi from "../artifacts/contracts/HedgeFund.sol/HedgeFund.json";
-import FundPlatformAbi from "../artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
-import ERC20 from "../artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
-
-export const ABI = JSON.stringify(FundAbi.abi);
-
-export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);
-
-export const FUND_ABI = JSON.stringify(FundAbi.abi);
-
-export const ERC20_ABI = JSON.stringify(ERC20.abi);
-
-
-export let fundSignedContract;
+import {FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI} from "../constants";
 
 export class FundService {
   fundPlatfromAddress;

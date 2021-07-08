@@ -71,12 +71,13 @@ export default {
 
     const fundManager = await fundContract.fundManager();
     
-    const fundStatus = fundStatuses[(await fundContract.fundStatus()).toNumber()].value;
+    console.log("FUND MANAGER: ", fundManager);
 
-    this.updateFundAddress(this.$route.params.address);
-    this.updateFundManager(fundManager);
-    this.updateFundIsManager(fundManager == provider.getSigner());
-    this.updateFundStatus(fundStatus);
+    console.log("fund status: ", await fundContract.fundStatus());
+
+    const fundStatus = fundStatuses[await fundContract.fundStatus()].value;
+
+ 
   },
   methods: {
     async makeDepositToFund(value) {
@@ -86,7 +87,7 @@ export default {
       console.log(overrides);
       this.fundContract.makeDeposit(overrides);
     },
-    ...mapMutations(["updateFundStatus","updateFundAddress", "updateFundManager", "updateFundIsManager"]),
+    ...mapMutations(["updateFundStatus", "updateFundManager", "updateFundIsManager"]),
   },
 };
 </script>

@@ -4,6 +4,19 @@ export const EFUND_TOKEN_BSC = "0xaFd0da2842D575e64EBE9Cc01f667fB5B4A20E8c";
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
 
+import FundAbi from "./artifacts/contracts/HedgeFund.sol/HedgeFund.json";
+import FundPlatformAbi from "./artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
+import ERC20 from "./artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
+
+export const ABI = JSON.stringify(FundAbi.abi);
+
+export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);
+
+export const FUND_ABI = JSON.stringify(FundAbi.abi);
+
+export const ERC20_ABI = JSON.stringify(ERC20.abi);
+
+
 export const pancakeRouterContractAbi = [
   {
     inputs: [
