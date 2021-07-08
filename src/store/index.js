@@ -1,11 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
+import { FUND_PLATFROM_ADDRESS_ETH ,FUND_PLATFROM_ADDRESS_BSC } from "../constants.ts";
+
+console.log("STORE: ", FUND_PLATFROM_ADDRESS_BSC);
+
+let curentDefaultValue = FUND_PLATFROM_ADDRESS_BSC;
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    platformAddress: FUND_PLATFROM_ADDRESS_BSC,
     signerAddress: null,
     fundContractAddress: null,
     fundContractStatus: null,
@@ -28,6 +34,9 @@ const store = new Vuex.Store({
     updateFundIsManager(state, isManger) {
       state.fundContractIsManager = isManger;
     },
+    updatePlatformAddress(state, newAddress) {
+      state.platformAddress = newAddress;
+    },
 
     logout: state => {
       state.signerAddress = null;
@@ -41,6 +50,7 @@ const store = new Vuex.Store({
     fundContractStatus: state => state.fundContractStatus,
     fundContractManager: state => state.fundContractManager,
     fundContractIsManager: state => state.fundContractIsManager,
+    platformAddress: state => state.platformAddress,
   },
   actions: {},
   plugins: [createPersistedState()],

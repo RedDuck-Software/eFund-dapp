@@ -111,71 +111,61 @@ export default {
     },
     async sendSwapRequest() {
       if (this.fromSwapCurr.label === "BNB") {
-        console.log("bnb to erc");
-        const { jsonSigner } = await getSigner();
-        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        //
-        // console.log(
-        //   parseFloat(
-        //     await utils.formatUnits((await currentProvider.getBalance(this.fundContractAddress)).toString(), 18)
-        //   )
-        // );
-
-        if (
-          parseFloat(
-            await utils.formatUnits((await currentProvider.getBalance(this.fundContractAddress)).toString(), 18)
-          ) > 0
-        ) {
-          const res = await this.fundContract.swapETHToERC20(
-            this.toSwapCurr.value,
-            FixedNumber.from(this.fromSwapValue),
-            0
-          );
-
-          return res;
-        } else {
-          alert("Yuo don't have enough BNB");
-        }
+        return await this.swapETHForTokens();
       } else if (this.toSwapCurr.label === "BNB") {
-        console.log("erc to bnb");
-        const { jsonSigner } = await getSigner();
-        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        if (
-          parseFloat(await utils.formatUnits(await tokenContract.balanceOf(this.fundContractAddress.toString()), 18)) >
-          0
-        ) {
-          const res = await this.fundContract.swapERC20ToETH(
-            this.toSwapCurr.value,
-            FixedNumber.from(this.fromSwapValue),
-            0
-          );
-
-          // console.log(res);
-
-          return res;
-        } else {
-          alert(`You need thia amount of ${this.fromSwapCurr.label}`);
-        }
+        return await this.swapERCForETH();
       } else {
+        return await this.swapERCForERC();
+      }
+    },
+    async swapERCForERC() { 
         console.log("erc to erc");
         const { jsonSigner } = await getSigner();
         const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        if (
-          parseFloat(await utils.formatUnits(await tokenContract.balanceOf(this.fundContractAddress.toString()), 18)) >
-          0
-        ) {
-          const res = await this.fundContract.swapERC20ToERC20(
+
+        if (!(await tokenContract.balanceOf(this.fundContractAddress.toString())).isZero()) {
+          return await this.fundContract.swapERC20ToERC20(
             this.fromSwapCurr.value,
             this.toSwapCurr.value,
             FixedNumber.from(this.fromSwapValue),
             0
           );
-
-          return res;
         } else {
-          alert(`You need to get this anount of ${this.fromSwapCurr.label}`);
+          alert(`You need to get this amount of ${this.fromSwapCurr.label}`);
         }
-      }
+    },
+    async swapERCForETH() { 
+        console.log("erc to bnb");
+        const { jsonSigner } = await getSigner();
+        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
+
+        if (!(await tokenContract.balanceOf(this.fundContractAddress.toString())).isZero()) {
+            return await this.fundContract.swapERC20ToETH(
+            this.toSwapCurr.value,
+            FixedNumber.from(this.fromSwapValue),
+            0
+          );
+        } else {
+          alert(`You need thia amount of ${this.fromSwapCurr.label}`);
+        }
+    },
+    async swapETHForTokens() {
+      
+      console.log("bnb to erc");
+        const { jsonSigner } = await getSigner();
+        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
+
+
+        if (!(await currentProvider.getBalance(this.fundContractAddress)).isZero()) {
+          return await this.fundContract.swapETHToERC20(
+            this.toSwapCurr.value,
+            FixedNumber.from(this.fromSwapValue),
+            0
+          );
+
+        } else {
+          alert("Yuo don't have enough BNB");
+        }
     },
     async getPricesPath(amount, path) {
       if (amount.isZero()) {

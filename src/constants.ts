@@ -1,3 +1,6 @@
+export const FUND_PLATFROM_ADDRESS_BSC = "0xf59f9889CA8F34A1B75Cc75bc3C5C6CDEB388912";
+export const FUND_PLATFROM_ADDRESS_ETH = "";
+
 export const pancakeRouterContractAbi = [
   {
     inputs: [

@@ -23,6 +23,9 @@ import MakeDepositForm from "./MakeDepositForm";
 import { ethers } from "ethers";
 import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
+import { FundService } from '../services/fundService';
+import { currentProvider } from '../services/ether' ;
+import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
@@ -31,16 +34,50 @@ export default {
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      fundContract: null,
+      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager"]),
+    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager", "platformAddress"]),
   },
-  mounted() {
+  async mounted() {
+    console.log("platform address: ", this.platformAddress);
+    console.log("fundContractAddress: ", this.fundContractAddress);
+
+    const fundService = new FundService(this.platformAddress, currentProvider);
+    const provider = fundService.getCurrentProvider();
+
+    const contractAddress = this.$route.params.address;
+
+    console.log(contractAddress);
+
+    const fundContract = await fundService.getFundContractInstance(contractAddress);
+
+    console.log(fundContract);
+
+    const platformContract = await fundService.getFundPlatformContractInstance();
+
+    console.log(platformContract);
+
+    const isFund = await platformContract.isFund(contractAddress);
+
+    console.log(isFund);
+
+    if(!isFund) { 
+      alert("fund is not found");
+      return;
+    }
+
+    const fundManager = await fundContract.fundManager();
+    
+    this.updateFundAddress(this.$route.params.address);
+    this.updateFundManager(fundManager);
+    this.updateFundIsManager(fundManager == provider.getSigner());
+
     this.fetchFundContract().then(() => this.getFundInfo());
   },
   methods: {
+
     async fetchFundContract() {
       this.fundContract = await getSignedFundContract(this.fundContractAddress);
       console.log(this.fundContract);
@@ -68,7 +105,7 @@ export default {
       console.log(overrides);
       this.fundContract.makeDeposit(overrides);
     },
-    ...mapMutations(["updateFundStatus", "updateFundManager", "updateFundIsManager"]),
+    ...mapMutations(["updateFundStatus","updateFundAddress", "updateFundManager", "updateFundIsManager"]),
   },
 };
 </script>

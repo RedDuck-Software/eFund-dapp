@@ -3,19 +3,26 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { mapMutations } from "vuex";
 import Fund from "../components/Fund";
+
 
 export default {
   name: "Fund",
   components: {
     FundComponent: Fund,
   },
-  mounted() {
-    this.updateFundAddress(this.$route.params.address);
+  data() { 
+    return  {
+      platformAddress : null,
+    };
+  },
+  async mounted() {
+    
   },
   methods: {
-    ...mapMutations(["updateFundAddress"]),
+
   },
 };
 </script>
