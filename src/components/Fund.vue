@@ -26,7 +26,6 @@ import { FundService } from '../services/fundService';
 import { currentProvider } from '../services/ether' ;
 import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
-export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
 export default {
   name: "Fund",

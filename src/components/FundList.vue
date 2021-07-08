@@ -11,6 +11,7 @@
 >
 
 <script>
+  
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
