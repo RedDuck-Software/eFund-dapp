@@ -9,13 +9,24 @@
     <li class="list-group-item">Balance: {{ fundBalance }}</li>
     <li class="list-group-item">Duration: {{ fundDuration }}</li>
     <li class="list-group-item">Manager: {{ fundContractManager }}</li>
-  </ul></template
->
+
+    <li class="list-group-item">
+      <span>Allowed tokens: </span>
+      <ol class="list-group">
+        <li v-for="token in alowedTokens" :key="token.address">
+          <span>Token: {{ token.address }}</span>  <span>Name: {{ token.name }}</span> 
+        </li>
+      </ol>
+    </li>
+  </ul>
+</template>
 
 <script>
+
 import { mapGetters } from "vuex";
-import { fundSignedContract, getSignedFundContract } from "../services/fundService";
+import { FundService, fundSignedContract, getSignedFundContract } from "../services/fundService";
 import { ethers } from "ethers";
+import { currentProvider } from '../services/ether';
 
 export default {
   name: "FundInfo",
@@ -24,30 +35,53 @@ export default {
   },
   data() {
     return {
+      fundService: null, 
       fundSignedContract: null,
       fundBalance: null,
       fundDuration: null,
+      alowedTokens: [],
     };
   },
-  mounted() {
+  async mounted() {
     this.interval = setInterval(() => this.getBalance(), 60000);
-    this.fetchFundContract().then(() => this.updateInfo());
+    
+    this.fundService = new FundService(this.platformAddress, currentProvider);
+    const provider = this.fundService.getCurrentProvider();
+
+    this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    console.log(this.fundSignedContract);
+    
+    const allowedTokensAddresses = await this.fundSignedContract.getAllowedTokensAddresses();
+    this.allowedTokens = []
+
+    allowedTokensAddresses.forEach(async element => {
+      this.allowedTokens.push(await this.getTokenInfo(element));
+    });
+
+    await this.updateInfo();
   },
   destroyed() {
     clearInterval(this.interval);
   },
   methods: {
     async fetchFundContract() {
-      this.fundSignedContract = fundSignedContract
-        ? fundSignedContract
-        : await getSignedFundContract(this.fundContractAddress);
+      
+    },
+    async getTokenInfo(tokenAddress) { 
+      const token = this.fundService.getERC20ContractInstance(tokenAddress);
+
+      return { 
+        address: tokenAddress,
+        name: await token.name(),
+      }
     },
     async updateInfo() {
       this.getBalance();
 
       this.fundSignedContract
         .fundDurationMonths()
-        .then(res => {
+        .then((res) => {
           this.fundDuration = res.toString();
         })
         .catch(() => console.log);
@@ -58,7 +92,7 @@ export default {
     async getBalance() {
       this.fundSignedContract
         .getCurrentBalanceInWei()
-        .then(res => {
+        .then((res) => {
           this.fundBalance = ethers.utils.formatEther(res.toString());
         })
         .catch(() => console.log);

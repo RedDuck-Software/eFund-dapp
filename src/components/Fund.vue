@@ -35,10 +35,12 @@ export default {
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
+      fundService: null,
+      fundContract : null, 
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager", "platformAddress"]),
+    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager"]),
   },
   async mounted() {
     console.log("platform address: ", this.platformAddress);
@@ -70,11 +72,12 @@ export default {
 
     const fundManager = await fundContract.fundManager();
     
+    const fundStatus = fundStatuses[(await fundContract.fundStatus()).toNumber()].value;
+
     this.updateFundAddress(this.$route.params.address);
     this.updateFundManager(fundManager);
     this.updateFundIsManager(fundManager == provider.getSigner());
-
-    this.fetchFundContract().then(() => this.getFundInfo());
+    this.updateFundStatus(fundStatus);
   },
   methods: {
 
@@ -82,22 +85,7 @@ export default {
       this.fundContract = await getSignedFundContract(this.fundContractAddress);
       console.log(this.fundContract);
     },
-    async getFundInfo() {
-      this.fundContract
-        .fundStatus()
-        .then(res => {
-          this.updateFundStatus(fundStatuses[res].value);
-        })
-        .catch(e => console.log);
 
-      this.fundContract
-        .fundManager()
-        .then(res => {
-          this.updateFundManager(res.toString());
-          this.updateFundIsManager(this.signerAddress.toLowerCase() === res.toString().toLowerCase());
-        })
-        .catch(e => console.log);
-    },
     async makeDepositToFund(value) {
       const overrides = {
         value: ethers.utils.parseEther(value),

@@ -2,12 +2,16 @@ import { Contract, ethers } from "ethers";
 import { currentProvider, getSigner } from "./ether";
 import FundAbi from "../artifacts/contracts/HedgeFund.sol/HedgeFund.json";
 import FundPlatformAbi from "../artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
+import ERC20 from "../artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
 
 export const ABI = JSON.stringify(FundAbi.abi);
 
 export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);
 
 export const FUND_ABI = JSON.stringify(FundAbi.abi);
+
+export const ERC20_ABI = JSON.stringify(ERC20.abi);
+
 
 export let fundSignedContract;
 
@@ -36,11 +40,15 @@ export class FundService {
     return currentProvider;
   }
 
-  async getFundPlatformContractInstance() { 
-    return new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider);
+  getFundPlatformContractInstance() { 
+    return new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
   }
 
-  async getFundContractInstance(address) { 
-    return new ethers.Contract(address, FUND_ABI , this.currentProvider);
+  getFundContractInstance(address) { 
+    return new ethers.Contract(address, FUND_ABI , this.currentProvider.getSigner());
+  }
+
+  getERC20ContractInstance(address) { 
+    return new ethers.Contract(address, ERC20_ABI , this.currentProvider.getSigner());
   }
 }
