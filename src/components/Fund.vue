@@ -46,38 +46,10 @@ export default {
     console.log("fundContractAddress: ", this.fundContractAddress);
 
     const fundService = new FundService(this.platformAddress, currentProvider);
-    const provider = fundService.getCurrentProvider();
 
     const contractAddress = this.$route.params.address;
 
-    console.log(contractAddress);
-
-    const fundContract = await fundService.getFundContractInstance(contractAddress);
-
-    console.log(fundContract);
-
-    const platformContract = await fundService.getFundPlatformContractInstance();
-
-    console.log(platformContract);
-
-    const isFund = await platformContract.isFund(contractAddress);
-
-    console.log(isFund);
-
-    if(!isFund) { 
-      alert("fund is not found");
-      return;
-    }
-
-    const fundManager = await fundContract.fundManager();
-    
-    console.log("FUND MANAGER: ", fundManager);
-
-    console.log("fund status: ", await fundContract.fundStatus());
-
-    const fundStatus = fundStatuses[await fundContract.fundStatus()].value;
-
- 
+    this.fundContract = await fundService.getFundContractInstance(contractAddress);
   },
   methods: {
     async makeDepositToFund(value) {

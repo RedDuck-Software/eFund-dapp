@@ -48,6 +48,7 @@ import { mapGetters } from "vuex";
 import { FundService } from "../services/fundService";
 import { ethers } from "ethers";
 import { currentProvider } from "../services/ether";
+import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
@@ -62,11 +63,12 @@ export default {
       fundDuration: null,
       alowedTokens: [],
       boughtTokens: [],
+      fundStatuse: 0,
     };
   },
   async mounted() {
     this.interval = setInterval(() => this.getBalance(), 60000);
-
+   
     this.fundService = new FundService(this.platformAddress, currentProvider);
     const provider = this.fundService.getCurrentProvider();
 

@@ -16,6 +16,7 @@ export const FUND_ABI = JSON.stringify(FundAbi.abi);
 
 export const ERC20_ABI = JSON.stringify(ERC20.abi);
 
+export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
 export const pancakeRouterContractAbi = [
   {
