@@ -32,17 +32,16 @@ export default {
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
+      platformAddress: FUND_PLATFROM_ADDRESS_BSC, 
       fundService: null,
       fundContract : null, 
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager"]),
+    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager", "eFundNetworkSettings"]),
   },
   async mounted() {
-    console.log("platform address: ", this.platformAddress);
-    console.log("fundContractAddress: ", this.fundContractAddress);
+    console.log("network setting: ", this.eFundNetworkSettings);
 
     const fundService = new FundService(this.platformAddress, currentProvider);
 

@@ -4,6 +4,10 @@ export const EFUND_TOKEN_BSC = "0xaFd0da2842D575e64EBE9Cc01f667fB5B4A20E8c";
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
 
+export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+export const WETH_ADDRESS = "";
+
+
 import FundAbi from "./artifacts/contracts/HedgeFund.sol/HedgeFund.json";
 import FundPlatformAbi from "./artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
 import ERC20 from "./artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
@@ -21,6 +25,29 @@ export const ERC20_ABI = JSON.stringify(ERC20.abi);
 export const SWAP_ROUTER_ABI = JSON.stringify(SwapRouter.abi);
 
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
+
+
+
+export const eFundNetworkSettings =
+{ 
+  97 : { // BSC Testnet
+    networkName: "BSCT",
+    wrappedCrypto : WBNB_ADDRESS,
+    eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
+    eFundTokenAddress: EFUND_TOKEN_BSC,
+    tokensAddresses: { 
+      "USDT" :  {
+        address : "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+      },
+      "BUSD" :  {
+        address : "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+      },
+      "DAI" :  {
+        address : "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      },
+    },
+  },
+};
 
 
 export const pancakeRouterContractAbi = [
