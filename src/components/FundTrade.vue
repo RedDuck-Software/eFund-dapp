@@ -12,7 +12,7 @@
           @change="handleFromValueChange()"
         />
       </label>
-      <span @onclick="setMaxFrom()">max</span>
+      <div v-on:click="setMaxFrom()">max</div>
       <select v-model="fromSwapCurrLabel" class="form-control" @change="handleFromValueChange()">
         <option v-for="(item, index) in fromSwapLabels" :key="index" :value="item">
           {{ item }}
@@ -118,14 +118,29 @@ export default {
     });
   },
   methods: {
-    async setMaxTo() {
-      this.fromSwapValue = await this.getMaxValueeOf();
-    },
     async setMaxFrom() {
-      this.toSwapValue = await this.getMaxValueeOf();
+      if (this.fromSwapCurr != null) {
+        this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
+        
+        if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
+          await this.reCalculateAmountsOut();
+        }
+      }
     },
-    async getMaxValueeOf(t) {
-      return 1000;
+    async setMaxTo() {
+      if(this.toSwapCurr != null ) {
+        this.toSwapValue = await this.getMaxValueOf(this.toSwapCurr.address);
+        if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
+          await this.reCalculateAmountsOut();
+        }
+      }
+    },
+    async getMaxValueOf(tokenAddress) {
+      if (tokenAddress == this.eFundNetworkSettings.wrappedCryptoAddress) {
+        return await this.fundService.getBalanceFormatted(this.fundContractAddress);
+      } else {
+        return await this.fundService.balanceOfFormatted(tokenAddress, this.fundContractAddress);
+      }
     },
     async handleFromValueChange() {
       this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
@@ -167,12 +182,12 @@ export default {
       const token = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
       const decimals = await token.decimals();
       const parsedAmount = utils.parseUnits(this.fromSwapValue, decimals);
-      
+
       const amounts = await this.getPricesPath(parsedAmount, [this.fromSwapCurr.address, this.toSwapCurr.address]);
 
       console.log(amounts);
 
-      this.toSwapValue = await utils.formatUnits(amounts[1].toString(), 18);
+      this.toSwapValue = utils.formatUnits(amounts[1].toString(), 18);
     },
     async swap() {
       const txhash = await this.sendSwapRequest();

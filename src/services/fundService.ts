@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers , utils} from "ethers";
 import { currentProvider, getSigner } from "./ether";
 import {FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from "../constants";
 
@@ -32,4 +32,18 @@ export class FundService {
     return new ethers.Contract(address, SWAP_ROUTER_ABI , this.currentProvider.getSigner());
   }
   
+  // erc20 balance of
+  async balanceOfFormatted(tokenAddress, of){ 
+    const contract = this.getERC20ContractInstance(tokenAddress);
+    return utils.formatUnits(await contract.balanceOf(of), await contract.decimals());
+  }
+
+  // balance in ETH|BNB
+  async getBalanceFormatted(of) { 
+    return utils.formatEther(await this.currentProvider.getBalance(of));
+  }
+
+  async findOptimalPathForSwap(tokeFrom, tokenTo, availableTokens ) { 
+    
+  }
 }
