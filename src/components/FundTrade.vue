@@ -121,14 +121,14 @@ export default {
     async setMaxFrom() {
       if (this.fromSwapCurr != null) {
         this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
-        
+
         if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
           await this.reCalculateAmountsOut();
         }
       }
     },
     async setMaxTo() {
-      if(this.toSwapCurr != null ) {
+      if (this.toSwapCurr != null) {
         this.toSwapValue = await this.getMaxValueOf(this.toSwapCurr.address);
         if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
           await this.reCalculateAmountsOut();
@@ -194,51 +194,63 @@ export default {
       console.log(txhash);
     },
     async sendSwapRequest() {
-      if (this.fromSwapCurr.label === "BNB") {
+      const wCrypto = this.eFundNetworkSettings.wrappedCryptoAddress;
+
+      const path = this.fundService.findOptimalPathForSwap(this.fromSwapCurr.address, this.toSwapCurr.address, []);
+
+      console.log(path);
+
+      if (path == null) {
+        alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
+        return;
+      }
+
+      if (this.fromSwapCurr.address == wCrypto) {
         return await this.swapETHForTokens();
-      } else if (this.toSwapCurr.label === "BNB") {
+      } else if (this.toSwapCurr.address == wCrypto) {
         return await this.swapERCForETH();
       } else {
-        return await this.swapERCForERC();
+        return await this.swapERCForERC(path);
       }
     },
-    async swapERCForERC() {
+    async swapERCForERC(path) {
       console.log("erc to erc");
-      const { jsonSigner } = await getSigner();
-      const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
 
-      if (!(await tokenContract.balanceOf(this.fundContractAddress.toString())).isZero()) {
-        return await this.fundContract.swapERC20ToERC20(
-          this.fromSwapCurr.value,
-          this.toSwapCurr.value,
-          FixedNumber.from(this.fromSwapValue),
-          0
-        );
-      } else {
-        alert(`You need to get this amount of ${this.fromSwapCurr.label}`);
+      const { jsonSigner } = await getSigner();
+
+      const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+      const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);
+
+      const amount = utils.parseUnits(this.fromSwapValue, await tokenFrom.decimals());
+
+      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount)) {
+        alert(`You need to get this amount of ${this.fromSwapCurr.name}`);
+        return;
       }
+
+      return await this.fundContract.swapERC20ToERC20(path, amount, 0);
     },
     async swapERCForETH() {
-      console.log("erc to bnb");
-      const { jsonSigner } = await getSigner();
-      const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
+      console.log("erc to bnb|eth");
 
-      if (!(await tokenContract.balanceOf(this.fundContractAddress.toString())).isZero()) {
-        return await this.fundContract.swapERC20ToETH(this.toSwapCurr.value, FixedNumber.from(this.fromSwapValue), 0);
-      } else {
+      const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+
+      const amount = utils.parseEther(this.toSwapValue);
+
+      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
         alert(`You need thia amount of ${this.fromSwapCurr.label}`);
-      }
+
+      return await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
     },
     async swapETHForTokens() {
       console.log("bnb to erc");
-      const { jsonSigner } = await getSigner();
-      const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
 
-      if (!(await currentProvider.getBalance(this.fundContractAddress)).isZero()) {
-        return await this.fundContract.swapETHToERC20(this.toSwapCurr.value, FixedNumber.from(this.fromSwapValue), 0);
-      } else {
-        alert("Yuo don't have enough BNB");
-      }
+      const amount = utils.parseEther(this.fromSwapValue);
+
+      if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
+        alert("You don't have enough ETH");
+
+      return await this.fundContract.swapETHToERC20(this.fromSwapCurr.address, amount, 0);
     },
     async getPricesPath(amount, path) {
       if (amount.isZero()) {
@@ -246,14 +258,6 @@ export default {
       } else {
         return await this.swapRouterContract.getAmountsOut(amount, path);
       }
-    },
-    async getPancakeRouterContractInstance(pancakeContractAddress) {
-      const signer = currentProvider.getSigner();
-      return new ethers.Contract(pancakeContractAddress, pancakeRouterContractAbi, signer);
-    },
-    async getPancakeRouterAddress() {
-      console.log(await this.fundContract.router());
-      return await this.fundContract.router();
     },
   },
 };

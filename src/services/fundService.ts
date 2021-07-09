@@ -43,7 +43,7 @@ export class FundService {
     return utils.formatEther(await this.currentProvider.getBalance(of));
   }
 
-  async findOptimalPathForSwap(tokeFrom, tokenTo, availableTokens ) { 
-    
+  async findOptimalPathForSwap(tokenFrom, tokenTo, availableTokens ) { 
+    return [tokenFrom, tokenTo];
   }
 }
