@@ -61,22 +61,22 @@ export default {
   data() {
     return {
       tokensList: [],
-      
-      fromSwapCurrLabel : "", 
-      toSwapCurrLabel : "",
-      
+
+      fromSwapCurrLabel: "",
+      toSwapCurrLabel: "",
+
       fromSwapCurr: null,
       toSwapCurr: null,
-      
+
       fromSwapValue: 0,
       toSwapValue: 0,
-      
+
       fromSwapList: [],
       toSwapList: [],
 
       fromSwapLabels: [],
       toSwapLabels: [],
-      
+
       swapRouterContract: null,
       fundContract: null,
       fundService: null,
@@ -85,12 +85,16 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
-    this.swapRouterContract = await this.fundService.getSwapRouterContractInstance(await this.fundContract.router());
+    const swapRouterAddress = await this.fundContract.router();
+
+    console.log("Swap router address is: ", swapRouterAddress);
+
+    this.swapRouterContract = await this.fundService.getSwapRouterContractInstance(swapRouterAddress);
 
     const wCrypto = this.eFundNetworkSettings.cryptoSign;
     const wCryptoAddress = this.eFundNetworkSettings.wrappedCryptoAddress;
 
-    this.fromSwapList[wCrypto]=  {
+    this.fromSwapList[wCrypto] = {
       name: wCrypto,
       address: wCryptoAddress,
       amount: utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)),
@@ -98,7 +102,7 @@ export default {
 
     this.fromSwapLabels.push(wCrypto);
 
-    this.boughtTokensAddresses.forEach(token => {
+    this.boughtTokensAddresses.forEach((token) => {
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
     });
@@ -107,28 +111,28 @@ export default {
       this.allowedTokensAddresses.length != 0 ? this.allowedTokensAddresses : this.eFundNetworkSettings.tokensAddresses;
 
     console.log(this.eFundNetworkSettings.tokensAddresses);
-    
-    tokensToSwap.forEach(token => {
+
+    tokensToSwap.forEach((token) => {
       this.toSwapList[token.name] = token;
       this.toSwapLabels.push(token.name);
     });
   },
   methods: {
-    async setMaxTo() { 
+    async setMaxTo() {
       this.fromSwapValue = await this.getMaxValueeOf();
-    },  
-    async setMaxFrom() { 
+    },
+    async setMaxFrom() {
       this.toSwapValue = await this.getMaxValueeOf();
     },
-    async getMaxValueeOf(t) { 
+    async getMaxValueeOf(t) {
       return 1000;
     },
     async handleFromValueChange() {
       this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
-      
+
       console.log(this.fromSwapCurr);
 
-      if(this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) { 
+      if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
         await this.reCalculateAmountsOut();
       }
 
@@ -148,24 +152,24 @@ export default {
     },
     async handleToValueChange() {
       this.toSwapCurr = this.toSwapList[this.toSwapCurrLabel];
-      
+
       console.log(this.toSwapCurr);
 
-      if(this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) { 
+      if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
         await this.reCalculateAmountsOut();
       }
       // if (this.fromSwapCurr.value === this.toSwapCurr.value) {
       //   this.fromSwapValue = this.toSwapValue;
       //   return;
       // }
-
-      
     },
-    async reCalculateAmountsOut() { 
-      const amounts = await this.getPricesPath(BigNumber.from(FixedNumber.from(this.toSwapValue)), [
-        this.fromSwapCurr.value,
-        this.toSwapCurr.value,
-      ]);
+    async reCalculateAmountsOut() {
+      const token = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+      const decimals = await token.decimals();
+      const parsedAmount = utils.parseUnits(this.fromSwapValue, decimals);
+      
+      const amounts = await this.getPricesPath(parsedAmount, [this.fromSwapCurr.address, this.toSwapCurr.address]);
+
       console.log(amounts);
 
       this.toSwapValue = await utils.formatUnits(amounts[1].toString(), 18);
@@ -225,9 +229,7 @@ export default {
       if (amount.isZero()) {
         return new Array(path.length).fill(BigNumber.from([0]));
       } else {
-        const contract = await this.getPancakeRouterContractInstance(await this.getPancakeRouterAddress());
-        const res = await contract.getAmountsOut(amount, path);
-        return res;
+        return await this.swapRouterContract.getAmountsOut(amount, path);
       }
     },
     async getPancakeRouterContractInstance(pancakeContractAddress) {
