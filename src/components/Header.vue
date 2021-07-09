@@ -29,7 +29,7 @@
             </li>
           </ul>
           <ConnectWallet v-if="!signerAddress" />
-          <div v-else class="text-white">
+          <div v-else class="text-gray">
             {{ signerAddress }}
           </div>
         </div>
@@ -79,6 +79,5 @@ header {
 }
 
 .nav-bg {
-  background-color: #17354d;
 }
 </style>

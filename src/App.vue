@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-vh-100 bg-secondary">
     <Header />
-    <div class="main container">
+    <div class="main container text-gray">
       <router-view></router-view>
     </div>
   </div>
@@ -22,6 +22,6 @@ export default {
 <style lang="scss">
 .main {
   padding-top: 80px;
-  background-color: #203144;
+  padding-bottom: 80px;
 }
 </style>

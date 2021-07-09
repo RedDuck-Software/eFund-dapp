@@ -1,8 +1,6 @@
 <template>
   <div class="py-3">
-    <!--    <div class="row">-->
-    <!--      <div class="col">-->
-    <div class="trade bg-dark rounded text-white px-5 py-4 my-4">
+    <div class="trade bg-dark rounded px-5 py-4 my-4">
       <h5 class="text-center text-uppercase mb-3">Trade</h5>
       <div class="row justify-content-center">
         <div class="form col-auto">
@@ -51,49 +49,6 @@
           </div>
         </div>
       </div>
-      <!--      </div>-->
-      <!--    </div>-->
-      <!--      <div class="d-flex">-->
-      <!--        <label>-->
-      <!--          Amount for swap-->
-      <!--          <input-->
-      <!--            v-model="fromSwapValue"-->
-      <!--            type="number"-->
-      <!--            min="0"-->
-      <!--            name="from swap"-->
-      <!--            class="form-control"-->
-      <!--            @change="handleFromValueChange()"-->
-      <!--          />-->
-      <!--        </label>-->
-      <!--        <select v-model="toSwapCurr" class="form-control" @change="handleFromValueChange()">-->
-      <!--          <option v-for="(item, index) in tokensList" :key="index" :value="item">-->
-      <!--            {{ item.label }}-->
-      <!--          </option>-->
-      <!--        </select>-->
-      <!--      </div>-->
-      <!--    </div>-->
-
-      <!--    <div class="d-flex">-->
-      <!--      <label>-->
-      <!--        Get after swap-->
-      <!--        <input-->
-      <!--          v-model="toSwapValue"-->
-      <!--          type="number"-->
-      <!--          min="0"-->
-      <!--          name="to swap"-->
-      <!--          class="form-control"-->
-      <!--          @change="handleToValueChange()"-->
-      <!--        />-->
-      <!--      </label>-->
-      <!--      <select v-model="toSwapCurr" class="form-control" @change="handleFromValueChange()">-->
-      <!--        <option v-for="(item, index) in tokensList" :key="index" :value="item">-->
-      <!--          {{ item.label }}-->
-      <!--        </option>-->
-      <!--      </select>-->
-      <!--    </div>-->
-      <!--    <div class="d-flex">-->
-      <!--      <button @click="swap()">Swap!</button>-->
-      <!--    </div>-->
     </div>
   </div>
 </template>
