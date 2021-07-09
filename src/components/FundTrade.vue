@@ -105,7 +105,10 @@ export default {
     this.boughtTokensAddresses.forEach((token) => {
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
+      console.log("token push: ", token.name);
     });
+
+    console.log("bought tokens addresses: " ,this.fromSwapLabels);
 
     const tokensToSwap =
       this.allowedTokensAddresses.length != 0 ? this.allowedTokensAddresses : this.eFundNetworkSettings.tokensAddresses;
@@ -250,7 +253,7 @@ export default {
       if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
         alert("You don't have enough ETH");
 
-      return await this.fundContract.swapETHToERC20(this.fromSwapCurr.address, amount, 0);
+      return await this.fundContract.swapETHToERC20(this.toSwapCurr.address, amount, 0);
     },
     async getPricesPath(amount, path) {
       if (amount.isZero()) {

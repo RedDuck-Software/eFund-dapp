@@ -40,12 +40,7 @@ export default {
   computed: {
     ...mapGetters(["signerAddress"]),
   },
-  watch: {
-    signerAddress(val, oldVal) {
-      this.fetchContract();
-    },
-  },
-  mounted() {
+   mounted() {
     this.fundService = new FundService(this.platformAddress, currentProvider);
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
   },
