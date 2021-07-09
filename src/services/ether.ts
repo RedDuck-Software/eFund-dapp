@@ -1,6 +1,7 @@
 import { ethers, providers, Contract } from "ethers";
 
 import EFundPlatform from "../artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
+import { vm } from "../main";
 
 declare global {
   interface Window {
@@ -46,3 +47,12 @@ export const startApp = (): string[] | void => {
     return;
   }
 };
+
+window.ethereum.on("accountsChanged", ([newAddress]) => {
+  vm.$store.commit("updateSignerAddress", newAddress ? newAddress : "");
+});
+
+window.ethereum.on("chainIdChanged", async ([networkId]) => {
+  const { address } = await getSigner();
+  vm.$store.commit("updateSignerAddress", address ? address : "");
+});
