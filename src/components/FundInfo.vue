@@ -10,16 +10,43 @@
         set Active
       </button>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Balance: <b>{{ fundBalance }}</b>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Duration: <b>{{ fundDuration }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
-  </ul></template
+
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Bought tokens:
+      <ol>
+        <li v-for="(item, index) in boughtTokens" :key="index" :value="item">
+          <ol>
+            <li>Address: {{ item.address }}</li>
+            <li>Name: {{ item.name }}</li>
+            <li>Balance: {{ item.balance }}</li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Bought tokens:
+      <ol>
+        <li v-for="(item, index) in alowedTokens" :key="index" :value="item">
+          <ol>
+            <li>Address: {{ item.address }}</li>
+            <li>Name: {{ item.name }}</li>
+            <li>Balance: {{ item.balance }}</li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ul>
+</template
 >
 
 <script>
@@ -32,9 +59,15 @@ import { fundStatuses } from "../constants";
 export default {
   name: "FundInfo",
   computed: {
-    ...mapGetters(["fundContractAddress", "fundContractStatus", "fundContractManager", "fundContractIsManager",  "eFundNetworkSettings"]),
+    ...mapGetters([
+      "fundContractAddress",
+      "fundContractStatus",
+      "fundContractManager",
+      "fundContractIsManager",
+      "eFundNetworkSettings",
+    ]),
   },
-  
+
   data() {
     return {
       fundService: null,
@@ -48,7 +81,7 @@ export default {
   },
   async mounted() {
     this.interval = setInterval(() => this.getBalance(), 60000);
-   
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     const provider = this.fundService.getCurrentProvider();
 
@@ -69,7 +102,6 @@ export default {
     boughtTokensAddresses.forEach(async (t) => {
       this.boughtTokens.push(await this.getTokenInfo(t));
     });
-
 
     this.updateAllowedTokensAddresses(this.allowedTokens);
     this.updateBoughtTokensAddresses(this.boughtTokens);
