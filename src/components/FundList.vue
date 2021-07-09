@@ -11,7 +11,7 @@
 >
 
 <script>
-  
+import { mapGetters } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
@@ -30,8 +30,11 @@ export default {
       this.fetchAllFunds();
     },
   },
+  computed: {
+    ...mapGetters(["eFundNetworkSettings"]),
+  },
   async mounted() {
-    const fundService = new FundService(this.platformAddress, currentProvider);
+    const fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     const provider = fundService.getCurrentProvider();
     this.readOnlyFactoryContract = fundService.getFundPlatformContractInstance();
 

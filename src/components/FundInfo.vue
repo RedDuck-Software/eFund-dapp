@@ -31,7 +31,7 @@
       <ol class="list-group">
         <div v-if="boughtTokens.length > 0">
           <li v-for="token in boughtTokens" :key="token.address">
-            <span>Token: {{ token.address }}</span> <span>Name: {{ token.name }}</span>
+            <span>Token: {{ token.address }}</span> <span>Name: {{ token.name }}</span> <span>Amount: {{ token.amount }}</span>
           </li>
         </div>
         <div v-if="boughtTokens.length  == 0">
@@ -44,17 +44,18 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { FundService } from "../services/fundService";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
   computed: {
-    ...mapGetters(["fundContractAddress", "fundContractStatus", "fundContractManager", "fundContractIsManager"]),
+    ...mapGetters(["fundContractAddress", "fundContractStatus", "fundContractManager", "fundContractIsManager",  "eFundNetworkSettings"]),
   },
+  
   data() {
     return {
       fundService: null,
@@ -69,7 +70,7 @@ export default {
   async mounted() {
     this.interval = setInterval(() => this.getBalance(), 60000);
    
-    this.fundService = new FundService(this.platformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     const provider = this.fundService.getCurrentProvider();
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
@@ -90,6 +91,10 @@ export default {
       this.boughtTokens.push(await this.getTokenInfo(t));
     });
 
+
+    this.updateAllowedTokensAddresses(this.allowedTokens);
+    this.updateBoughtTokensAddresses(this.boughtTokens);
+
     await this.updateInfo();
   },
   destroyed() {
@@ -103,6 +108,7 @@ export default {
       return {
         address: tokenAddress,
         name: await token.name(),
+        amount: utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
       };
     },
     async updateInfo() {
@@ -123,6 +129,7 @@ export default {
       this.fundBalance = ethers.utils.formatEther(curBalance.toString());
       console.log("fund balance is: ", this.fundBalance);
     },
+    ...mapMutations(["updateBoughtTokensAddresses", "updateAllowedTokensAddresses"]),
   },
 };
 </script>

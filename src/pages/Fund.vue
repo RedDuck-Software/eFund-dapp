@@ -36,14 +36,19 @@ export default {
       alert("fund is not found");
       return;
     }
+    const signerAddress = await fundService.getCurrentProvider().getSigner().getAddress();
+    const isManager = fundManager == signerAddress;
+    
+    console.log("isManager: ", isManager);
 
+    this.updateSignerAddress(signerAddress);
     this.updateFundAddress(fundAddress);
-    this.updateFundIsManager(fundManager == fundService.getCurrentProvider().getSigner());
+    this.updateFundIsManager(isManager);
     this.updateFundManager(fundManager);
     this.updateFundStatus(fundStatus);
   },
   methods: {
-    ...mapMutations(["updateFundAddress", "updateFundManager", "updateFundIsManager", "updateFundStatus"]),
+    ...mapMutations(["updateFundAddress", "updateFundManager", "updateFundIsManager", "updateFundStatus", "updateSignerAddress"]),
   },
 };
 </script>

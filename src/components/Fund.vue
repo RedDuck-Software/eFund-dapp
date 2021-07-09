@@ -43,7 +43,7 @@ export default {
   async mounted() {
     console.log("network setting: ", this.eFundNetworkSettings);
 
-    const fundService = new FundService(this.platformAddress, currentProvider);
+    const fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
     const contractAddress = this.$route.params.address;
 

@@ -32,20 +32,24 @@ export const eFundNetworkSettings =
 { 
   97 : { // BSC Testnet
     networkName: "BSCT",
-    wrappedCrypto : WBNB_ADDRESS,
+    cryptoSign: "BNB",
+    wrappedCryptoAddress : WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
-    tokensAddresses: { 
-      "USDT" :  {
-        address : "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+    tokensAddresses: [
+      { 
+        name : "USDT",
+        address :  "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
       },
-      "BUSD" :  {
-        address : "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+      { 
+        name : "BUSD",
+        address :  "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
       },
-      "DAI" :  {
-        address : "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      { 
+        name : "DAI",
+        address :  "0x8a9424745056Eb399FD19a0EC26A14316684e274",
       },
-    },
+    ],
   },
 };
 

@@ -13,6 +13,8 @@ const store = new Vuex.Store({
     fundContractManager: null,
     fundContractIsManager: null,
     eFundNetworkSettings: eFundNetworkSettings[97],
+    boughtTokensAddresses: [],
+    allowedTokensAddresses: [],
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -30,8 +32,14 @@ const store = new Vuex.Store({
     updateFundIsManager(state, isManger) {
       state.fundContractIsManager = isManger;
     },
-    updateEFundSettings(state, settings) { 
+    updateEFundSettings(state, settings) {
       state.eFundNetworkSettings = settings;
+    },
+    updateBoughtTokensAddresses(state, tokens) {
+      state.boughtTokensAddresses = tokens;
+    },
+    updateAllowedTokensAddresses(state, tokens) {
+      state.allowedTokensAddresses = tokens;
     },
     logout: state => {
       state.signerAddress = null;
@@ -46,6 +54,8 @@ const store = new Vuex.Store({
     fundContractManager: state => state.fundContractManager,
     fundContractIsManager: state => state.fundContractIsManager,
     eFundNetworkSettings: state => state.eFundNetworkSettings,
+    boughtTokensAddresses: state => state.boughtTokensAddresses,
+    allowedTokensAddresses: state => state.allowedTokensAddresses,
   },
   actions: {},
   plugins: [createPersistedState()],
