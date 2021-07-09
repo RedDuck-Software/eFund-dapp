@@ -7,6 +7,8 @@ export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
 import FundAbi from "./artifacts/contracts/HedgeFund.sol/HedgeFund.json";
 import FundPlatformAbi from "./artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
 import ERC20 from "./artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
+import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Router02.sol/UniswapV2Router02.json";
+
 
 export const ABI = JSON.stringify(FundAbi.abi);
 
@@ -16,7 +18,10 @@ export const FUND_ABI = JSON.stringify(FundAbi.abi);
 
 export const ERC20_ABI = JSON.stringify(ERC20.abi);
 
+export const SWAP_ROUTER_ABI = JSON.stringify(SwapRouter.abi);
+
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
+
 
 export const pancakeRouterContractAbi = [
   {

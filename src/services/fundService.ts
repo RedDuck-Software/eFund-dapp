@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import {FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI} from "../constants";
+import {FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from "../constants";
 
 export class FundService {
   fundPlatfromAddress;
@@ -27,4 +27,9 @@ export class FundService {
   getERC20ContractInstance(address) { 
     return new ethers.Contract(address, ERC20_ABI , this.currentProvider.getSigner());
   }
+
+  getSwapRouterContractInstance(address) { 
+    return new ethers.Contract(address, SWAP_ROUTER_ABI , this.currentProvider.getSigner());
+  }
+  
 }
