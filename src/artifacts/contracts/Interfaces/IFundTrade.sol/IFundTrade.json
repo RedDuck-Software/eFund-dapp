@@ -6,14 +6,9 @@
     {
       "inputs": [
         {
-          "internalType": "address payable",
-          "name": "tokenFrom",
-          "type": "address"
-        },
-        {
-          "internalType": "address payable",
-          "name": "tokenTo",
-          "type": "address"
+          "internalType": "address[]",
+          "name": "path",
+          "type": "address[]"
         },
         {
           "internalType": "uint256",
