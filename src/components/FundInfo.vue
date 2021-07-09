@@ -16,8 +16,8 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
       Duration: <b>{{ fundDuration }}</b>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
-      Manager:<b> {{ fundContractManager }}</b>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
   </ul></template
 >

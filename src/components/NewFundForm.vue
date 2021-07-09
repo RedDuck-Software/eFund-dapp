@@ -84,9 +84,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.form-control {
-  font-size: 1.5rem;
-  /*background-color: #333;*/
-}
-</style>
+<style scoped></style>

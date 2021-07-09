@@ -1,6 +1,6 @@
 <template>
-  <div class="py-3">
-    <div class="trade bg-dark rounded px-5 py-4 my-4">
+  <div class="create-fund-form d-flex flex-column align-content-center">
+    <div class="bg-gray-dark rounded px-5 py-4 my-4">
       <h5 class="text-center text-uppercase mb-3">Trade</h5>
       <div class="row justify-content-center">
         <div class="form col-auto">
@@ -11,12 +11,16 @@
                 type="number"
                 min="0"
                 name="from swap"
-                class="form-control"
+                class="form-control bg-dark border-0"
                 @change="handleFromValueChange()"
               />
             </div>
             <div class="form-input">
-              <select v-model="fromSwapCurr" class="form-control pl-2 pr-4" @change="handleFromValueChange()">
+              <select
+                v-model="fromSwapCurr"
+                class="form-control pl-2 pr-4 bg-dark border-0"
+                @change="handleFromValueChange()"
+              >
                 <option v-for="(item, index) in tokensList" :key="index" :value="item">
                   {{ item.label }}
                 </option>
@@ -30,12 +34,16 @@
                 type="number"
                 min="0"
                 name="to swap"
-                class="form-control"
+                class="form-control bg-dark border-0"
                 @change="handleToValueChange()"
               />
             </div>
             <div class="form-input">
-              <select v-model="fromSwapCurr" class="form-control pl-2 pr-4" @change="handleFromValueChange()">
+              <select
+                v-model="fromSwapCurr"
+                class="form-control pl-2 pr-4 bg-dark border-0"
+                @change="handleFromValueChange()"
+              >
                 <option v-for="(item, index) in tokensList" :key="index" :value="item">
                   {{ item.label }}
                 </option>
@@ -209,10 +217,12 @@ export default {
 </script>
 
 <style scoped>
-.trade {
-}
-
 input {
-  width: 320px;
+  width: 160px;
+}
+@media (min-width: 768px) {
+  input {
+    width: 320px;
+  }
 }
 </style>

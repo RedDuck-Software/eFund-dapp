@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="my-3">
-      <h1 class="font-bold text-white">
+    <div class="my-3 d-flex min-w-0">
+      <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
       <!--      <p class="text-white">Fund address</p>-->

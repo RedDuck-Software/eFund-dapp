@@ -20,7 +20,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex justify-content-between">
+        <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex justify-content-between min-w-0">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item mx-0 mx-lg-1">
               <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Home' }">
@@ -29,7 +29,7 @@
             </li>
           </ul>
           <ConnectWallet v-if="!signerAddress" />
-          <div v-else class="text-gray">
+          <div v-else class="text-gray truncate ml-2">
             {{ signerAddress }}
           </div>
         </div>
@@ -75,9 +75,6 @@ export default {
 
 <style scoped>
 header {
-  height: 80px;
-}
-
-.nav-bg {
+  height: 120px;
 }
 </style>

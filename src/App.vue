@@ -21,7 +21,7 @@ export default {
 
 <style lang="scss">
 .main {
-  padding-top: 80px;
+  padding-top: 120px;
   padding-bottom: 80px;
 }
 </style>

@@ -10,10 +10,24 @@ $theme-colors: (
 
 @import 'node_modules/bootstrap/scss/bootstrap';
 
+.form-control {
+  font-size: 1.5rem;
+}
+
 @media (min-width: 992px){
   .navbar-expand-lg .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
   }
+}
+
+.truncate{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.min-w-0{
+  min-width: 0;
 }
 
