@@ -1,15 +1,34 @@
 <template>
-  <div class="">
-    <div class="d-flex">
-      <input v-model="etherValue" type="number" class="form-control" />
-      <select v-model="month" class="form-control">
-        <option v-for="(item, index) in monthList" :key="index" :value="item">
-          {{ item }}
-        </option>
-      </select>
-      <button :disabled="!signerAddress" class="btn btn-primary" @click="createNewFund()">
-        Create New
-      </button>
+  <div class="create-fund-form d-flex flex-column align-content-center">
+    <div class="bg-gray-dark rounded px-5 py-4 my-4">
+      <h5 class="text-center text-uppercase mb-3">Create fund</h5>
+      <div class="row justify-content-center">
+        <div class="form col-auto">
+          <div class="form-group d-flex justify-content-between">
+            <div class="form-input mr-2">
+              <input
+                id="inputValue"
+                v-model="etherValue"
+                type="number"
+                class="form-control bg-dark border-0"
+                placeholder="Fund Value"
+              />
+            </div>
+            <div class="form-input">
+              <select id="inputMonth" v-model="month" class="form-control pl-2 pr-4 bg-dark border-0">
+                <option v-for="(item, index) in monthList" :key="index" :value="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group d-flex flex-column">
+            <button :disabled="!signerAddress" class="btn btn-primary px-3" @click="createNewFund()">
+              Create New
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <FundList />
   </div>

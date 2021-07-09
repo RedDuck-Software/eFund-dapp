@@ -1,47 +1,26 @@
 <template>
-  <ul class="list-group">
-    <li class="list-group-item">
+  <ul class="list-group text-gray">
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Status: {{ fundContractStatus }}
-      <button v-if="fundContractIsManager && fundContractStatus === 'Opened'" @click="setFundStatusActive()">
+      <button
+        v-if="fundContractIsManager && fundContractStatus === 'Opened'"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusActive()"
+      >
         set Active
       </button>
     </li>
-    <li class="list-group-item">Balance: {{ fundBalance }}</li>
-    <li class="list-group-item">Duration: {{ fundDuration }}</li>
-    <li class="list-group-item">Manager: {{ fundContractManager }}</li>
-
-    <li class="list-group-item">
-      <span>Allowed tokens: </span>
-      <ol class="list-group">
-        <div v-if="alowedTokens.length > 0">
-          <li v-for="token in alowedTokens" :key="token.address">
-            <span>Token: {{ token.address }}</span> <span>Name: {{ token.name }}</span>
-          </li>
-        </div>
-        <div v-if="alowedTokens.length  == 0">
-          <span>All tokens are allowed</span>
-        </div>
-        
-      </ol>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+      Balance: <b>{{ fundBalance }}</b>
     </li>
-
-
-    <li class="list-group-item">
-      <span>Bought tokens: </span>
-      <ol class="list-group">
-        <div v-if="boughtTokens.length > 0">
-          <li v-for="token in boughtTokens" :key="token.address">
-            <span>Token: {{ token.address }}</span> <span>Name: {{ token.name }}</span> <span>Amount: {{ token.amount }}</span>
-          </li>
-        </div>
-        <div v-if="boughtTokens.length  == 0">
-          <span>No tokens bought yet</span>
-        </div>
-        
-      </ol>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+      Duration: <b>{{ fundDuration }}</b>
     </li>
-  </ul>
-</template>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Manager:<b class="truncate"> {{ fundContractManager }}</b>
+    </li>
+  </ul></template
+>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
