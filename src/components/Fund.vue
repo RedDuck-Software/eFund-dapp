@@ -1,14 +1,18 @@
 <template>
   <div>
-    <div class="text-center mb-10">
-      <h1 class="font-bold text-3xl text-gray-900">
+    <div class="my-3 d-flex min-w-0">
+      <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
-      <p>Fund address</p>
+      <!--      <p class="text-white">Fund address</p>-->
     </div>
-    <div class="d-flex">
-      <FundInfo />
-      <FundStatistic />
+    <div class="row">
+      <div class="col-sm-8">
+        <FundInfo />
+      </div>
+      <div class="col-sm-4">
+        <FundStatistic />
+      </div>
     </div>
     <MakeDepositForm v-if="fundContractStatus === 'Opened'" @make-deposit="makeDepositToFund" />
     <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" :fund-contract="fundContract" />

@@ -1,14 +1,24 @@
 <template>
-  <ul class="list-group">
-    <li class="list-group-item">
+  <ul class="list-group text-gray">
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Status: {{ fundContractStatus }}
-      <button v-if="fundContractIsManager && fundContractStatus === 'Opened'" @click="setFundStatusActive()">
+      <button
+        v-if="fundContractIsManager && fundContractStatus === 'Opened'"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusActive()"
+      >
         set Active
       </button>
     </li>
-    <li class="list-group-item">Balance: {{ fundBalance }}</li>
-    <li class="list-group-item">Duration: {{ fundDuration }}</li>
-    <li class="list-group-item">Manager: {{ fundContractManager }}</li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+      Balance: <b>{{ fundBalance }}</b>
+    </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+      Duration: <b>{{ fundDuration }}</b>
+    </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Manager:<b class="truncate"> {{ fundContractManager }}</b>
+    </li>
   </ul></template
 >
 

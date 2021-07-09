@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <div id="app" class="min-vh-100 bg-secondary">
     <Header />
-    <div class="container">
+    <div class="main container text-gray">
       <router-view></router-view>
     </div>
   </div>
@@ -9,6 +9,7 @@
 
 <script>
 import Header from "./components/Header";
+import "./App.scss";
 
 export default {
   name: "App",
@@ -18,4 +19,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.main {
+  padding-top: 120px;
+  padding-bottom: 80px;
+}
+</style>
