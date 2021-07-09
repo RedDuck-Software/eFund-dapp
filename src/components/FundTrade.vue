@@ -17,12 +17,12 @@
             </div>
             <div class="form-input">
               <select
-                v-model="fromSwapCurr"
+                v-model="fromSwapCurrLabel"
                 class="form-control pl-2 pr-4 bg-dark border-0"
                 @change="handleFromValueChange()"
               >
-                <option v-for="(item, index) in tokensList" :key="index" :value="item">
-                  {{ item.label }}
+                <option v-for="(item, index) in fromSwapLabels" :key="index" :value="item">
+                  {{ item }}
                 </option>
               </select>
             </div>
@@ -40,20 +40,18 @@
             </div>
             <div class="form-input">
               <select
-                v-model="fromSwapCurr"
+                v-model="toSwapCurrLabel"
                 class="form-control pl-2 pr-4 bg-dark border-0"
-                @change="handleFromValueChange()"
+                @change="handleToValueChange()"
               >
-                <option v-for="(item, index) in tokensList" :key="index" :value="item">
-                  {{ item.label }}
+                <option v-for="(item, index) in toSwapLabels" :key="index" :value="item">
+                  {{ item }}
                 </option>
               </select>
             </div>
           </div>
           <div class="form-group d-flex flex-column">
-            <button :disabled="!toSwapValue" class="btn btn-primary px-3" @click="swap()">
-              Swap!
-            </button>
+            <button :disabled="!toSwapValue" class="btn btn-primary px-3" @click="swap()">Swap!</button>
           </div>
         </div>
       </div>
@@ -124,34 +122,31 @@ export default {
       console.log("token push: ", token.name);
     });
 
-    console.log("bought tokens addresses: " ,this.fromSwapLabels);
+    console.log("bought tokens addresses: ", this.fromSwapLabels);
 
     const tokensToSwap =
       this.allowedTokensAddresses.length != 0 ? this.allowedTokensAddresses : this.eFundNetworkSettings.tokensAddresses;
-
-    console.log(this.eFundNetworkSettings.tokensAddresses);
 
     tokensToSwap.forEach((token) => {
       this.toSwapList[token.name] = token;
       this.toSwapLabels.push(token.name);
     });
+
+    console.log("tokens to swap: ", tokensToSwap);
+    console.log("tokens to swap labels: ", this.toSwapLabels);
   },
   methods: {
     async setMaxFrom() {
       if (this.fromSwapCurr != null) {
         this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
 
-        if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
-          await this.reCalculateAmountsOut();
-        }
+        await this.reCalculateAmountsOut();
       }
     },
     async setMaxTo() {
       if (this.toSwapCurr != null) {
         this.toSwapValue = await this.getMaxValueOf(this.toSwapCurr.address);
-        if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
-          await this.reCalculateAmountsOut();
-        }
+        await this.reCalculateAmountsOut();
       }
     },
     async getMaxValueOf(tokenAddress) {
@@ -166,38 +161,21 @@ export default {
 
       console.log(this.fromSwapCurr);
 
-      if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
-        await this.reCalculateAmountsOut();
-      }
-
-      // if (this.fromSwapCurrLabel.value === this.toSwapCurr.value) {
-      //   this.toSwapValue = this.fromSwapValue;
-      //   return;
-      // }
-
-      // if (this.fromSwapValue > 0) {
-      //   const amounts = await this.getPricesPath(BigNumber.from(FixedNumber.from(this.fromSwapValue)), [
-      //     this.fromSwapCurr.value.toString(),
-      //     this.toSwapCurr.value.toString(),
-      //   ]);
-
-      //   this.toSwapValue = parseFloat(await utils.formatUnits(amounts[1].toString(), 18)).toFixed(9);
-      // }
+      await this.reCalculateAmountsOut();
     },
     async handleToValueChange() {
       this.toSwapCurr = this.toSwapList[this.toSwapCurrLabel];
 
       console.log(this.toSwapCurr);
 
-      if (this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr) {
-        await this.reCalculateAmountsOut();
-      }
-      // if (this.fromSwapCurr.value === this.toSwapCurr.value) {
-      //   this.fromSwapValue = this.toSwapValue;
-      //   return;
-      // }
+      await this.reCalculateAmountsOut();
     },
     async reCalculateAmountsOut() {
+      if (!(this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr)) {
+        console.log("cannot recalculate amounts out");
+        return;
+      }
+
       const token = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
       const decimals = await token.decimals();
       const parsedAmount = utils.parseUnits(this.fromSwapValue, decimals);
