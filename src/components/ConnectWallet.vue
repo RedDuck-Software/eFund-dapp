@@ -8,7 +8,7 @@
     </div>
     <div>
       <p>Please connect to your wallet.</p>
-      <button type="button" :disabled="checkMetaMask()" @click="handleConnectWallet()">
+      <button type="button" :disabled="checkMetaMask()" class="btn btn-primary" @click="handleConnectWallet()">
         Connect Wallet
       </button>
     </div>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getSigner, isMetaMaskInstalled, currentProvider } from "../services/ether";
+import { getSigner, isMetaMaskInstalled } from "../services/ether";
 import { mapMutations } from "vuex";
 
 export default {
@@ -38,21 +38,8 @@ export default {
         const { address } = await getSigner();
         this.updateSignerAddress(address);
       }
-
-      currentProvider.on("accountsChanged", ([newAddress]) => {
-        console.log("accountsChanged");
-        if (newAddress === undefined) {
-          this.networkError = "";
-        }
-        this.updateSignerAddress(newAddress);
-      });
-
-      currentProvider.on("chainIdChanged", async ([networkId]) => {
-        this.networkError = "";
-        const { address } = await getSigner();
-        this.updateSignerAddress(address);
-      });
     },
+
     ...mapMutations(["updateSignerAddress"]),
   },
 };
