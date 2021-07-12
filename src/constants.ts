@@ -1,3 +1,67 @@
+export const FUND_PLATFROM_ADDRESS_BSC = "0xB51358E0A66E2B5d2D8a5353b6c2fcD4396BfE8d";
+export const EFUND_TOKEN_BSC = "0xCC2CAF40C5FceA1b2d9402E1B434809789513834";
+
+export const FUND_PLATFROM_ADDRESS_ETH = "";
+export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
+
+export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+export const WETH_ADDRESS = "";
+
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+import FundAbi from "./artifacts/contracts/HedgeFund.sol/HedgeFund.json";
+import FundPlatformAbi from "./artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
+import ERC20 from "./artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
+import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Router02.sol/UniswapV2Router02.json";
+import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol/IUniswapV2Factory.json";
+import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
+
+
+export const ABI = JSON.stringify(FundAbi.abi);
+
+export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);
+
+export const FUND_ABI = JSON.stringify(FundAbi.abi);
+
+export const ERC20_ABI = JSON.stringify(ERC20.abi);
+
+export const SWAP_ROUTER_ABI = JSON.stringify(SwapRouter.abi);
+
+export const SWAP_FACTORY_ABI = JSON.stringify(SwapFactory.abi);
+
+export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
+
+
+export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
+
+
+
+export const eFundNetworkSettings =
+{ 
+  97 : { // BSC Testnet
+    networkName: "BSCT",
+    cryptoSign: "BNB",
+    wrappedCryptoAddress : WBNB_ADDRESS,
+    eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
+    eFundTokenAddress: EFUND_TOKEN_BSC,
+    tokensAddresses: [
+      { 
+        name : "USDT",
+        address :  "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+      },
+      { 
+        name : "BUSD",
+        address :  "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+      },
+      { 
+        name : "DAI",
+        address :  "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      },
+    ],
+  },
+};
+
+
 export const pancakeRouterContractAbi = [
   {
     inputs: [

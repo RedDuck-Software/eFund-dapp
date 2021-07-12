@@ -1,17 +1,102 @@
-import { Contract, ethers } from "ethers";
-import { currentProvider, getSigner } from "./ether";
-import FundAbi from "../artifacts/contracts/HedgeFund.sol/HedgeFund.json";
+import { ethers, utils } from "ethers";
+import { currentProvider } from "./ether";
+import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, ZERO_ADDRESS, SWAP_PAIR_ABI } from "../constants";
 
-export const ABI = JSON.stringify(FundAbi.abi);
+function arrayInsertBefore(arr, index, value) {
+  return arr.splice(index, 0, value);
+}
 
-export let fundSignedContract;
+function arrayRemoveAt(arr, indexFrom, indexTo) {
+  return arr.splice(indexFrom, indexTo);
+}
 
-export const getSignedFundContract = async (address: string): Promise<Contract> => {
-  const { jsonSigner } = await getSigner();
-  fundSignedContract = new ethers.Contract(address, ABI, jsonSigner);
-  return fundSignedContract;
-};
+export class FundService {
+  fundPlatfromAddress;
 
-export const getReadOnlyFundContract = async (address: string): Promise<Contract> => {
-  return new ethers.Contract(address, ABI, currentProvider);
-};
+  currentProvider;
+
+  constructor(fundPlatfromAddress: string, provider) {
+    this.fundPlatfromAddress = fundPlatfromAddress;
+    this.currentProvider = provider;
+  }
+
+  getCurrentProvider() {
+    return currentProvider;
+  }
+
+  getFundPlatformContractInstance() {
+    return new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
+  }
+
+  getFundContractInstance(address) {
+    return new ethers.Contract(address, FUND_ABI, this.currentProvider.getSigner());
+  }
+
+  getERC20ContractInstance(address) {
+    return new ethers.Contract(address, ERC20_ABI, this.currentProvider.getSigner());
+  }
+
+  getSwapRouterContractInstance(address) {
+    return new ethers.Contract(address, SWAP_ROUTER_ABI, this.currentProvider.getSigner());
+  }
+
+  getSwapFactoryContractInstance(address) {
+    return new ethers.Contract(address, SWAP_FACTORY_ABI, this.currentProvider.getSigner());
+  }
+
+  getSwapPairContractInstance(address) {
+    return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
+  }
+
+  // erc20 balance of
+  async balanceOfFormatted(tokenAddress, of) {
+    const contract = this.getERC20ContractInstance(tokenAddress);
+    return utils.formatUnits(await contract.balanceOf(of), await contract.decimals());
+  }
+
+  // balance in ETH|BNB
+  async getBalanceFormatted(of) {
+    return utils.formatEther(await this.currentProvider.getBalance(of));
+  }
+
+  async findOptimalPathForSwap(tokenFrom, tokenTo, factoryAddress, availableTokens) {
+    const factory = this.getSwapFactoryContractInstance(factoryAddress);
+
+    const path = [tokenFrom, tokenTo];
+    
+    if (await this.isPathExists(path, factory)) {
+      return path;
+    }
+
+    for (let i = 0; i < availableTokens.length; i++) {
+      let curPath = path.slice();
+
+      curPath = arrayInsertBefore(path, curPath.length - 1, availableTokens[i]);
+
+      if (await this.isPathExists(curPath, factory)) {
+        return curPath;
+      }
+
+      // for (let j = i; j < availableTokens.length; j++) {
+      //   let curPathLong = curPath.slice();
+
+      //   curPathLong = arrayInsertBefore(curPathLong, curPathLong.length - 1, availableTokens[i]);
+
+      //   if (await this.isPathExists(curPath, factory)) {
+      //     return curPathLong;
+      //   }
+      // }
+    }
+
+    return null;
+  }
+
+  async isPathExists(path, factory) {
+    for (let i = 0; i < path.length - 1; i++) {
+      const pair = await factory.getPair(path[i], path[i + 1]);
+
+      if (pair == ZERO_ADDRESS) return false;
+    }
+    return true;
+  }
+}

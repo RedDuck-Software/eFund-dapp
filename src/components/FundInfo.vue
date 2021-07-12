@@ -10,54 +10,99 @@
         set Active
       </button>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Balance: <b>{{ fundBalance }}</b>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 ">
-      Duration: <b>{{ fundDuration }}</b>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
+      Duration: <b>{{ fundDuration }} months</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
-  </ul></template
->
+
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Bought tokens:
+      <ol>
+        <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
+          <ol>
+            <li>Address: {{ item.address }}</li>
+            <li>Name: {{ item.name }}</li>
+            <li>Balance: {{ item.amount }}</li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Allowed tokens:
+      <ol>
+        <li v-for="(item, index) in allowedTokensAddresses" :key="index" :value="item">
+          <ol>
+            <li>Address: {{ item.address }}</li>
+            <li>Name: {{ item.name }}</li>
+            <li>Balance: {{ item.amount }}</li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ul>
+</template>
 
 <script>
-import { mapGetters } from "vuex";
-import { fundSignedContract, getSignedFundContract } from "../services/fundService";
-import { ethers } from "ethers";
+import { mapGetters, mapMutations } from "vuex";
+import { FundService } from "../services/fundService";
+import { ethers, utils } from "ethers";
+import { currentProvider } from "../services/ether";
+import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
-  computed: {
-    ...mapGetters(["fundContractAddress", "fundContractStatus", "fundContractManager", "fundContractIsManager"]),
-  },
   data() {
     return {
+      fundService: null,
       fundSignedContract: null,
       fundBalance: null,
       fundDuration: null,
+      boughtTokens: [],
+      allowedTokens: [],
+      fundStatuse: 0,
     };
   },
-  mounted() {
+
+  computed: {
+    ...mapGetters([
+      "fundContractAddress",
+      "fundContractStatus",
+      "fundContractManager",
+      "fundContractIsManager",
+      "eFundNetworkSettings",
+      "allowedTokensAddresses",
+      "boughtTokensAddresses",
+    ]),
+  },
+  async mounted() {
+    console.log("found info: ", JSON.stringify(this.boughtTokensAddresses));
+
     this.interval = setInterval(() => this.getBalance(), 60000);
-    this.fetchFundContract().then(() => this.updateInfo());
+
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+
+    this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    await this.updateInfo();
   },
   destroyed() {
     clearInterval(this.interval);
   },
   methods: {
-    async fetchFundContract() {
-      this.fundSignedContract = fundSignedContract
-        ? fundSignedContract
-        : await getSignedFundContract(this.fundContractAddress);
-    },
+    async fetchFundContract() {},
+
     async updateInfo() {
-      this.getBalance();
+      await this.getBalance();
 
       this.fundSignedContract
         .fundDurationMonths()
-        .then(res => {
+        .then((res) => {
           this.fundDuration = res.toString();
         })
         .catch(() => console.log);
@@ -66,12 +111,9 @@ export default {
       this.fundSignedContract.setFundStatusActive();
     },
     async getBalance() {
-      this.fundSignedContract
-        .getCurrentBalanceInWei()
-        .then(res => {
-          this.fundBalance = ethers.utils.formatEther(res.toString());
-        })
-        .catch(() => console.log);
+      const curBalance = await this.fundSignedContract.getCurrentBalanceInWei();
+      this.fundBalance = ethers.utils.formatEther(curBalance.toString());
+      console.log("fund balance is: ", this.fundBalance);
     },
   },
 };

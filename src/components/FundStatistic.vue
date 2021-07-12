@@ -1,4 +1,6 @@
-<template> <div></div></template>
+<template>
+  <div></div>
+</template>
 
 <script>
 import { mapGetters } from "vuex";
@@ -18,7 +20,7 @@ export default {
     ...mapGetters(["fundContractAddress"]),
   },
   mounted() {
-    this.tokensList = tokens.data.map(token => {
+    this.tokensList = tokens.data.map((token) => {
       return {
         value: token.address,
         label: token.symbol,

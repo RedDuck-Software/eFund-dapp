@@ -15,56 +15,46 @@
       </div>
     </div>
     <MakeDepositForm v-if="fundContractStatus === 'Opened'" @make-deposit="makeDepositToFund" />
-    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" :fund-contract="fundContract" />
+    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" 
+      :fund-contract="fundContract" 
+     />
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { getSignedFundContract } from "../services/fundService";
 import FundInfo from "./FundInfo";
 import MakeDepositForm from "./MakeDepositForm";
 import { ethers } from "ethers";
 import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
+import { FundService } from '../services/fundService';
+import { currentProvider } from '../services/ether' ;
+import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
-export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
 export default {
   name: "Fund",
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      fundContract: null,
+      platformAddress: FUND_PLATFROM_ADDRESS_BSC, 
+      fundService: null,
+      fundContract : null, 
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager"]),
+    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager", "eFundNetworkSettings"]),
   },
-  mounted() {
-    this.fetchFundContract().then(() => this.getFundInfo());
+  async mounted() {
+    console.log("network setting: ", this.eFundNetworkSettings);
+
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
   },
   methods: {
-    async fetchFundContract() {
-      this.fundContract = await getSignedFundContract(this.fundContractAddress);
-      console.log(this.fundContract);
-    },
-    async getFundInfo() {
-      this.fundContract
-        .fundStatus()
-        .then(res => {
-          this.updateFundStatus(fundStatuses[res].value);
-        })
-        .catch(e => console.log);
-
-      this.fundContract
-        .fundManager()
-        .then(res => {
-          this.updateFundManager(res.toString());
-          this.updateFundIsManager(this.signerAddress.toLowerCase() === res.toString().toLowerCase());
-        })
-        .catch(e => console.log);
-    },
+ 
     async makeDepositToFund(value) {
       const overrides = {
         value: ethers.utils.parseEther(value),
@@ -72,7 +62,6 @@ export default {
       console.log(overrides);
       this.fundContract.makeDeposit(overrides);
     },
-    ...mapMutations(["updateFundStatus", "updateFundManager", "updateFundIsManager"]),
   },
 };
 </script>

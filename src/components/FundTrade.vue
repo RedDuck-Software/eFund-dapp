@@ -17,12 +17,12 @@
             </div>
             <div class="form-input">
               <select
-                v-model="fromSwapCurr"
+                v-model="fromSwapCurrLabel"
                 class="form-control pl-2 pr-4 bg-dark border-0"
                 @change="handleFromValueChange()"
               >
-                <option v-for="(item, index) in tokensList" :key="index" :value="item">
-                  {{ item.label }}
+                <option v-for="(item, index) in fromSwapLabels" :key="index" :value="item">
+                  {{ item }}
                 </option>
               </select>
             </div>
@@ -40,20 +40,18 @@
             </div>
             <div class="form-input">
               <select
-                v-model="fromSwapCurr"
+                v-model="toSwapCurrLabel"
                 class="form-control pl-2 pr-4 bg-dark border-0"
-                @change="handleFromValueChange()"
+                @change="handleToValueChange()"
               >
-                <option v-for="(item, index) in tokensList" :key="index" :value="item">
-                  {{ item.label }}
+                <option v-for="(item, index) in filterToLabels(toSwapLabels)" :key="index" :value="item">
+                  {{ item }}
                 </option>
               </select>
             </div>
           </div>
           <div class="form-group d-flex flex-column">
-            <button :disabled="!toSwapValue" class="btn btn-primary px-3" @click="swap()">
-              Swap!
-            </button>
+            <button :disabled="!toSwapValue" class="btn btn-primary px-3" @click="swap()">Swap!</button>
           </div>
         </div>
       </div>
@@ -65,152 +63,226 @@
 import tokens from "../services/tokens.json";
 import { BigNumber, FixedNumber, ethers, utils, Contract } from "ethers";
 import { currentProvider, getSigner } from "../services/ether";
+import { FundService } from "../services/fundService";
 import { pancakeRouterContractAbi, erc20TokenContractAbi } from "../constants";
 import { mapGetters } from "vuex";
 
 export default {
   name: "FundTrade",
-  props: ["fundContract"],
   computed: {
-    ...mapGetters(["fundContractAddress"]),
+    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses"]),
+    boughtTokensAddresses() {
+      return this.$store.state.boughtTokensAddresses;
+    },
   },
   data() {
     return {
       tokensList: [],
+
+      fromSwapCurrLabel: "",
+      toSwapCurrLabel: "",
+
+      fromSwapCurr: null,
+      toSwapCurr: null,
+
       fromSwapValue: 0,
-      fromSwapCurr: "",
       toSwapValue: 0,
-      toSwapCurr: "",
+
+      fromSwapList: [],
+      toSwapList: [],
+
+      fromSwapLabels: [],
+      toSwapLabels: [],
+
+      swapRouterContract: null,
+      fundContract: null,
+      fundService: null,
     };
   },
-  mounted() {
-    this.tokensList = tokens.data.map(token => {
-      return {
-        value: token.address,
-        label: token.symbol,
-      };
+  async mounted() {
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+    const swapRouterAddress = await this.fundContract.router();
+
+    console.log("Swap router address is: ", swapRouterAddress);
+
+    this.swapRouterContract = await this.fundService.getSwapRouterContractInstance(swapRouterAddress);
+
+    const wCrypto = this.eFundNetworkSettings.cryptoSign;
+    const wCryptoAddress = this.eFundNetworkSettings.wrappedCryptoAddress;
+
+    this.fromSwapList[wCrypto] = {
+      name: wCrypto,
+      address: wCryptoAddress,
+      amount: utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)),
+    };
+
+    this.fromSwapLabels.push(wCrypto);
+
+    console.log("bought token addresses before foreach: ", this.boughtTokensAddresses, {
+      length: this.boughtTokensAddresses.length,
     });
 
-    this.fromSwapCurr = this.tokensList[0];
-    this.toSwapCurr = this.tokensList[0];
+    for (let i = 0; i < this.boughtTokensAddresses.length; i++) {
+      const token = this.boughtTokensAddresses[i];
+
+      console.log("token push: ", token.name);
+
+      this.fromSwapList[token.name] = token;
+      this.fromSwapLabels.push(token.name);
+    }
+
+    console.log("bought tokens addresses: ", this.fromSwapLabels);
+
+    const tokensToSwap =
+      this.allowedTokensAddresses.length != 0 ? this.allowedTokensAddresses : this.eFundNetworkSettings.tokensAddresses;
+
+    tokensToSwap.forEach((token) => {
+      this.toSwapList[token.name] = token;
+      this.toSwapLabels.push(token.name);
+    });
+
+    console.log("tokens to swap: ", tokensToSwap);
+    console.log("tokens to swap labels: ", this.toSwapLabels);
   },
   methods: {
-    async handleFromValueChange() {
-      if (this.fromSwapCurr.value === this.toSwapCurr.value) {
-        this.toSwapValue = this.fromSwapValue;
-        return;
-      }
+    filterToLabels(labels) {
+      return labels.filter((item) =>
+        this.fromSwapCurr == null
+          ? true
+          : this.toSwapList[item].address.toLowerCase() != this.fromSwapCurr.address.toLowerCase()
+      );
+    },
+    async setMaxFrom() {
+      if (this.fromSwapCurr != null) {
+        this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
 
-      if (this.fromSwapValue > 0) {
-        const amounts = await this.getPricesPath(BigNumber.from(FixedNumber.from(this.fromSwapValue)), [
-          this.fromSwapCurr.value.toString(),
-          this.toSwapCurr.value.toString(),
-        ]);
-
-        this.toSwapValue = parseFloat(await utils.formatUnits(amounts[1].toString(), 18)).toFixed(9);
+        await this.reCalculateAmountsOut();
       }
     },
+    async setMaxTo() {
+      if (this.toSwapCurr != null) {
+        this.toSwapValue = await this.getMaxValueOf(this.toSwapCurr.address);
+        await this.reCalculateAmountsOut();
+      }
+    },
+    async getMaxValueOf(tokenAddress) {
+      if (tokenAddress == this.eFundNetworkSettings.wrappedCryptoAddress) {
+        return await this.fundService.getBalanceFormatted(this.fundContractAddress);
+      } else {
+        return await this.fundService.balanceOfFormatted(tokenAddress, this.fundContractAddress);
+      }
+    },
+    async handleFromValueChange() {
+      this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
+
+      console.log(this.fromSwapCurr);
+
+      await this.reCalculateAmountsOut();
+    },
     async handleToValueChange() {
-      if (this.fromSwapCurr.value === this.toSwapCurr.value) {
-        this.fromSwapValue = this.toSwapValue;
+      this.toSwapCurr = this.toSwapList[this.toSwapCurrLabel];
+
+      console.log(this.toSwapCurr);
+
+      await this.reCalculateAmountsOut();
+    },
+    async reCalculateAmountsOut() {
+      if (!(this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr)) {
+        console.log("cannot recalculate amounts out");
         return;
       }
 
-      const amounts = await this.getPricesPath(BigNumber.from(FixedNumber.from(this.toSwapValue)), [
-        this.fromSwapCurr.value,
-        this.toSwapCurr.value,
-      ]);
+      const token = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+      const decimals = await token.decimals();
+      const parsedAmount = utils.parseUnits(this.fromSwapValue, decimals);
+      console.log("before amounts: ", this.fromSwapCurr.address, this.toSwapCurr.address);
 
-      this.fromSwapValue = await utils.formatUnits(amounts[1].toString(), 18);
+      const amounts = await this.getPricesPath(parsedAmount, [this.fromSwapCurr.address, this.toSwapCurr.address]);
+
+      console.log(amounts);
+
+      this.toSwapValue = utils.formatUnits(amounts[1].toString(), 18);
     },
     async swap() {
       const txhash = await this.sendSwapRequest();
       console.log(txhash);
     },
     async sendSwapRequest() {
-      if (this.fromSwapCurr.label === "BNB") {
-        console.log("bnb to erc");
-        const { jsonSigner } = await getSigner();
-        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        //
-        // console.log(
-        //   parseFloat(
-        //     await utils.formatUnits((await currentProvider.getBalance(this.fundContractAddress)).toString(), 18)
-        //   )
-        // );
+      const wCrypto = this.eFundNetworkSettings.wrappedCryptoAddress;
 
-        if (
-          parseFloat(
-            await utils.formatUnits((await currentProvider.getBalance(this.fundContractAddress)).toString(), 18)
-          ) > 0
-        ) {
-          const res = await this.fundContract.swapETHToERC20(
-            this.toSwapCurr.value,
-            FixedNumber.from(this.fromSwapValue),
-            0
-          );
+      const availableTokenAddresses = [];
 
-          return res;
-        } else {
-          alert("Yuo don't have enough BNB");
-        }
-      } else if (this.toSwapCurr.label === "BNB") {
-        console.log("erc to bnb");
-        const { jsonSigner } = await getSigner();
-        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        if (
-          parseFloat(await utils.formatUnits(await tokenContract.balanceOf(this.fundContractAddress.toString()), 18)) >
-          0
-        ) {
-          const res = await this.fundContract.swapERC20ToETH(
-            this.toSwapCurr.value,
-            FixedNumber.from(this.fromSwapValue),
-            0
-          );
+      this.toSwapLabels.forEach((t) => {
+        availableTokenAddresses.push(this.toSwapList[t].address);
+      });
 
-          // console.log(res);
+      console.log("available tokens: ", availableTokenAddresses);
 
-          return res;
-        } else {
-          alert(`You need thia amount of ${this.fromSwapCurr.label}`);
-        }
+      if (this.fromSwapCurr.address == wCrypto) {
+        return await this.swapETHForTokens();
+      } else if (this.toSwapCurr.address == wCrypto) {
+        return await this.swapERCForETH();
       } else {
-        console.log("erc to erc");
-        const { jsonSigner } = await getSigner();
-        const tokenContract = new Contract(this.fromSwapCurr.value, erc20TokenContractAbi, jsonSigner);
-        if (
-          parseFloat(await utils.formatUnits(await tokenContract.balanceOf(this.fundContractAddress.toString()), 18)) >
-          0
-        ) {
-          const res = await this.fundContract.swapERC20ToERC20(
-            this.fromSwapCurr.value,
-            this.toSwapCurr.value,
-            FixedNumber.from(this.fromSwapValue),
-            0
-          );
+        const path = await this.fundService.findOptimalPathForSwap(
+          this.fromSwapCurr.address,
+          this.toSwapCurr.address,
+          availableTokenAddresses
+        );
 
-          return res;
-        } else {
-          alert(`You need to get this anount of ${this.fromSwapCurr.label}`);
+        console.log(path);
+
+        if (path == null) {
+          alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
+          return;
         }
+
+        return await this.swapERCForERC(path);
       }
+    },
+    async swapERCForERC(path) {
+      console.log("erc to erc");
+
+      const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+      const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);
+
+      const amount = utils.parseUnits(this.fromSwapValue, await tokenFrom.decimals());
+
+      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount)) {
+        alert(`You need to get this amount of ${this.fromSwapCurr.name}`);
+        return;
+      }
+
+      return await this.fundContract.swapERC20ToERC20(path, amount, 0);
+    },
+    async swapERCForETH() {
+      console.log("erc to bnb|eth");
+
+      const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
+
+      const amount = utils.parseEther(this.toSwapValue);
+
+      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
+        alert(`You need thia amount of ${this.fromSwapCurr.label}`);
+
+      return await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
+    },
+    async swapETHForTokens() {
+      console.log("bnb to erc");
+
+      const amount = utils.parseEther(this.fromSwapValue);
+
+      if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
+        alert("You don't have enough ETH");
+
+      return await this.fundContract.swapETHToERC20(this.toSwapCurr.address, amount, 0);
     },
     async getPricesPath(amount, path) {
       if (amount.isZero()) {
         return new Array(path.length).fill(BigNumber.from([0]));
       } else {
-        const contract = await this.getPancakeRouterContractInstance(await this.getPancakeRouterAddress());
-        const res = await contract.getAmountsOut(amount, path);
-        return res;
+        return await this.swapRouterContract.getAmountsOut(amount, path);
       }
-    },
-    async getPancakeRouterContractInstance(pancakeContractAddress) {
-      const signer = currentProvider.getSigner();
-      return new ethers.Contract(pancakeContractAddress, pancakeRouterContractAbi, signer);
-    },
-    async getPancakeRouterAddress() {
-      console.log(await this.fundContract.router());
-      return await this.fundContract.router();
     },
   },
 };
