@@ -8,7 +8,7 @@ $theme-colors: (
 
 );
 
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
 
 .form-control {
   font-size: 1.5rem;
