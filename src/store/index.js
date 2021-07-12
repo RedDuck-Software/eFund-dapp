@@ -16,6 +16,7 @@ const store = new Vuex.Store({
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
     fundStartTimestamp: null,
+    isDepositsWithdrawed: false,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -45,7 +46,9 @@ const store = new Vuex.Store({
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
     },
-
+    updateiIsDepositsWithdrawed(state, isDepositsWithdrawed) {
+      state.isDepositsWithdrawed = isDepositsWithdrawed;
+    },
     logout: state => {
       state.signerAddress = null;
       state.walletProviderType = null;
@@ -62,6 +65,7 @@ const store = new Vuex.Store({
     boughtTokensAddresses: state => state.boughtTokensAddresses,
     allowedTokensAddresses: state => state.allowedTokensAddresses,
     fundStartTimestamp: state => state.fundStartTimestamp,
+    isDepositsWithdrawed: state => state.isDepositsWithdrawed,
   },
   actions: {
     // async updateBoughtTokensAddresses(context, tokens) {

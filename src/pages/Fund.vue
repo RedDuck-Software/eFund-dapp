@@ -36,11 +36,6 @@ export default {
     this.fundService = new FundService(this.platformAddress, currentProvider);
     this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
     const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
-    const fundManager = await this.fundContract.fundManager();
-    const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
-    const fundStartTimestamp = await this.fundContract.fundStartTimestamp();
-
-    console.log("fund manager ", fundManager);
 
     const isFund = await platform.isFund(this.fundContractAddress);
 
@@ -48,6 +43,13 @@ export default {
       alert("fund is not found");
       return;
     }
+    const isDepositsWithdrawed = await this.fundContract.isDepositsWithdrawed();
+    const fundManager = await this.fundContract.fundManager();
+    const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
+    const fundStartTimestamp = await this.fundContract.fundStartTimestamp();
+
+    console.log("fund manager ", fundManager);
+
     const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
     const isManager = fundManager == signerAddress;
 
@@ -77,6 +79,7 @@ export default {
     this.updateFundManager(fundManager);
     this.updateFundStatus(fundStatus);
     this.updateFundStartTimestamp(fundStartTimestamp);
+    this.updateiIsDepositsWithdrawed(isDepositsWithdrawed);
 
     this.isLoaded = true;
   },
@@ -101,6 +104,7 @@ export default {
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
+      "updateiIsDepositsWithdrawed",
     ]),
   },
 };

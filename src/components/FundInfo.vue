@@ -75,7 +75,6 @@ import { mapGetters, mapMutations } from "vuex";
 import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
-import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
@@ -85,9 +84,6 @@ export default {
       fundSignedContract: null,
       fundBalance: null,
       fundDuration: null,
-      boughtTokens: [],
-      allowedTokens: [],
-      fundStatuse: 0,
       fundCanBeCompleted: false,
     };
   },
@@ -115,6 +111,7 @@ export default {
 
     this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundDuration * 30 * 24 * 60 * 60;
 
+      
     await this.updateInfo();
   },
   destroyed() {
