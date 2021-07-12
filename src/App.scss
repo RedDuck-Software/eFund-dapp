@@ -4,11 +4,10 @@ $theme-colors: (
   "secondary": #0d0415,
   dark: rgb(22,21,34),
   gray: rgb(127,127,127),
-  "gray-dark": rgb(32,34,49)
-
+  "gray-dark": rgb(32,34,49),
 );
 
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
 
 .form-control {
   font-size: 1.5rem;

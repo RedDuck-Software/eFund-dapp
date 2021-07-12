@@ -1,14 +1,6 @@
 import { ethers, utils } from "ethers";
-import { currentProvider } from "./ether";
-import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, ZERO_ADDRESS, SWAP_PAIR_ABI } from "../constants";
-
-function arrayInsertBefore(arr, index, value) {
-  return arr.splice(index, 0, value);
-}
-
-function arrayRemoveAt(arr, indexFrom, indexTo) {
-  return arr.splice(indexFrom, indexTo);
-}
+import { currentProvider, getSigner } from "./ether";
+import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from "../constants";
 
 export class FundService {
   fundPlatfromAddress;
