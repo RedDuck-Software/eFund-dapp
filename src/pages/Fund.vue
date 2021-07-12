@@ -88,7 +88,7 @@ export default {
 
       return {
         address: tokenAddress,
-        name: await token.name(),
+        name: await token.symbol(),
         amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
       };
     },

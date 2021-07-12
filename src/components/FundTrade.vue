@@ -147,9 +147,11 @@ export default {
   },
   methods: {
     filterToLabels(labels) {
-      return labels.filter((item) => {
-        return this.fromSwapCurr == null ? true : item.address != this.fromSwapCurr.address;
-      });
+      return labels.filter((item) =>
+        this.fromSwapCurr == null
+          ? true
+          : this.toSwapList[item].address.toLowerCase() != this.fromSwapCurr.address.toLowerCase()
+      );
     },
     async setMaxFrom() {
       if (this.fromSwapCurr != null) {
