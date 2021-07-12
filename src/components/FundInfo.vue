@@ -14,7 +14,7 @@
       Balance: <b>{{ fundBalance }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Duration: <b>{{ fundDuration }}</b>
+      Duration: <b>{{ fundDuration }} months</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
@@ -54,7 +54,6 @@ import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
-import Vue from "vue";
 
 export default {
   name: "FundInfo",
@@ -84,13 +83,9 @@ export default {
   async mounted() {
     console.log("found info: ", JSON.stringify(this.boughtTokensAddresses));
 
-    // Vue.set(this, 'boughtTokens', this.boughtTokensAddresses);
-
     this.interval = setInterval(() => this.getBalance(), 60000);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
-
-    const provider = this.fundService.getCurrentProvider();
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 

@@ -1,6 +1,7 @@
 <template>
-  <div v-if="isLoaded">
-    <FundComponent />
+  <div>
+    <FundComponent v-if="isLoaded" />
+    <span v-if="!isLoaded">Loading</span>
   </div>
 </template>
 
@@ -30,10 +31,6 @@ export default {
     };
   },
   async mounted() {
-    console.log("FUND MOUNTED ", this.isInfoLoaded);
-
-    ///this.updateIsInfoLoaded(false);
-
     this.fundContractAddress = this.$route.params.address;
 
     this.fundService = new FundService(this.platformAddress, currentProvider);
