@@ -1,8 +1,6 @@
 <template>
   <div>
-    <button class="btn btn-primary" @click="fetchAllFunds()">
-      Get all funds
-    </button>
+    <button class="btn btn-primary" @click="fetchAllFunds()">Get all funds</button>
     <div class="divide-y divide-gray-200">
       <div v-for="(fund, index) in funds" :key="index" class="bg-dark rounded">
         <router-link class="py-4 px-3 mt-3 d-block text-gray" :to="{ name: 'Fund', params: { address: fund } }">{{
@@ -10,8 +8,8 @@
         }}</router-link>
       </div>
     </div>
-  </div></template
->
+  </div>
+</template>
 
 <script>
 import { mapGetters } from "vuex";

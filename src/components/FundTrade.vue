@@ -44,7 +44,7 @@
                 class="form-control pl-2 pr-4 bg-dark border-0"
                 @change="handleToValueChange()"
               >
-                <option v-for="(item, index) in toSwapLabels" :key="index" :value="item">
+                <option v-for="(item, index) in filterToLabels(toSwapLabels)" :key="index" :value="item">
                   {{ item }}
                 </option>
               </select>
@@ -70,7 +70,10 @@ import { mapGetters } from "vuex";
 export default {
   name: "FundTrade",
   computed: {
-    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "boughtTokensAddresses", "allowedTokensAddresses"]),
+    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses"]),
+    boughtTokensAddresses() {
+      return this.$store.state.boughtTokensAddresses;
+    },
   },
   data() {
     return {
@@ -116,11 +119,18 @@ export default {
 
     this.fromSwapLabels.push(wCrypto);
 
-    this.boughtTokensAddresses.forEach((token) => {
+    console.log("bought token addresses before foreach: ", this.boughtTokensAddresses, {
+      length: this.boughtTokensAddresses.length,
+    });
+
+    for (let i = 0; i < this.boughtTokensAddresses.length; i++) {
+      const token = this.boughtTokensAddresses[i];
+
+      console.log("token push: ", token.name);
+
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
-      console.log("token push: ", token.name);
-    });
+    }
 
     console.log("bought tokens addresses: ", this.fromSwapLabels);
 
@@ -136,6 +146,13 @@ export default {
     console.log("tokens to swap labels: ", this.toSwapLabels);
   },
   methods: {
+    filterToLabels(labels) {
+      return labels.filter((item) =>
+        this.fromSwapCurr == null
+          ? true
+          : this.toSwapList[item].address.toLowerCase() != this.fromSwapCurr.address.toLowerCase()
+      );
+    },
     async setMaxFrom() {
       if (this.fromSwapCurr != null) {
         this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
@@ -179,6 +196,7 @@ export default {
       const token = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
       const decimals = await token.decimals();
       const parsedAmount = utils.parseUnits(this.fromSwapValue, decimals);
+      console.log("before amounts: ", this.fromSwapCurr.address, this.toSwapCurr.address);
 
       const amounts = await this.getPricesPath(parsedAmount, [this.fromSwapCurr.address, this.toSwapCurr.address]);
 
@@ -193,27 +211,37 @@ export default {
     async sendSwapRequest() {
       const wCrypto = this.eFundNetworkSettings.wrappedCryptoAddress;
 
-      const path = this.fundService.findOptimalPathForSwap(this.fromSwapCurr.address, this.toSwapCurr.address, []);
+      const availableTokenAddresses = [];
 
-      console.log(path);
+      this.toSwapLabels.forEach((t) => {
+        availableTokenAddresses.push(this.toSwapList[t].address);
+      });
 
-      if (path == null) {
-        alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
-        return;
-      }
+      console.log("available tokens: ", availableTokenAddresses);
 
       if (this.fromSwapCurr.address == wCrypto) {
         return await this.swapETHForTokens();
       } else if (this.toSwapCurr.address == wCrypto) {
         return await this.swapERCForETH();
       } else {
+        const path = await this.fundService.findOptimalPathForSwap(
+          this.fromSwapCurr.address,
+          this.toSwapCurr.address,
+          availableTokenAddresses
+        );
+
+        console.log(path);
+
+        if (path == null) {
+          alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
+          return;
+        }
+
         return await this.swapERCForERC(path);
       }
     },
     async swapERCForERC(path) {
       console.log("erc to erc");
-
-      const { jsonSigner } = await getSigner();
 
       const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
       const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);

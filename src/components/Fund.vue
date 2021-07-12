@@ -15,7 +15,9 @@
       </div>
     </div>
     <MakeDepositForm v-if="fundContractStatus === 'Opened'" @make-deposit="makeDepositToFund" />
-    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" :fund-contract="fundContract" />
+    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" 
+      :fund-contract="fundContract" 
+     />
   </div>
 </template>
 
@@ -47,13 +49,12 @@ export default {
   async mounted() {
     console.log("network setting: ", this.eFundNetworkSettings);
 
-    const fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
-    const contractAddress = this.$route.params.address;
-
-    this.fundContract = await fundService.getFundContractInstance(contractAddress);
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
   },
   methods: {
+ 
     async makeDepositToFund(value) {
       const overrides = {
         value: ethers.utils.parseEther(value),
@@ -61,7 +62,6 @@ export default {
       console.log(overrides);
       this.fundContract.makeDeposit(overrides);
     },
-    ...mapMutations(["updateFundStatus", "updateFundManager", "updateFundIsManager"]),
   },
 };
 </script>
