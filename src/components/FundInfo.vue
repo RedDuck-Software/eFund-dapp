@@ -80,9 +80,8 @@ export default {
       "allowedTokensAddresses",
     ]),
     boughtTokensAddresses() {
-      console.log(this.$store.state.boughtTokensAddresses);
-
-      return this.$store.state.boughtTokensAddresses.slice();
+      console.log(this.$store.state);
+      return [...this.$store.state.boughtTokensAddresses];
     },
   },
   async mounted() {

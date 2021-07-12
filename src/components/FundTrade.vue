@@ -217,24 +217,24 @@ export default {
 
       console.log("available tokens: ", availableTokenAddresses);
 
-      const path = await this.fundService.findOptimalPathForSwap(
-        this.fromSwapCurr.address,
-        this.toSwapCurr.address,
-        availableTokenAddresses
-      );
-
-      console.log(path);
-
-      if (path == null) {
-        alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
-        return;
-      }
-
       if (this.fromSwapCurr.address == wCrypto) {
         return await this.swapETHForTokens();
       } else if (this.toSwapCurr.address == wCrypto) {
         return await this.swapERCForETH();
       } else {
+        const path = await this.fundService.findOptimalPathForSwap(
+          this.fromSwapCurr.address,
+          this.toSwapCurr.address,
+          availableTokenAddresses
+        );
+
+        console.log(path);
+
+        if (path == null) {
+          alert(`Cannot swap ${this.fromSwapCurr.name} to ${this.toSwapCurr.name} - no optimal path `);
+          return;
+        }
+
         return await this.swapERCForERC(path);
       }
     },
