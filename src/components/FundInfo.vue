@@ -9,15 +9,35 @@
       >
         set Active
       </button>
+
+      <button
+        v-if="fundContractStatus === 'Active' && fundCanBeCompleted"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusCompleted()"
+      >
+        set Completed
+      </button>
+
+      <button
+        v-if="fundContractStatus === 'Completed'"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusClosed()"
+      >
+        set Closed
+      </button>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Balance: <b>{{ fundBalance }}</b>
+      Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Duration: <b>{{ fundDuration }} months</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
+    </li>
+
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
     </li>
 
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
@@ -68,6 +88,7 @@ export default {
       boughtTokens: [],
       allowedTokens: [],
       fundStatuse: 0,
+      fundCanBeCompleted: false,
     };
   },
 
@@ -80,6 +101,7 @@ export default {
       "eFundNetworkSettings",
       "allowedTokensAddresses",
       "boughtTokensAddresses",
+      "fundStartTimestamp",
     ]),
   },
   async mounted() {
@@ -90,6 +112,8 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundDuration * 30 * 24 * 60 * 60;
 
     await this.updateInfo();
   },
@@ -112,6 +136,13 @@ export default {
     async setFundStatusActive() {
       this.fundSignedContract.setFundStatusActive();
     },
+    async setFundStatusCompleted() {
+      this.fundSignedContract.setFundStatusCompleted();
+    },
+    async setFundStatusClosed() {
+      this.fundSignedContract.setFundStatusClosed();
+    },
+
     async getBalance() {
       const curBalance = await this.fundSignedContract.getCurrentBalanceInWei();
       this.fundBalance = ethers.utils.formatEther(curBalance.toString());

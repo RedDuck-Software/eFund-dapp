@@ -15,7 +15,7 @@ const store = new Vuex.Store({
     eFundNetworkSettings: eFundNetworkSettings[97],
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
-    isInfoLoaded: false,
+    fundStartTimestamp: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -42,9 +42,10 @@ const store = new Vuex.Store({
     updateAllowedTokensAddresses(state, tokens) {
       state.allowedTokensAddresses = tokens;
     },
-    updateIsInfoLoaded(state, isLoaded) {
-      state.isInfoLoaded = isLoaded;
+    updateFundStartTimestamp(state, time) {
+      state.fundStartTimestamp = time;
     },
+
     logout: state => {
       state.signerAddress = null;
       state.walletProviderType = null;
@@ -60,7 +61,7 @@ const store = new Vuex.Store({
     eFundNetworkSettings: state => state.eFundNetworkSettings,
     boughtTokensAddresses: state => state.boughtTokensAddresses,
     allowedTokensAddresses: state => state.allowedTokensAddresses,
-    isInfoLoaded: state => state.isInfoLoaded,
+    fundStartTimestamp: state => state.fundStartTimestamp,
   },
   actions: {
     // async updateBoughtTokensAddresses(context, tokens) {

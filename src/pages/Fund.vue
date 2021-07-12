@@ -38,6 +38,7 @@ export default {
     const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
     const fundManager = await this.fundContract.fundManager();
     const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
+    const fundStartTimestamp = await this.fundContract.fundStartTimestamp();
 
     console.log("fund manager ", fundManager);
 
@@ -75,6 +76,7 @@ export default {
     this.updateFundIsManager(isManager);
     this.updateFundManager(fundManager);
     this.updateFundStatus(fundStatus);
+    this.updateFundStartTimestamp(fundStartTimestamp);
 
     this.isLoaded = true;
   },
@@ -98,6 +100,7 @@ export default {
       "updateAllowedTokensAddresses",
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
+      "updateFundStartTimestamp",
     ]),
   },
 };
