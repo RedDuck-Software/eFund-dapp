@@ -23,7 +23,7 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Bought tokens:
       <ol>
-        <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
+        <li v-for="(item, index) in boughtTokens" :key="index" :value="item">
           <ol>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
@@ -40,7 +40,7 @@
           <ol>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
-            <li>Balance: {{ item.balance }}</li>
+            <li>Balance: {{ item.amount }}</li>
           </ol>
         </li>
       </ol>
@@ -54,9 +54,22 @@ import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
+import Vue from "vue";
 
 export default {
   name: "FundInfo",
+  data() {
+    return {
+      fundService: null,
+      fundSignedContract: null,
+      fundBalance: null,
+      fundDuration: null,
+      boughtTokens: [],
+      allowedTokens: [],
+      fundStatuse: 0,
+    };
+  },
+
   computed: {
     ...mapGetters([
       "fundContractAddress",
@@ -64,29 +77,26 @@ export default {
       "fundContractManager",
       "fundContractIsManager",
       "eFundNetworkSettings",
-      "boughtTokensAddresses",
       "allowedTokensAddresses",
     ]),
-  },
+    boughtTokensAddresses() {
+      console.log(this.$store.state.boughtTokensAddresses);
 
-  data() {
-    return {
-      fundService: null,
-      fundSignedContract: null,
-      fundBalance: null,
-      fundDuration: null,
-      fundStatuse: 0,
-    };
+      return this.$store.state.boughtTokensAddresses.slice();
+    },
   },
   async mounted() {
+    console.log("found info: ", this.boughtTokensAddresses);
+
+    // Vue.set(this, 'boughtTokens', this.boughtTokensAddresses);
+
     this.interval = setInterval(() => this.getBalance(), 60000);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+
     const provider = this.fundService.getCurrentProvider();
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
-
-    console.log(this.fundSignedContract);
 
     await this.updateInfo();
   },
@@ -95,7 +105,7 @@ export default {
   },
   methods: {
     async fetchFundContract() {},
-   
+
     async updateInfo() {
       await this.getBalance();
 

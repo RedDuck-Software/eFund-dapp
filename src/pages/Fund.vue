@@ -1,9 +1,11 @@
-<template >
-  <FundComponent v-if="isLoaded" />
+<template>
+  <div v-if="isLoaded">
+    <FundComponent  />
+  </div>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapGetters } from "vuex";
 import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
@@ -15,17 +17,22 @@ export default {
   components: {
     FundComponent: Fund,
   },
+  computed: {
+    ...mapGetters["isInfoLoaded"],
+  },
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      isLoaded: false,
       fundContract: null,
       fundService: null,
       fundContractAddress: null,
+      isLoaded: false,
     };
   },
   async mounted() {
-    console.log("FUND MOUNTED");
+    console.log("FUND MOUNTED ", this.isInfoLoaded);
+
+    ///this.updateIsInfoLoaded(false);
 
     this.fundContractAddress = this.$route.params.address;
 
@@ -62,11 +69,14 @@ export default {
       boughtTokens.push(await this.getTokenInfo(t));
     });
 
-
     console.log("updating state");
 
-    this.updateAllowedTokensAddresses(allowedTokens);
+    console.log("allowed tokens: ", allowedTokens);
+    console.log("bought tokens: ", boughtTokens);
+
     this.updateBoughtTokensAddresses(boughtTokens);
+
+    this.updateAllowedTokensAddresses(allowedTokens);
 
     this.updateSignerAddress(signerAddress);
     this.updateFundAddress(this.fundContractAddress);
@@ -76,6 +86,7 @@ export default {
 
     this.isLoaded = true;
   },
+ 
   methods: {
     async getTokenInfo(tokenAddress) {
       const token = this.fundService.getERC20ContractInstance(tokenAddress);
@@ -94,6 +105,7 @@ export default {
       "updateSignerAddress",
       "updateAllowedTokensAddresses",
       "updateBoughtTokensAddresses",
+      "updateIsInfoLoaded",
     ]),
   },
 };

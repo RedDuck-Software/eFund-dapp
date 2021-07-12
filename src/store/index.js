@@ -15,6 +15,7 @@ const store = new Vuex.Store({
     eFundNetworkSettings: eFundNetworkSettings[97],
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
+    isInfoLoaded: false,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -36,10 +37,13 @@ const store = new Vuex.Store({
       state.eFundNetworkSettings = settings;
     },
     updateBoughtTokensAddresses(state, tokens) {
-      state.boughtTokensAddresses = tokens;
+      Vue.set(state, 'boughtTokensAddresses', tokens)
     },
     updateAllowedTokensAddresses(state, tokens) {
-      state.allowedTokensAddresses = tokens;
+      Vue.set(state, 'allowedTokensAddresses', tokens)
+    },
+    updateIsInfoLoaded(state, isLoaded) {
+      state.isInfoLoaded = isLoaded;
     },
     logout: state => {
       state.signerAddress = null;
@@ -56,14 +60,20 @@ const store = new Vuex.Store({
     eFundNetworkSettings: state => state.eFundNetworkSettings,
     boughtTokensAddresses: state => state.boughtTokensAddresses,
     allowedTokensAddresses: state => state.allowedTokensAddresses,
+    isInfoLoaded: state => state.isInfoLoaded,
   },
   actions: {
-    updateBoughtTokensAddresses(context, tokens) {
-      context.commit('updateBoughtTokensAddresses', tokens);
-    },
-    updateAllowedTokensAddresses(context, tokens) {
-      context.commit('updateAllowedTokensAddresses', tokens);
-    },
+    // updateBoughtTokensAddresses(context, tokens) {
+    //   context.commit('updateBoughtTokensAddresses', tokens);
+    //   console.log("commited ", tokens);
+    // },
+    // updateAllowedTokensAddresses(context, tokens) {
+    //   context.commit('updateAllowedTokensAddresses', tokens);
+    //   console.log("commited ", tokens);
+    // },
+    // updateIsInfoLoaded(context, isLoaded) {
+    //   context.commit('updateIsInfoLoaded', isLoaded);
+    // },
   },
   plugins: [createPersistedState()],
 });

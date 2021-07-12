@@ -44,7 +44,7 @@
                 class="form-control pl-2 pr-4 bg-dark border-0"
                 @change="handleToValueChange()"
               >
-                <option v-for="(item, index) in filterLabels(toSwapLabels)" :key="index" :value="item">
+                <option v-for="(item, index) in filterToLabels(toSwapLabels)" :key="index" :value="item">
                   {{ item }}
                 </option>
               </select>
@@ -70,7 +70,10 @@ import { mapGetters } from "vuex";
 export default {
   name: "FundTrade",
   computed: {
-    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses", "boughtTokensAddresses"]),
+    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses"]),
+    boughtTokensAddresses() {
+      return this.$store.state.boughtTokensAddresses;
+    },
   },
   data() {
     return {
@@ -116,14 +119,18 @@ export default {
 
     this.fromSwapLabels.push(wCrypto);
 
-    console.log("bought token addresses before foreach: ", this.boughtTokensAddresses);
+    console.log("bought token addresses before foreach: ", this.boughtTokensAddresses, {
+      length: this.boughtTokensAddresses.length,
+    });
 
-    this.boughtTokensAddresses.forEach((token) => {
+    for (let i = 0; i < this.boughtTokensAddresses.length; i++) {
+      const token = this.boughtTokensAddresses[i];
+
       console.log("token push: ", token.name);
 
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
-    });
+    }
 
     console.log("bought tokens addresses: ", this.fromSwapLabels);
 
@@ -139,9 +146,9 @@ export default {
     console.log("tokens to swap labels: ", this.toSwapLabels);
   },
   methods: {
-    filterLabels(labels) {
+    filterToLabels(labels) {
       return labels.filter((item) => {
-        return this.fromSwapLabelCurr == null ? true : item.address != this.fromSwapCurr.address;
+        return this.fromSwapCurr == null ? true : item.address != this.fromSwapCurr.address;
       });
     },
     async setMaxFrom() {
