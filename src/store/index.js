@@ -37,10 +37,10 @@ const store = new Vuex.Store({
       state.eFundNetworkSettings = settings;
     },
     updateBoughtTokensAddresses(state, tokens) {
-      Vue.set(state, 'boughtTokensAddresses', tokens)
+      state.boughtTokensAddresses = tokens;
     },
     updateAllowedTokensAddresses(state, tokens) {
-      Vue.set(state, 'allowedTokensAddresses', tokens)
+      state.allowedTokensAddresses = tokens;
     },
     updateIsInfoLoaded(state, isLoaded) {
       state.isInfoLoaded = isLoaded;
@@ -63,13 +63,14 @@ const store = new Vuex.Store({
     isInfoLoaded: state => state.isInfoLoaded,
   },
   actions: {
-    // updateBoughtTokensAddresses(context, tokens) {
+    // async updateBoughtTokensAddresses(context, tokens) {
     //   context.commit('updateBoughtTokensAddresses', tokens);
-    //   console.log("commited ", tokens);
+    //   console.log("commited ", JSON.stringify(context.state.boughtTokensAddresses));
+
     // },
-    // updateAllowedTokensAddresses(context, tokens) {
+    // async updateAllowedTokensAddresses(context, tokens) {
     //   context.commit('updateAllowedTokensAddresses', tokens);
-    //   console.log("commited ", tokens);
+    //   console.log("commited ", JSON.stringify(context.state.allowedTokensAddresses));
     // },
     // updateIsInfoLoaded(context, isLoaded) {
     //   context.commit('updateIsInfoLoaded', isLoaded);

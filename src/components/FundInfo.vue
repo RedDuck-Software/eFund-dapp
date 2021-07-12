@@ -23,7 +23,7 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Bought tokens:
       <ol>
-        <li v-for="(item, index) in boughtTokens" :key="index" :value="item">
+        <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
           <ol>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
@@ -78,14 +78,11 @@ export default {
       "fundContractIsManager",
       "eFundNetworkSettings",
       "allowedTokensAddresses",
+      "boughtTokensAddresses",
     ]),
-    boughtTokensAddresses() {
-      console.log(this.$store.state);
-      return [...this.$store.state.boughtTokensAddresses];
-    },
   },
   async mounted() {
-    console.log("found info: ", this.boughtTokensAddresses);
+    console.log("found info: ", JSON.stringify(this.boughtTokensAddresses));
 
     // Vue.set(this, 'boughtTokens', this.boughtTokensAddresses);
 

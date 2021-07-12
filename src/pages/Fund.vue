@@ -1,6 +1,6 @@
 <template>
   <div v-if="isLoaded">
-    <FundComponent  />
+    <FundComponent />
   </div>
 </template>
 
@@ -61,23 +61,18 @@ export default {
     const allowedTokens = [];
     const boughtTokens = [];
 
-    allowedTokensAddresses.forEach(async (t) => {
+    for (let i = 0; i < allowedTokensAddresses.length; i++) {
+      const t = allowedTokensAddresses[i];
       allowedTokens.push(await this.getTokenInfo(t));
-    });
+    }
 
-    boughtTokensAddresses.forEach(async (t) => {
+    for (let i = 0; i < boughtTokensAddresses.length; i++) {
+      const t = boughtTokensAddresses[i];
       boughtTokens.push(await this.getTokenInfo(t));
-    });
-
-    console.log("updating state");
-
-    console.log("allowed tokens: ", allowedTokens);
-    console.log("bought tokens: ", boughtTokens);
+    }
 
     this.updateBoughtTokensAddresses(boughtTokens);
-
     this.updateAllowedTokensAddresses(allowedTokens);
-
     this.updateSignerAddress(signerAddress);
     this.updateFundAddress(this.fundContractAddress);
     this.updateFundIsManager(isManager);
@@ -86,7 +81,7 @@ export default {
 
     this.isLoaded = true;
   },
- 
+
   methods: {
     async getTokenInfo(tokenAddress) {
       const token = this.fundService.getERC20ContractInstance(tokenAddress);
