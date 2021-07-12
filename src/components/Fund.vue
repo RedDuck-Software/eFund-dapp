@@ -1,9 +1,9 @@
 <template>
   <div class="position-relative">
-    <div v-if="fundContractStatus === 'Completed'" class="show-widthrawal p-5 popover">
+    <div v-if="fundContractStatus === 'Completed' || (fundContractStatus === 'Closed' && !isDepositsWithdrawed)">
       <button class="btn btn-primary" @click="widthdrawal">Widthdraw</button>
     </div>
-    <div v-if="fundContractStatus !== 'Completed'" class="my-3 d-flex min-w-0">
+    <div class="my-3 d-flex min-w-0">
       <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
@@ -50,6 +50,7 @@ export default {
       "fundContractStatus",
       "fundContractIsManager",
       "eFundNetworkSettings",
+      "isDepositsWithdrawed",
     ]),
   },
   async mounted() {

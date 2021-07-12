@@ -1,7 +1,11 @@
 import { ethers, utils } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI } from "../constants";
+import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, SWAP_PAIR_ABI, ZERO_ADDRESS } from "../constants";
 
+
+function arrayInsertBefore(arr, index, value) {
+  return arr.slice(index, 0, value);
+}
 export class FundService {
   fundPlatfromAddress;
 

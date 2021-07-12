@@ -39,14 +39,11 @@ export default {
 
     const isFund = await platform.isFund(this.fundContractAddress);
 
-    if (this.isFinished()) {
-      this.fundContract.setFundStatusCompleted();
-    }
-
     if (!isFund) {
       alert("fund is not found");
       return;
     }
+    
     const isDepositsWithdrawed = await this.fundContract.isDepositsWithdrawed();
     const fundManager = await this.fundContract.fundManager();
     const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;

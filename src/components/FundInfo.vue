@@ -36,8 +36,12 @@
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
 
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+    <li v-if="fundStartTimestamp != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
+    </li>
+
+    <li v-if="fundEndTime != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      <span>Fund end:</span> <b class="truncate"> {{ new Date(fundEndTime.toNumber() * 1000) }}</b>
     </li>
 
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
@@ -85,6 +89,7 @@ export default {
       fundBalance: null,
       fundDuration: null,
       fundCanBeCompleted: false,
+      fundEndTime: null,
     };
   },
 
@@ -109,9 +114,10 @@ export default {
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-    this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundDuration * 30 * 24 * 60 * 60;
+    this.fundEndTime = await this.fundSignedContract.getEndTime();
 
-      
+    this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundEndTime;
+
     await this.updateInfo();
   },
   destroyed() {
