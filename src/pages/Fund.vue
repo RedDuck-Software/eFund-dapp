@@ -1,5 +1,5 @@
-<template>
-  <FundComponent />
+<template >
+  <FundComponent v-if="isLoaded" />
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { FUND_PLATFROM_ADDRESS_BSC, fundStatuses } from "../constants";
+import { ethers } from "ethers";
 
 export default {
   name: "Fund",
@@ -17,38 +18,83 @@ export default {
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
+      isLoaded: false,
+      fundContract: null,
+      fundService: null,
+      fundContractAddress: null,
     };
   },
   async mounted() {
-    const fundAddress = this.$route.params.address;
+    console.log("FUND MOUNTED");
 
-    const fundService = new FundService(this.platformAddress, currentProvider);
-    const fund = fundService.getFundContractInstance(fundAddress);
-    const platform = fundService.getFundPlatformContractInstance(fundAddress);
-    const fundManager = await fund.fundManager();
-    const fundStatus = fundStatuses[await fund.fundStatus()].value;
+    this.fundContractAddress = this.$route.params.address;
+
+    this.fundService = new FundService(this.platformAddress, currentProvider);
+    this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
+    const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
+    const fundManager = await this.fundContract.fundManager();
+    const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
 
     console.log("fund manager ", fundManager);
 
-    const isFund = await platform.isFund(fundAddress);
+    const isFund = await platform.isFund(this.fundContractAddress);
 
     if (!isFund) {
       alert("fund is not found");
       return;
     }
-    const signerAddress = await fundService.getCurrentProvider().getSigner().getAddress();
+    const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
     const isManager = fundManager == signerAddress;
-    
+
     console.log("isManager: ", isManager);
 
+    const allowedTokensAddresses = await this.fundContract.getAllowedTokensAddresses();
+    const boughtTokensAddresses = await this.fundContract.getBoughtTokensAddresses();
+
+    const allowedTokens = [];
+    const boughtTokens = [];
+
+    allowedTokensAddresses.forEach(async (t) => {
+      allowedTokens.push(await this.getTokenInfo(t));
+    });
+
+    boughtTokensAddresses.forEach(async (t) => {
+      boughtTokens.push(await this.getTokenInfo(t));
+    });
+
+
+    console.log("updating state");
+
+    this.updateAllowedTokensAddresses(allowedTokens);
+    this.updateBoughtTokensAddresses(boughtTokens);
+
     this.updateSignerAddress(signerAddress);
-    this.updateFundAddress(fundAddress);
+    this.updateFundAddress(this.fundContractAddress);
     this.updateFundIsManager(isManager);
     this.updateFundManager(fundManager);
     this.updateFundStatus(fundStatus);
+
+    this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateFundAddress", "updateFundManager", "updateFundIsManager", "updateFundStatus", "updateSignerAddress"]),
+    async getTokenInfo(tokenAddress) {
+      const token = this.fundService.getERC20ContractInstance(tokenAddress);
+
+      return {
+        address: tokenAddress,
+        name: await token.name(),
+        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
+      };
+    },
+    ...mapMutations([
+      "updateFundAddress",
+      "updateFundManager",
+      "updateFundIsManager",
+      "updateFundStatus",
+      "updateSignerAddress",
+      "updateAllowedTokensAddresses",
+      "updateBoughtTokensAddresses",
+    ]),
   },
 };
 </script>

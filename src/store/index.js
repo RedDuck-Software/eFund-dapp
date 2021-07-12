@@ -57,7 +57,14 @@ const store = new Vuex.Store({
     boughtTokensAddresses: state => state.boughtTokensAddresses,
     allowedTokensAddresses: state => state.allowedTokensAddresses,
   },
-  actions: {},
+  actions: {
+    updateBoughtTokensAddresses(context, tokens) {
+      context.commit('updateBoughtTokensAddresses', tokens);
+    },
+    updateAllowedTokensAddresses(context, tokens) {
+      context.commit('updateAllowedTokensAddresses', tokens);
+    },
+  },
   plugins: [createPersistedState()],
 });
 

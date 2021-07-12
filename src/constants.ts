@@ -7,11 +7,14 @@ export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 export const WETH_ADDRESS = "";
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 import FundAbi from "./artifacts/contracts/HedgeFund.sol/HedgeFund.json";
 import FundPlatformAbi from "./artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
 import ERC20 from "./artifacts/contracts/Tokens/ERC20/eFund.sol/eFundERC20.json";
 import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Router02.sol/UniswapV2Router02.json";
+import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol/IUniswapV2Factory.json";
+import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
 
 export const ABI = JSON.stringify(FundAbi.abi);
@@ -23,6 +26,11 @@ export const FUND_ABI = JSON.stringify(FundAbi.abi);
 export const ERC20_ABI = JSON.stringify(ERC20.abi);
 
 export const SWAP_ROUTER_ABI = JSON.stringify(SwapRouter.abi);
+
+export const SWAP_FACTORY_ABI = JSON.stringify(SwapFactory.abi);
+
+export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
+
 
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 

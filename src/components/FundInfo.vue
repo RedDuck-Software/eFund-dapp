@@ -23,20 +23,20 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Bought tokens:
       <ol>
-        <li v-for="(item, index) in boughtTokens" :key="index" :value="item">
+        <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
           <ol>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
-            <li>Balance: {{ item.balance }}</li>
+            <li>Balance: {{ item.amount }}</li>
           </ol>
         </li>
       </ol>
     </li>
 
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Bought tokens:
+      Allowed tokens:
       <ol>
-        <li v-for="(item, index) in alowedTokens" :key="index" :value="item">
+        <li v-for="(item, index) in allowedTokensAddresses" :key="index" :value="item">
           <ol>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
@@ -46,8 +46,7 @@
       </ol>
     </li>
   </ul>
-</template
->
+</template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
@@ -65,6 +64,8 @@ export default {
       "fundContractManager",
       "fundContractIsManager",
       "eFundNetworkSettings",
+      "boughtTokensAddresses",
+      "allowedTokensAddresses",
     ]),
   },
 
@@ -74,8 +75,6 @@ export default {
       fundSignedContract: null,
       fundBalance: null,
       fundDuration: null,
-      alowedTokens: [],
-      boughtTokens: [],
       fundStatuse: 0,
     };
   },
@@ -89,23 +88,6 @@ export default {
 
     console.log(this.fundSignedContract);
 
-    const allowedTokensAddresses = await this.fundSignedContract.getAllowedTokensAddresses();
-    const boughtTokensAddresses = await this.fundSignedContract.getBoughtTokensAddresses();
-
-    this.allowedTokens = [];
-    this.boughtTokens = [];
-
-    allowedTokensAddresses.forEach(async (t) => {
-      this.allowedTokens.push(await this.getTokenInfo(t));
-    });
-
-    boughtTokensAddresses.forEach(async (t) => {
-      this.boughtTokens.push(await this.getTokenInfo(t));
-    });
-
-    this.updateAllowedTokensAddresses(this.allowedTokens);
-    this.updateBoughtTokensAddresses(this.boughtTokens);
-
     await this.updateInfo();
   },
   destroyed() {
@@ -113,15 +95,7 @@ export default {
   },
   methods: {
     async fetchFundContract() {},
-    async getTokenInfo(tokenAddress) {
-      const token = this.fundService.getERC20ContractInstance(tokenAddress);
-
-      return {
-        address: tokenAddress,
-        name: await token.name(),
-        amount: utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
-      };
-    },
+   
     async updateInfo() {
       await this.getBalance();
 
@@ -140,7 +114,6 @@ export default {
       this.fundBalance = ethers.utils.formatEther(curBalance.toString());
       console.log("fund balance is: ", this.fundBalance);
     },
-    ...mapMutations(["updateBoughtTokensAddresses", "updateAllowedTokensAddresses"]),
   },
 };
 </script>
