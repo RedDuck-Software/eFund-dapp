@@ -48,6 +48,12 @@ export class FundService {
     return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
   }
 
+  async getSwapFactoryAddress(swapRouterAddress) {
+    const router = this.getSwapRouterContractInstance(swapRouterAddress);
+
+    return await router.factory();
+  }
+
   // erc20 balance of
   async balanceOfFormatted(tokenAddress, of) {
     const contract = this.getERC20ContractInstance(tokenAddress);
@@ -59,11 +65,16 @@ export class FundService {
     return utils.formatEther(await this.currentProvider.getBalance(of));
   }
 
-  async findOptimalPathForSwap(tokenFrom, tokenTo, factoryAddress, availableTokens) {
+  async findOptimalPathForSwap(tokenFrom, tokenTo, availableTokens, factoryAddress) {
+
+    console.log("factory address: ", factoryAddress);
+
     const factory = this.getSwapFactoryContractInstance(factoryAddress);
 
     const path = [tokenFrom, tokenTo];
-    
+
+    console.log(JSON.stringify(path));
+
     if (await this.isPathExists(path, factory)) {
       return path;
     }
@@ -73,19 +84,8 @@ export class FundService {
 
       curPath = arrayInsertBefore(path, curPath.length - 1, availableTokens[i]);
 
-      if (await this.isPathExists(curPath, factory)) {
+      if (await this.isPathExists(curPath, factory))
         return curPath;
-      }
-
-      // for (let j = i; j < availableTokens.length; j++) {
-      //   let curPathLong = curPath.slice();
-
-      //   curPathLong = arrayInsertBefore(curPathLong, curPathLong.length - 1, availableTokens[i]);
-
-      //   if (await this.isPathExists(curPath, factory)) {
-      //     return curPathLong;
-      //   }
-      // }
     }
 
     return null;

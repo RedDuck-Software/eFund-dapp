@@ -24,26 +24,28 @@
       Bought tokens:
       <ol>
         <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
-          <ol>
+          <ul class="mt-2">
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
             <li>Balance: {{ item.amount }}</li>
-          </ol>
+          </ul>
         </li>
       </ol>
     </li>
 
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Allowed tokens:
-      <ol>
+      <ol v-if="allowedTokensAddresses.length != 0">
         <li v-for="(item, index) in allowedTokensAddresses" :key="index" :value="item">
-          <ol>
+          <ul>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
             <li>Balance: {{ item.amount }}</li>
-          </ol>
+          </ul>
         </li>
       </ol>
+
+      <span v-if="allowedTokensAddresses.length == 0">&nbsp;all tokens are allowed</span>
     </li>
   </ul>
 </template>

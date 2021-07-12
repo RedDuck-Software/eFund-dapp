@@ -37,25 +37,25 @@ export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: 
 
 
 export const eFundNetworkSettings =
-{ 
-  97 : { // BSC Testnet
+{
+  97: { // BSC Testnet
     networkName: "BSCT",
     cryptoSign: "BNB",
-    wrappedCryptoAddress : WBNB_ADDRESS,
+    wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
     tokensAddresses: [
-      { 
-        name : "USDT",
-        address :  "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+      {
+        name: "USDT",
+        address: "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
       },
-      { 
-        name : "BUSD",
-        address :  "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+      {
+        name: "BUSD",
+        address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
       },
-      { 
-        name : "DAI",
-        address :  "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      {
+        name: "DAI",
+        address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
       },
     ],
   },
