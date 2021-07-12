@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div class="my-3 d-flex min-w-0">
+  <div class="position-relative">
+    <div v-if="fundContractStatus === 'Completed'" class="show-widthrawal p-5 popover">
+      <button class="btn btn-primary" @click="widthdrawal">Widthdraw</button>
+    </div>
+    <div v-if="fundContractStatus !== 'Completed'" class="my-3 d-flex min-w-0">
       <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
@@ -15,9 +18,7 @@
       </div>
     </div>
     <MakeDepositForm v-if="fundContractStatus === 'Opened'" @make-deposit="makeDepositToFund" />
-    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" 
-      :fund-contract="fundContract" 
-     />
+    <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" :fund-contract="fundContract" />
   </div>
 </template>
 
@@ -28,23 +29,28 @@ import MakeDepositForm from "./MakeDepositForm";
 import { ethers } from "ethers";
 import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
-import { FundService } from '../services/fundService';
-import { currentProvider } from '../services/ether' ;
+import { FundService } from "../services/fundService";
+import { currentProvider } from "../services/ether";
 import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
-
 
 export default {
   name: "Fund",
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC, 
+      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
       fundService: null,
-      fundContract : null, 
+      fundContract: null,
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress", "signerAddress", "fundContractStatus", "fundContractIsManager", "eFundNetworkSettings"]),
+    ...mapGetters([
+      "fundContractAddress",
+      "signerAddress",
+      "fundContractStatus",
+      "fundContractIsManager",
+      "eFundNetworkSettings",
+    ]),
   },
   async mounted() {
     console.log("network setting: ", this.eFundNetworkSettings);
@@ -52,9 +58,10 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    console.log(this.fundContract.functions);
   },
   methods: {
- 
     async makeDepositToFund(value) {
       const overrides = {
         value: ethers.utils.parseEther(value),
@@ -62,8 +69,29 @@ export default {
       console.log(overrides);
       this.fundContract.makeDeposit(overrides);
     },
+    async widthdrawal() {
+      const res = await this.fundContract.withdraw();
+      console.log(res);
+    },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "../App";
+
+.show-widthrawal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(22, 21, 34, 0.9);
+  z-index: $zindex-popover;
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+  max-height: 100%;
+  max-width: none;
+}
+</style>

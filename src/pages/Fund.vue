@@ -18,9 +18,6 @@ export default {
   components: {
     FundComponent: Fund,
   },
-  computed: {
-    ...mapGetters["isInfoLoaded"],
-  },
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -29,6 +26,9 @@ export default {
       fundContractAddress: null,
       isLoaded: false,
     };
+  },
+  computed: {
+    ...mapGetters["isInfoLoaded"],
   },
   async mounted() {
     this.fundContractAddress = this.$route.params.address;
@@ -39,15 +39,20 @@ export default {
     const fundManager = await this.fundContract.fundManager();
     const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
 
-    console.log("fund manager ", fundManager);
-
     const isFund = await platform.isFund(this.fundContractAddress);
+
+    if (this.isFinished()) {
+      this.fundContract.setFundStatusCompleted();
+    }
 
     if (!isFund) {
       alert("fund is not found");
       return;
     }
-    const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
+    const signerAddress = await this.fundService
+      .getCurrentProvider()
+      .getSigner()
+      .getAddress();
     const isManager = fundManager == signerAddress;
 
     console.log("isManager: ", isManager);
@@ -89,6 +94,18 @@ export default {
         amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
       };
     },
+    async isFinished() {
+      // d.setMonth(d.getMonth() + 8)
+      const date = new Date(await this.fundContract.fundStartTimestamp());
+      console.log(date.setMonth(date.getMonth() + 3));
+      // console.log(date.getMonth());
+
+      console.log(new Date(Date.now()).getMonth());
+      // fund finsished timestamp > now  timestamp
+      // const find
+      // if()
+    },
+
     ...mapMutations([
       "updateFundAddress",
       "updateFundManager",
