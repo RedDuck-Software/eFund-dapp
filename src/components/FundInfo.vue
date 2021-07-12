@@ -9,9 +9,25 @@
       >
         set Active
       </button>
+
+      <button
+        v-if="fundContractStatus === 'Active' && fundCanBeCompleted"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusCompleted()"
+      >
+        set Completed
+      </button>
+
+      <button
+        v-if="fundContractStatus === 'Completed'"
+        class="btn btn-primary px-3 ml-3"
+        @click="setFundStatusClosed()"
+      >
+        set Closed
+      </button>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Balance: <b>{{ fundBalance }}</b>
+      Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Duration: <b>{{ fundDuration }} months</b>
@@ -20,30 +36,40 @@
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
 
+    <li v-if="fundStartTimestamp != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
+    </li>
+
+    <li v-if="fundEndTime != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      <span>Fund end:</span> <b class="truncate"> {{ new Date(fundEndTime.toNumber() * 1000) }}</b>
+    </li>
+
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Bought tokens:
       <ol>
         <li v-for="(item, index) in boughtTokensAddresses" :key="index" :value="item">
-          <ol>
+          <ul class="mt-2">
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
             <li>Balance: {{ item.amount }}</li>
-          </ol>
+          </ul>
         </li>
       </ol>
     </li>
 
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Allowed tokens:
-      <ol>
+      <ol v-if="allowedTokensAddresses.length != 0">
         <li v-for="(item, index) in allowedTokensAddresses" :key="index" :value="item">
-          <ol>
+          <ul>
             <li>Address: {{ item.address }}</li>
             <li>Name: {{ item.name }}</li>
             <li>Balance: {{ item.amount }}</li>
-          </ol>
+          </ul>
         </li>
       </ol>
+
+      <span v-if="allowedTokensAddresses.length == 0">&nbsp;all tokens are allowed</span>
     </li>
   </ul>
 </template>
@@ -53,7 +79,6 @@ import { mapGetters, mapMutations } from "vuex";
 import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
-import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
@@ -63,9 +88,8 @@ export default {
       fundSignedContract: null,
       fundBalance: null,
       fundDuration: null,
-      boughtTokens: [],
-      allowedTokens: [],
-      fundStatuse: 0,
+      fundCanBeCompleted: false,
+      fundEndTime: null,
     };
   },
 
@@ -78,6 +102,7 @@ export default {
       "eFundNetworkSettings",
       "allowedTokensAddresses",
       "boughtTokensAddresses",
+      "fundStartTimestamp",
     ]),
   },
   async mounted() {
@@ -88,6 +113,10 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
     this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    this.fundEndTime = await this.fundSignedContract.getEndTime();
+
+    this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundEndTime;
 
     await this.updateInfo();
   },
@@ -110,6 +139,13 @@ export default {
     async setFundStatusActive() {
       this.fundSignedContract.setFundStatusActive();
     },
+    async setFundStatusCompleted() {
+      this.fundSignedContract.setFundStatusCompleted();
+    },
+    async setFundStatusClosed() {
+      this.fundSignedContract.setFundStatusClosed();
+    },
+
     async getBalance() {
       const curBalance = await this.fundSignedContract.getCurrentBalanceInWei();
       this.fundBalance = ethers.utils.formatEther(curBalance.toString());

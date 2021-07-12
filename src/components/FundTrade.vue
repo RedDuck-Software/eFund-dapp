@@ -27,6 +27,7 @@
               </select>
             </div>
           </div>
+
           <div class="form-group d-flex justify-content-between">
             <div class="form-input mr-2">
               <input
@@ -95,6 +96,7 @@ export default {
       toSwapLabels: [],
 
       swapRouterContract: null,
+      swapRouterAddress: null,
       fundContract: null,
       fundService: null,
     };
@@ -102,21 +104,22 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
-    const swapRouterAddress = await this.fundContract.router();
+    this.swapRouterAddress = await this.fundContract.router();
 
-    console.log("Swap router address is: ", swapRouterAddress);
+    console.log("Swap router address is: ", this.swapRouterAddress);
 
-    this.swapRouterContract = await this.fundService.getSwapRouterContractInstance(swapRouterAddress);
+    this.swapRouterContract = this.fundService.getSwapRouterContractInstance(this.swapRouterAddress);
 
     const wCrypto = this.eFundNetworkSettings.cryptoSign;
     const wCryptoAddress = this.eFundNetworkSettings.wrappedCryptoAddress;
 
-    this.fromSwapList[wCrypto] = {
+    const wCryptoObj = {
       name: wCrypto,
       address: wCryptoAddress,
       amount: utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)),
     };
 
+    this.fromSwapList[wCrypto] = wCryptoObj;
     this.fromSwapLabels.push(wCrypto);
 
     console.log("bought token addresses before foreach: ", this.boughtTokensAddresses, {
@@ -142,6 +145,9 @@ export default {
       this.toSwapLabels.push(token.name);
     });
 
+    this.toSwapList[wCrypto] = wCryptoObj;
+    this.toSwapLabels.push(wCrypto);
+
     console.log("tokens to swap: ", tokensToSwap);
     console.log("tokens to swap labels: ", this.toSwapLabels);
   },
@@ -160,12 +166,6 @@ export default {
         await this.reCalculateAmountsOut();
       }
     },
-    async setMaxTo() {
-      if (this.toSwapCurr != null) {
-        this.toSwapValue = await this.getMaxValueOf(this.toSwapCurr.address);
-        await this.reCalculateAmountsOut();
-      }
-    },
     async getMaxValueOf(tokenAddress) {
       if (tokenAddress == this.eFundNetworkSettings.wrappedCryptoAddress) {
         return await this.fundService.getBalanceFormatted(this.fundContractAddress);
@@ -177,6 +177,12 @@ export default {
       this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
 
       console.log(this.fromSwapCurr);
+
+      if (this.toSwapCurr != null && this.toSwapCurr.address.toLowerCase() == this.fromSwapCurr.address.toLowerCase()) {
+        this.toSwapCurr = null;
+        this.toSwapValue = 0;
+        this.toSwapCurrLabel = null;
+      }
 
       await this.reCalculateAmountsOut();
     },
@@ -227,7 +233,8 @@ export default {
         const path = await this.fundService.findOptimalPathForSwap(
           this.fromSwapCurr.address,
           this.toSwapCurr.address,
-          availableTokenAddresses
+          availableTokenAddresses,
+          this.fundService.getSwapFactoryAddress(this.swapRouterAddress)
         );
 
         console.log(path);
@@ -237,9 +244,14 @@ export default {
           return;
         }
 
+        if (path.length > 2) {
+          alert("Warning: no direct swap, complex path is using.");
+        }
+
         return await this.swapERCForERC(path);
       }
     },
+
     async swapERCForERC(path) {
       console.log("erc to erc");
 
@@ -247,6 +259,8 @@ export default {
       const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);
 
       const amount = utils.parseUnits(this.fromSwapValue, await tokenFrom.decimals());
+
+      console.log("amount ", amount);
 
       if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount)) {
         alert(`You need to get this amount of ${this.fromSwapCurr.name}`);
@@ -273,7 +287,7 @@ export default {
       const amount = utils.parseEther(this.fromSwapValue);
 
       if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
-        alert("You don't have enough ETH");
+        alert(`You don't have enough ${this.eFundNetworkSettings.cryptoSign}`);
 
       return await this.fundContract.swapETHToERC20(this.toSwapCurr.address, amount, 0);
     },

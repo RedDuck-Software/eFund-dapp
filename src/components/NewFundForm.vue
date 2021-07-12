@@ -3,7 +3,7 @@
     <div class="bg-gray-dark rounded px-5 py-4 my-4">
       <h5 class="text-center text-uppercase mb-3">Create fund</h5>
       <div class="row justify-content-center">
-        <div class="form col-auto">
+        <div class="form col-lg-6">
           <div class="form-group d-flex justify-content-between">
             <div class="form-input mr-2">
               <input
@@ -20,6 +20,18 @@
                   {{ item }}
                 </option>
               </select>
+            </div>
+          </div>
+          <div class="form-group d-flex justify-content-between">
+            <div class="form-input">
+              <vue-tags-input
+                v-model="token"
+                :tags="allowedTokens"
+                :validation="validation"
+                class="allowed-tokens"
+                :placeholder="`Add allowed for tarde tokens `"
+                @tags-changed="newTokenAdded"
+              />
             </div>
           </div>
           <div class="form-group d-flex flex-column">
@@ -40,13 +52,15 @@ import { ethers } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import FundList from "./FundList";
-import { FUND_PLATFROM_ADDRESS_BSC } from '../constants';
+import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
 const PANCACKE_V2_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 
+import VueTagsInput from "@johmun/vue-tags-input";
+
 export default {
   name: "NewFundForm",
-  components: { FundList },
+  components: { FundList, VueTagsInput },
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -54,12 +68,20 @@ export default {
       month: 1,
       monthList: [1, 3, 6],
       factoryContract: null,
+      token: "",
+      allowedTokens: [],
+      validation: [
+        {
+          classes: "min-length",
+          rule: address => address.text.length < 8,
+        },
+      ],
     };
   },
   computed: {
     ...mapGetters(["signerAddress"]),
   },
-   mounted() {
+  mounted() {
     this.fundService = new FundService(this.platformAddress, currentProvider);
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
   },
@@ -69,16 +91,47 @@ export default {
         value: ethers.utils.parseEther(this.etherValue.toString()), // To convert Ether to Wei:
       };
 
-      console.log(this.factoryContract);
-
       if (this.factoryContract) {
-        const tx = await this.factoryContract.createFund(PANCACKE_V2_ROUTER, this.month, [], overrides);
+        const tx = await this.factoryContract.createFund(PANCACKE_V2_ROUTER, this.month, this.allowedTokens, overrides);
 
         return await tx.wait();
       }
+    },
+    newTokenAdded(newTokens) {
+      this.allowedTokens = newTokens;
+      this.allowedTokens = this.allowedTokens.map(token => {
+        if (token.text) {
+          return token.text;
+        }
+      });
+      //
+      console.log(this.allowedTokens);
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.allowed-tokens .ti-input {
+  border: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 1.25rem;
+  background-clip: padding-box;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.allowed-tokens .ti-input input {
+  background-color: rgb(22, 21, 34);
+  line-height: 1.5;
+  color: #495057;
+  padding: 0.375rem 0.75rem;
+}
+</style>
+
+<style scoped lang="scss">
+.vue-tags-input {
+  border-radius: 0.25rem;
+  background-color: rgb(22, 21, 34);
+}
+</style>

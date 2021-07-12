@@ -18,9 +18,6 @@ export default {
   components: {
     FundComponent: Fund,
   },
-  computed: {
-    ...mapGetters["isInfoLoaded"],
-  },
   data() {
     return {
       platformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -30,16 +27,15 @@ export default {
       isLoaded: false,
     };
   },
+  computed: {
+    ...mapGetters["isInfoLoaded"],
+  },
   async mounted() {
     this.fundContractAddress = this.$route.params.address;
 
     this.fundService = new FundService(this.platformAddress, currentProvider);
     this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
     const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
-    const fundManager = await this.fundContract.fundManager();
-    const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
-
-    console.log("fund manager ", fundManager);
 
     const isFund = await platform.isFund(this.fundContractAddress);
 
@@ -47,6 +43,14 @@ export default {
       alert("fund is not found");
       return;
     }
+    
+    const isDepositsWithdrawed = await this.fundContract.isDepositsWithdrawed();
+    const fundManager = await this.fundContract.fundManager();
+    const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
+    const fundStartTimestamp = await this.fundContract.fundStartTimestamp();
+
+    console.log("fund manager ", fundManager);
+
     const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
     const isManager = fundManager == signerAddress;
 
@@ -75,6 +79,8 @@ export default {
     this.updateFundIsManager(isManager);
     this.updateFundManager(fundManager);
     this.updateFundStatus(fundStatus);
+    this.updateFundStartTimestamp(fundStartTimestamp);
+    this.updateiIsDepositsWithdrawed(isDepositsWithdrawed);
 
     this.isLoaded = true;
   },
@@ -89,6 +95,18 @@ export default {
         amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
       };
     },
+    async isFinished() {
+      // d.setMonth(d.getMonth() + 8)
+      const date = new Date(await this.fundContract.fundStartTimestamp());
+      console.log(date.setMonth(date.getMonth() + 3));
+      // console.log(date.getMonth());
+
+      console.log(new Date(Date.now()).getMonth());
+      // fund finsished timestamp > now  timestamp
+      // const find
+      // if()
+    },
+
     ...mapMutations([
       "updateFundAddress",
       "updateFundManager",
@@ -98,6 +116,8 @@ export default {
       "updateAllowedTokensAddresses",
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
+      "updateFundStartTimestamp",
+      "updateiIsDepositsWithdrawed",
     ]),
   },
 };
