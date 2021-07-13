@@ -10,7 +10,7 @@ import { mapMutations, mapGetters } from "vuex";
 import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { FUND_PLATFROM_ADDRESS_BSC, fundStatuses } from "../constants";
+import { fundStatuses } from "../constants";
 import { ethers } from "ethers";
 
 export default {
@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
       fundContract: null,
       fundService: null,
       fundContractAddress: null,

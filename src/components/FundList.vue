@@ -15,13 +15,11 @@
 import { mapGetters } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
 export default {
   name: "FundList",
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
       funds: [],
       readOnlyFactoryContract: null,
     };

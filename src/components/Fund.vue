@@ -31,14 +31,12 @@ import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
-import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 
 export default {
   name: "Fund",
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
       fundService: null,
       fundContract: null,
     };
