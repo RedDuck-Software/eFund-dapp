@@ -61,12 +61,10 @@
 </template>
 
 <script>
-import tokens from "../services/tokens.json";
-import { BigNumber, FixedNumber, ethers, utils, Contract } from "ethers";
-import { currentProvider, getSigner } from "../services/ether";
+import { BigNumber, utils } from "ethers";
+import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { pancakeRouterContractAbi, erc20TokenContractAbi } from "../constants";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "FundTrade",
@@ -128,11 +126,7 @@ export default {
 
     for (let i = 0; i < this.boughtTokensAddresses.length; i++) {
       const token = this.boughtTokensAddresses[i];
-
-      console.log("token push: ", token.name);
-
-      this.fromSwapList[token.name] = token;
-      this.fromSwapLabels.push(token.name);
+      this.addTokenToBoughts(token);
     }
 
     console.log("bought tokens addresses: ", this.fromSwapLabels);
@@ -152,6 +146,11 @@ export default {
     console.log("tokens to swap labels: ", this.toSwapLabels);
   },
   methods: {
+    addTokenToBoughts(token) {
+      console.log("token push: ", token.name);
+      this.fromSwapList[token.name] = token;
+      this.fromSwapLabels.push(token.name);
+    },
     filterToLabels(labels) {
       return labels.filter((item) =>
         this.fromSwapCurr == null
@@ -213,6 +212,11 @@ export default {
     async swap() {
       const txhash = await this.sendSwapRequest();
       console.log(txhash);
+      this.resetInputPriceValues();
+    },
+    resetInputPriceValues() {
+      this.toSwapValue = 0;
+      this.fromSwapValue = 0;
     },
     async sendSwapRequest() {
       const wCrypto = this.eFundNetworkSettings.wrappedCryptoAddress;
@@ -267,7 +271,26 @@ export default {
         return;
       }
 
-      return await this.fundContract.swapERC20ToERC20(path, amount, 0);
+      const tx = await this.fundContract.swapERC20ToERC20(path, amount, 0);
+
+      const txHash = await tx.wait();
+
+      if (!this.boughtTokensAddresses.some((v) => v.address == this.toSwapCurr.address)) {
+        const newBoughtToken = {
+          name: await tokenTo.symbol(),
+          address: this.toSwapCurr.address,
+          amount: await tokenTo.balanceOf(this.fundContractAddress),
+        };
+
+        this.addTokenToBoughts(newBoughtToken);
+        this.addBoughtToken(newBoughtToken);
+      } else {
+        // todo: update token1 balance
+      }
+
+      // todo: update token0 balance
+
+      return txHash;
     },
     async swapERCForETH() {
       console.log("erc to bnb|eth");
@@ -278,18 +301,48 @@ export default {
 
       if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
         alert(`You need thia amount of ${this.fromSwapCurr.label}`);
+      const tx = await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
 
-      return await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
+      const txHash = await tx.wait();
+
+      this.updateFundBalance(
+        utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
+      );
+
+      return txHash;
     },
     async swapETHForTokens() {
       console.log("bnb to erc");
 
       const amount = utils.parseEther(this.fromSwapValue);
 
+      const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);
+
       if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
         alert(`You don't have enough ${this.eFundNetworkSettings.cryptoSign}`);
 
-      return await this.fundContract.swapETHToERC20(this.toSwapCurr.address, amount, 0);
+      const tx = await this.fundContract.swapETHToERC20(this.toSwapCurr.address, amount, 0);
+
+      const txHash = await tx.wait();
+
+      if (!this.boughtTokensAddresses.some((v) => v.address == this.toSwapCurr.address)) {
+        const newBoughtToken = {
+          name: await tokenTo.symbol(),
+          address: this.toSwapCurr.address,
+          amount: await tokenTo.balanceOf(this.fundContractAddress),
+        };
+
+        this.addTokenToBoughts(newBoughtToken);
+        this.addBoughtToken(newBoughtToken);
+      } else {
+        // todo: update token balance
+      }
+
+      this.updateFundBalance(
+        utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
+      );
+
+      return txHash;
     },
     async getPricesPath(amount, path) {
       if (amount.isZero()) {
@@ -298,6 +351,7 @@ export default {
         return await this.swapRouterContract.getAmountsOut(amount, path);
       }
     },
+    ...mapMutations(["addBoughtToken", "updateFundBalance"]),
   },
 };
 </script>

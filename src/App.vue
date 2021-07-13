@@ -9,12 +9,29 @@
 
 <script>
 import Header from "./components/Header";
+import { mapGetters, mapMutations } from "vuex";
+import { eFundNetworkSettings as networkSettings } from "./constants";
 import "./App.scss";
 
 export default {
   name: "App",
   components: {
     Header,
+  },
+  computed: {
+    ...mapGetters["eFundNetworkSettings"],
+  },
+
+  async mounted() {
+    if (this.eFundNetworkSettings == undefined) {
+      console.log(JSON.stringify(networkSettings[97]));
+      this.updateEFundSettings(networkSettings[97]);
+    }
+
+    console.log("network settings: ", this.eFundNetworkSettings);
+  },
+  methods: {
+    ...mapMutations(["updateEFundSettings"]),
   },
 };
 </script>

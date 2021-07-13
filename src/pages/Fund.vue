@@ -10,7 +10,7 @@ import { mapMutations, mapGetters } from "vuex";
 import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { fundStatuses } from "../constants";
+import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers } from "ethers";
 
 export default {
@@ -24,15 +24,19 @@ export default {
       fundService: null,
       fundContractAddress: null,
       isLoaded: false,
+      eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     };
   },
   computed: {
-    ...mapGetters["isInfoLoaded"],
+    ...mapGetters["eFundNetworkSettings"],
   },
   async mounted() {
     this.fundContractAddress = this.$route.params.address;
 
-    this.fundService = new FundService(this.platformAddress, currentProvider);
+    console.log(this.fundContractAddress);
+    console.log(this.eFundNetworkSettings);
+
+    this.fundService = new FundService(this.eFundPlatformAddress, currentProvider);
     this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
     const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
 
@@ -42,7 +46,7 @@ export default {
       alert("fund is not found");
       return;
     }
-    
+
     const isDepositsWithdrawed = await this.fundContract.isDepositsWithdrawed();
     const fundManager = await this.fundContract.fundManager();
     const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;

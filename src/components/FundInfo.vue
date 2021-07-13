@@ -11,7 +11,7 @@
       </button>
 
       <button
-        v-if="fundContractStatus === 'Active' && fundCanBeCompleted"
+        v-if="fundContractStatus === 'Active' && Math.floor(Date.now() / 1000) > this.fundEndTime"
         class="btn btn-primary px-3 ml-3"
         @click="setFundStatusCompleted()"
       >
@@ -80,17 +80,17 @@ import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
+import { utimesSync } from "fs";
 
 export default {
   name: "FundInfo",
   data() {
     return {
       fundService: null,
-      fundSignedContract: null,
-      fundBalance: null,
+      fundContract: null,
       fundDuration: null,
-      fundCanBeCompleted: false,
       fundEndTime: null,
+      interval: null,
     };
   },
 
@@ -104,20 +104,19 @@ export default {
       "allowedTokensAddresses",
       "boughtTokensAddresses",
       "fundStartTimestamp",
+      "fundBalance",
     ]),
   },
   async mounted() {
     console.log("found info: ", JSON.stringify(this.boughtTokensAddresses));
 
-    this.interval = setInterval(() => this.getBalance(), 60000);
+    this.interval = setInterval(() => this.updateBalance(), 10000);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
-    this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-    this.fundEndTime = await this.fundSignedContract.getEndTime();
-
-    this.fundCanBeCompleted = Math.floor(Date.now() / 1000) > this.fundEndTime;
+    this.fundEndTime = await this.fundContract.getEndTime();
 
     await this.updateInfo();
   },
@@ -126,27 +125,27 @@ export default {
   },
   methods: {
     async updateInfo() {
-      await this.getBalance();
+      await this.updateBalance();
 
-      this.fundDuration = await this.fundSignedContract.fundDuration();
+      this.fundDuration = await this.fundContract.fundDuration();
     },
     async setFundStatusActive() {
-      await this.fundSignedContract.setFundStatusActive();
+      await this.fundContract.setFundStatusActive();
       this.updateStoreFundStatus(fundStatuses[1].value);
     },
     async setFundStatusCompleted() {
-      await this.fundSignedContract.setFundStatusCompleted();
+      await this.fundContract.setFundStatusCompleted();
       this.updateStoreFundStatus(fundStatuses[2].value);
     },
     async setFundStatusClosed() {
-      await this.fundSignedContract.setFundStatusClosed();
+      await this.fundContract.setFundStatusClosed();
       this.updateStoreFundStatus(fundStatuses[3].value);
     },
 
-    async getBalance() {
-      const curBalance = await this.fundSignedContract.getCurrentBalanceInWei();
-      this.fundBalance = ethers.utils.formatEther(curBalance.toString());
-      console.log("fund balance is: ", this.fundBalance);
+    async updateBalance() {
+      const balance = utils.formatEther(await this.fundContract.getCurrentBalanceInWei());
+      this.updateFundBalance(balance);
+      console.log("fund balance is: ", balance);
     },
     updateStoreFundStatus(newStatus) {
       this.updateFundStatus(newStatus);
@@ -163,6 +162,7 @@ export default {
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
       "updateiIsDepositsWithdrawed",
+      "updateFundBalance",
     ]),
   },
 };

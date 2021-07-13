@@ -39,7 +39,12 @@
           </div>
         </div>
       </div>
-      <vue-range-slider v-if="capValues != null" :step="rangeStep" v-model="capValues" :value="capValues"></vue-range-slider>
+      <vue-range-slider
+        v-if="capValues != null"
+        :step="rangeStep"
+        v-model="capValues"
+        :value="capValues"
+      ></vue-range-slider>
     </div>
     <FundList />
   </div>
@@ -101,7 +106,7 @@ export default {
     this.hardCap = utils.formatEther(hardCapMax);
     this.softCap = utils.formatEther(softCapMin);
 
-    this.capValues = [parseFloat(this.softCap), parseFloat(this.hardCap) ];
+    this.capValues = [parseFloat(this.softCap), parseFloat(this.hardCap)];
   },
   methods: {
     async createNewFund() {
@@ -109,12 +114,17 @@ export default {
         value: ethers.utils.parseEther(this.etherValue.toString()), // To convert Ether to Wei:
       };
 
+      console.log("cap values: ", {
+        v1: utils.parseEther(this.capValues[0].toString()),
+        v2: utils.parseEther(this.capValues[1].toString()),
+      });
+
       if (this.factoryContract) {
         const tx = await this.factoryContract.createFund(
           PANCACKE_V2_ROUTER,
           this.month,
-          utils.parseEther(this.hardCap),
-          utils.parseEther(this.softCap),
+          utils.parseEther(this.capValues[0].toString()),
+          utils.parseEther(this.capValues[1].toString()),
           this.allowedTokens,
           overrides
         );
