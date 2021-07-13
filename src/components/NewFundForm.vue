@@ -114,9 +114,12 @@ export default {
   methods: {
     async createNewFund() {
       this.$loading = true;
+      
       try {
+        console.log(this.etherValue);
+
         const overrides = {
-          value: ethers.utils.parseEther(this.etherValue),
+          value: ethers.utils.parseEther(this.etherValue.toString()),
         };
 
         console.log("cap values: ", {
