@@ -53,32 +53,48 @@ export default {
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
     this.swapRouterContract = this.fundService.getSwapRouterContractInstance(this.swapRouterAddress);
-    this.fundSignedContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-    await this.calculateValues();
+    await this.calculateValues(this.boughtTokensAddresses);
+  },
+  watch: {
+    boughtTokensAddresses(newVal) {
+      console.log(newVal);
+      this.calculateValues(newVal);
+    },
   },
   methods: {
-    async calculateValues() {
-      this.boughtTokensAddresses.map(async token => {
-        const parsedAmount = BigNumber.from(FixedNumber.from(token.amount));
-        const amounts = await this.getPricesPath(parsedAmount, [token.address, WBNB_ADDRESS]);
-        const value = Number(await utils.formatUnits(amounts[1].toString(), 18));
+    async calculateValues(boughtTokensAddresses) {
+      for (let i = 0; i < boughtTokensAddresses.length; i++) {
+        const token = boughtTokensAddresses[i];
+        const t = this.fundService.getERC20ContractInstance(token.address);
+        const decimals = await t.decimals();
+        const parsedAmount = utils.parseUnits(token.amount, decimals);
+
+        const amounts = await this.getPricesPath(parsedAmount, [
+          token.address,
+          this.eFundNetworkSettings.wrappedCryptoAddress,
+        ]);
+
+        const value = parseFloat(utils.formatUnits(amounts[1], decimals));
+
         this.fullBNBValue = this.fullBNBValue + value;
         this.tokensBNBValuesList.push(value);
-      });
+      }
 
-      const BNBValue = Number(await this.getBalance());
+      const BNBValue = await this.getBalance();
+
       this.fullBNBValue = this.fullBNBValue + BNBValue;
+
       this.tokensBNBValuesList.push(BNBValue);
 
-      this.boughtTokensAddresses.map((token, index) => {
+      boughtTokensAddresses.map((token, index) => {
         const percent = (this.tokensBNBValuesList[index] / this.fullBNBValue) * 100;
-        const name = `${token.name} ${percent.toFixed()}%`;
+        const name = `${token.name} ${percent < 1 ? "<1" : percent.toFixed()}%`;
         this.tokensNamesList.push(name);
       });
 
       const percent = (BNBValue / this.fullBNBValue) * 100;
-      const name = `BNB ${percent.toFixed}%`;
+      const name = `BNB ${percent.toFixed()}%`;
       this.tokensNamesList.push(name);
 
       this.tokensChartData.datasets[0].data = this.tokensBNBValuesList;
@@ -93,8 +109,8 @@ export default {
       }
     },
     async getBalance() {
-      const curBalance = await this.fundSignedContract.getCurrentBalanceInWei();
-      return ethers.utils.formatEther(curBalance.toString());
+      const curBalance = await this.fundContract.getCurrentBalanceInWei();
+      return parseFloat(ethers.utils.formatEther(curBalance));
     },
   },
 };
