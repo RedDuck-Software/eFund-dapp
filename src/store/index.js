@@ -18,6 +18,8 @@ const store = new Vuex.Store({
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
     fundBalance: null,
+    hardCap: null,
+    softCap: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -57,6 +59,12 @@ const store = new Vuex.Store({
     updateFundBalance(state, newBalance) {
       state.fundBalance = newBalance;
     },
+    updateSoftCap(state, softCap) {
+      state.softCap = softCap;
+    },
+    updateHardCap(state, hardCap) {
+      state.hardCap = hardCap;
+    },
     logout: state => {
       state.signerAddress = null;
       state.walletProviderType = null;
@@ -74,6 +82,8 @@ const store = new Vuex.Store({
     allowedTokensAddresses: state => state.allowedTokensAddresses,
     fundStartTimestamp: state => state.fundStartTimestamp,
     isDepositsWithdrawed: state => state.isDepositsWithdrawed,
+    softCap: state => state.softCap,
+    hardCap: state => state.hardCap,
     fundBalance: state => state.fundBalance,
   },
   actions: {

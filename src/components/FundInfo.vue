@@ -33,9 +33,14 @@
       Duration: <b>{{ formatDuration(fundDuration) }} </b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Manager:<b class="truncate"> {{ fundContractManager }}</b>
+      Manager: <b class="truncate"> {{ fundContractManager }}</b>
     </li>
-
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Min deposit amount: <b class="truncate"> {{ softCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+    </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Max deposit amount: <b class="truncate"> {{ hardCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+    </li>
     <li
       v-if="fundStartTimestamp != null && fundContractStatus !== 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
@@ -87,6 +92,7 @@ import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
 import { asyncLoading } from "vuejs-loading-plugin";
+import { utimesSync } from "fs";
 
 export default {
   name: "FundInfo",
@@ -111,6 +117,8 @@ export default {
       "boughtTokensAddresses",
       "fundStartTimestamp",
       "fundBalance",
+      "hardCap",
+      "softCap",
     ]),
   },
   async mounted() {
@@ -137,7 +145,7 @@ export default {
       this.fundDuration = await this.fundContract.fundDuration();
     },
     async setFundStatusActive() {
-      const tx = await this.fundContract.setFundStatusActive();
+      const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[1].value);
@@ -148,7 +156,7 @@ export default {
         });
     },
     async setFundStatusCompleted() {
-      const tx = await this.fundContract.setFundStatusCompleted();
+      const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[2].value);
@@ -159,7 +167,7 @@ export default {
         });
     },
     async setFundStatusClosed() {
-      const tx = await this.fundContract.setFundStatusClosed();
+      const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[3].value);
