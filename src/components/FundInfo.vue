@@ -30,7 +30,7 @@
       Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Duration: <b>{{ fundDuration }} months</b>
+      Duration: <b>{{ new Date(fundDuration * 1000).toISOString().substr(11, 8) }} </b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
@@ -79,6 +79,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
+import { fundStatuses } from "../constants";
 
 export default {
   name: "FundInfo",
@@ -124,26 +125,22 @@ export default {
     clearInterval(this.interval);
   },
   methods: {
-    async fetchFundContract() {},
-
     async updateInfo() {
       await this.getBalance();
 
-      this.fundSignedContract
-        .fundDurationMonths()
-        .then((res) => {
-          this.fundDuration = res.toString();
-        })
-        .catch(() => console.log);
+      this.fundDuration = await this.fundSignedContract.fundDuration();
     },
     async setFundStatusActive() {
-      this.fundSignedContract.setFundStatusActive();
+      await this.fundSignedContract.setFundStatusActive();
+      this.updateStoreFundStatus(fundStatuses[1].value);
     },
     async setFundStatusCompleted() {
-      this.fundSignedContract.setFundStatusCompleted();
+      await this.fundSignedContract.setFundStatusCompleted();
+      this.updateStoreFundStatus(fundStatuses[2].value);
     },
     async setFundStatusClosed() {
-      this.fundSignedContract.setFundStatusClosed();
+      await this.fundSignedContract.setFundStatusClosed();
+      this.updateStoreFundStatus(fundStatuses[3].value);
     },
 
     async getBalance() {
@@ -151,6 +148,22 @@ export default {
       this.fundBalance = ethers.utils.formatEther(curBalance.toString());
       console.log("fund balance is: ", this.fundBalance);
     },
+    updateStoreFundStatus(newStatus) {
+      this.updateFundStatus(newStatus);
+    },
+
+    ...mapMutations([
+      "updateFundAddress",
+      "updateFundManager",
+      "updateFundIsManager",
+      "updateFundStatus",
+      "updateSignerAddress",
+      "updateAllowedTokensAddresses",
+      "updateBoughtTokensAddresses",
+      "updateIsInfoLoaded",
+      "updateFundStartTimestamp",
+      "updateiIsDepositsWithdrawed",
+    ]),
   },
 };
 </script>

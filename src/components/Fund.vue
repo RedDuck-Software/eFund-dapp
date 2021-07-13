@@ -1,6 +1,6 @@
 <template>
   <div class="position-relative">
-    <div v-if="fundContractStatus === 'Completed' || (fundContractStatus === 'Closed' && !isDepositsWithdrawed)">
+    <div v-if="(fundContractStatus === 'Completed' || fundContractStatus === 'Closed') && !isDepositsWithdrawed">
       <button class="btn btn-primary" @click="widthdrawal">Widthdraw</button>
     </div>
     <div class="my-3 d-flex min-w-0">

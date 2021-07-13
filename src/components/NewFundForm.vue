@@ -63,7 +63,7 @@ export default {
   components: { FundList, VueTagsInput, VueRangeSlider },
   data() {
     return {
-      etherValue: "0.1",
+      etherValue: 0.1,
       month: 1,
       monthList: [1, 3, 6],
       factoryContract: null,
