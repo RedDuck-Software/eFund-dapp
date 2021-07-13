@@ -113,8 +113,8 @@ export default {
   },
   methods: {
     async createNewFund() {
-      this.$loading = true;
-      
+      this.$loading(true);
+
       try {
         console.log(this.etherValue);
 
@@ -142,7 +142,7 @@ export default {
         alert("Create fund exception:", ex);
         console.error(ex);
       } finally {
-        this.$loading = false;
+        this.$loading(false);
       }
     },
     newTokenAdded(newTokens) {
@@ -152,7 +152,6 @@ export default {
           return token.text;
         }
       });
-      //
       console.log(this.allowedTokens);
     },
   },
