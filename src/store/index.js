@@ -17,6 +17,7 @@ const store = new Vuex.Store({
     allowedTokensAddresses: [],
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
+    fundBalance: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -36,9 +37,13 @@ const store = new Vuex.Store({
     },
     updateEFundSettings(state, settings) {
       state.eFundNetworkSettings = settings;
+      // console.log(JSON.stringify(state.eFundNetworkSettings));
     },
     updateBoughtTokensAddresses(state, tokens) {
       state.boughtTokensAddresses = tokens;
+    },
+    addBoughtToken(state, token) {
+      state.boughtTokensAddresses.push(token);
     },
     updateAllowedTokensAddresses(state, tokens) {
       state.allowedTokensAddresses = tokens;
@@ -46,8 +51,11 @@ const store = new Vuex.Store({
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
     },
-    updateiIsDepositsWithdrawed(state, isDepositsWithdrawed) {
+    updateIsDepositsWithdrawed(state, isDepositsWithdrawed) {
       state.isDepositsWithdrawed = isDepositsWithdrawed;
+    },
+    updateFundBalance(state, newBalance) {
+      state.fundBalance = newBalance;
     },
     logout: state => {
       state.signerAddress = null;
@@ -66,12 +74,12 @@ const store = new Vuex.Store({
     allowedTokensAddresses: state => state.allowedTokensAddresses,
     fundStartTimestamp: state => state.fundStartTimestamp,
     isDepositsWithdrawed: state => state.isDepositsWithdrawed,
+    fundBalance: state => state.fundBalance,
   },
   actions: {
     // async updateBoughtTokensAddresses(context, tokens) {
     //   context.commit('updateBoughtTokensAddresses', tokens);
     //   console.log("commited ", JSON.stringify(context.state.boughtTokensAddresses));
-
     // },
     // async updateAllowedTokensAddresses(context, tokens) {
     //   context.commit('updateAllowedTokensAddresses', tokens);
