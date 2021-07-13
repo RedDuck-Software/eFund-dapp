@@ -29,18 +29,25 @@
                 :tags="allowedTokens"
                 :validation="validation"
                 class="allowed-tokens"
-                :placeholder="`Add allowed for tarde tokens `"
+                :placeholder="`Add allowed for trade tokens `"
                 @tags-changed="newTokenAdded"
               />
             </div>
           </div>
           <div class="form-group d-flex flex-column">
-            <button :disabled="!signerAddress" class="btn btn-primary px-3" @click="createNewFund()">
-              Create New
-            </button>
+            <button :disabled="!signerAddress" class="btn btn-primary px-3" @click="createNewFund()">Create New</button>
           </div>
         </div>
       </div>
+      <vue-range-slider
+        class="mt-5"
+        v-if="capValues != null"
+        :step="rangeStep"
+        v-model="capValues"
+        :max="hardCap"
+        :min="softCap"
+        :value="capValues"
+      ></vue-range-slider>
     </div>
     <FundList />
   </div>
@@ -48,11 +55,12 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import FundList from "./FundList";
-import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
+import "vue-range-component/dist/vue-range-slider.css";
+import VueRangeSlider from "vue-range-component";
 
 const PANCACKE_V2_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 
@@ -60,46 +68,83 @@ import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
   name: "NewFundForm",
-  components: { FundList, VueTagsInput },
+  components: { FundList, VueTagsInput, VueRangeSlider },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      etherValue: "0.1",
+      etherValue: 0.1,
       month: 1,
       monthList: [1, 3, 6],
       factoryContract: null,
       token: "",
+      softCap: null,
+      hardCap: null,
       allowedTokens: [],
+      capValues: null,
+      rangeStep: 0.1,
       validation: [
         {
           classes: "min-length",
-          rule: address => address.text.length < 8,
+          rule: (address) => address.text.length < 8,
         },
       ],
     };
   },
   computed: {
-    ...mapGetters(["signerAddress"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
-  mounted() {
-    this.fundService = new FundService(this.platformAddress, currentProvider);
+  async mounted() {
+    console.log("eFund platform", this.eFundNetworkSettings.eFundPlatformAddress);
+
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
+
+    console.log(this.factoryContract);
+
+    const hardCapMax = await this.factoryContract.hardCap();
+    const softCapMin = await this.factoryContract.softCap();
+
+    console.log("cap max", hardCapMax);
+    console.log("cap min", softCapMin);
+
+    this.hardCap = parseFloat(utils.formatEther(hardCapMax));
+    this.softCap = parseFloat(utils.formatEther(softCapMin));
+
+    this.capValues = [this.softCap, this.hardCap];
   },
   methods: {
     async createNewFund() {
-      const overrides = {
-        value: ethers.utils.parseEther(this.etherValue.toString()), // To convert Ether to Wei:
-      };
+      this.$loading = true;
+      try {
+        const overrides = {
+          value: ethers.utils.parseEther(this.etherValue),
+        };
 
-      if (this.factoryContract) {
-        const tx = await this.factoryContract.createFund(PANCACKE_V2_ROUTER, this.month, this.allowedTokens, overrides);
+        console.log("cap values: ", {
+          v1: utils.parseEther(this.capValues[0].toString()),
+          v2: utils.parseEther(this.capValues[1].toString()),
+        });
 
-        return await tx.wait();
+        const tx = await this.factoryContract.createFund(
+          PANCACKE_V2_ROUTER,
+          this.month,
+          utils.parseEther(this.capValues[0].toString()),
+          utils.parseEther(this.capValues[1].toString()),
+          this.allowedTokens,
+          overrides
+        );
+
+        const txHash = await tx.wait();
+        console.log("txHash: ", txHash);
+      } catch (ex) {
+        alert("Create fund exception:", ex);
+        console.error(ex);
+      } finally {
+        this.$loading = false;
       }
     },
     newTokenAdded(newTokens) {
       this.allowedTokens = newTokens;
-      this.allowedTokens = this.allowedTokens.map(token => {
+      this.allowedTokens = this.allowedTokens.map((token) => {
         if (token.text) {
           return token.text;
         }

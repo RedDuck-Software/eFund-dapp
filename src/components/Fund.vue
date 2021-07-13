@@ -1,13 +1,12 @@
 <template>
   <div class="position-relative">
-    <div v-if="fundContractStatus === 'Completed' || (fundContractStatus === 'Closed' && !isDepositsWithdrawed)">
+    <div v-if="(fundContractStatus === 'Completed' || fundContractStatus === 'Closed') && !isDepositsWithdrawed">
       <button class="btn btn-primary" @click="widthdrawal">Widthdraw</button>
     </div>
     <div class="my-3 d-flex min-w-0">
       <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
-      <!--      <p class="text-white">Fund address</p>-->
     </div>
     <div class="row">
       <div class="col-sm-8">
@@ -31,14 +30,13 @@ import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
-import { FUND_PLATFROM_ADDRESS_BSC } from "../constants";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "Fund",
   components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
   data() {
     return {
-      platformAddress: FUND_PLATFROM_ADDRESS_BSC,
       fundService: null,
       fundContract: null,
     };
@@ -55,7 +53,7 @@ export default {
   },
   async mounted() {
     console.log("network setting: ", this.eFundNetworkSettings);
-
+    console.log("fundContractStatus :", this.fundContractStatus);
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
@@ -71,9 +69,19 @@ export default {
       this.fundContract.makeDeposit(overrides);
     },
     async widthdrawal() {
-      const res = await this.fundContract.withdraw();
-      console.log(res);
+      const tx = await this.fundContract.withdraw();
+
+      asyncLoading(tx.wait())
+        .then((txHash) => {
+          console.log(txHash);
+          this.updateIsDepositsWithdrawed(true);
+        })
+        .catch((ex) => {
+          alert("WitdrawAll Error: ", ex);
+          console.error(ex);
+        });
     },
+    ...mapMutations(["updateIsDepositsWithdrawed"]),
   },
 };
 </script>

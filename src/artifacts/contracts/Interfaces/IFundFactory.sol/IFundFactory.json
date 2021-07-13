@@ -27,7 +27,17 @@
         },
         {
           "internalType": "uint256",
-          "name": "_fundDurationInMonths",
+          "name": "_fundDuration",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_softCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_hardCap",
           "type": "uint256"
         },
         {
