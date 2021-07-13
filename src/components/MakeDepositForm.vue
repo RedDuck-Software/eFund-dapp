@@ -31,7 +31,7 @@
 import {mapGetters} from "vuex";
 
 export default {
-  name: "MakeDepositForm",
+  name: "MakeDepositForm",  
   computed: {
     ...mapGetters(["softCap", "hardCap"]),
   },

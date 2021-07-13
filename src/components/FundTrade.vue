@@ -10,6 +10,8 @@
                 v-model="fromSwapValue"
                 type="number"
                 min="0"
+                :step="0.1"
+                :max="fromSwapMaxValue"
                 name="from swap"
                 class="form-control bg-dark border-0"
                 @change="handleFromValueChange()"
@@ -34,6 +36,7 @@
                 v-model="toSwapValue"
                 type="number"
                 min="0"
+                :step="0.1"
                 name="to swap"
                 class="form-control bg-dark border-0"
                 @change="handleToValueChange()"
@@ -70,7 +73,7 @@ import { asyncLoading } from "vuejs-loading-plugin";
 export default {
   name: "FundTrade",
   computed: {
-    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses"]),
+    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses", "fundBalance"]),
     boughtTokensAddresses() {
       return this.$store.state.boughtTokensAddresses;
     },
@@ -78,6 +81,8 @@ export default {
   data() {
     return {
       tokensList: [],
+
+      fromSwapMaxValue: 100,
 
       fromSwapCurrLabel: "",
       toSwapCurrLabel: "",
@@ -183,6 +188,7 @@ export default {
         this.toSwapValue = 0;
         this.toSwapCurrLabel = null;
       }
+      this.fromSwapMaxValue = this.fundBalance;
 
       await this.reCalculateAmountsOut();
     },

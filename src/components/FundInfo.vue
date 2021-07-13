@@ -79,8 +79,7 @@
           </ul>
         </li>
       </ol>
-
-      <span v-if="allowedTokensAddresses.length == 0">&nbsp;all tokens are allowed</span>
+      <span v-else>&nbsp;all tokens are allowed</span>
     </li>
   </ul>
 </template>

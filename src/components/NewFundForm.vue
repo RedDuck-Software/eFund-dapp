@@ -49,7 +49,7 @@
         :value="capValues"
       ></vue-range-slider>
     </div>
-    <FundList />
+    <FundList :shouldRedrawList="false" />
   </div>
 </template>
 
@@ -81,6 +81,7 @@ export default {
       allowedTokens: [],
       capValues: null,
       rangeStep: 0.1,
+      shouldRedrawList: false,
       validation: [
         {
           classes: "min-length",
@@ -138,6 +139,9 @@ export default {
 
         const txHash = await tx.wait();
         console.log("txHash: ", txHash);
+
+        this.shouldRedrawList = true;
+
       } catch (ex) {
         alert("Create fund exception:", ex);
         console.error(ex);

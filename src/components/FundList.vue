@@ -18,14 +18,21 @@ import { FundService } from "../services/fundService";
 
 export default {
   name: "FundList",
+  props: ["shouldRedrawList"],
   data() {
     return {
       funds: [],
       readOnlyFactoryContract: null,
+      fetchCount: 0,
     };
   },
   watch: {
     readOnlyFactoryContract() {
+      this.fetchAllFunds();
+    },
+    shouldRedrawList(v) {
+      alert("new fund created!");
+
       this.fetchAllFunds();
     },
   },
@@ -43,8 +50,9 @@ export default {
     async fetchAllFunds() {
       try {
         const data = await this.readOnlyFactoryContract.getAllFunds();
-        this.funds = data;
         console.log(data);
+        this.funds = data.slice().reverse();
+        this.fetchCount += 1;
       } catch (err) {
         console.log("Error: ", err);
       }
