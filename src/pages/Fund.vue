@@ -90,7 +90,7 @@ export default {
       this.updateFundManager(fundManager);
       this.updateFundStatus(fundStatus);
       this.updateFundStartTimestamp(fundStartTimestamp);
-      this.updateiIsDepositsWithdrawed(isDepositsWithdrawed);
+      this.updateIsDepositsWithdrawed(isDepositsWithdrawed);
 
       this.isLoaded = true;
     },
@@ -125,7 +125,7 @@ export default {
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
-      "updateiIsDepositsWithdrawed",
+      "updateIsDepositsWithdrawed",
     ]),
   },
 };

@@ -222,7 +222,7 @@ export default {
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
-      "updateiIsDepositsWithdrawed",
+      "updateIsDepositsWithdrawed",
       "updateFundBalance",
     ]),
   },

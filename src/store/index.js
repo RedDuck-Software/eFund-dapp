@@ -51,7 +51,7 @@ const store = new Vuex.Store({
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
     },
-    updateiIsDepositsWithdrawed(state, isDepositsWithdrawed) {
+    updateIsDepositsWithdrawed(state, isDepositsWithdrawed) {
       state.isDepositsWithdrawed = isDepositsWithdrawed;
     },
     updateFundBalance(state, newBalance) {

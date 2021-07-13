@@ -74,14 +74,14 @@ export default {
       asyncLoading(tx.wait())
         .then((txHash) => {
           console.log(txHash);
-          this.updateiIsDepositsWithdrawed(true);
+          this.updateIsDepositsWithdrawed(true);
         })
         .catch((ex) => {
           alert("WitdrawAll Error: ", ex);
           console.error(ex);
         });
     },
-    ...mapMutations(["updateiIsDepositsWithdrawed"]),
+    ...mapMutations(["updateIsDepositsWithdrawed"]),
   },
 };
 </script>
