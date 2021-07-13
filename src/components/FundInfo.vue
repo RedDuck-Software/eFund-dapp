@@ -29,18 +29,24 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
       Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
-    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Duration: <b>{{ new Date(fundDuration * 1000).toISOString().substr(11, 8) }} </b>
+    <li v-if="fundDuration != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
+      Duration: <b>{{ formatDuration(fundDuration) }} </b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager:<b class="truncate"> {{ fundContractManager }}</b>
     </li>
 
-    <li v-if="fundStartTimestamp != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+    <li
+      v-if="fundStartTimestamp != null && fundContractStatus !== 'Opened'"
+      class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
+    >
       <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
     </li>
 
-    <li v-if="fundEndTime != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+    <li
+      v-if="fundEndTime != null && fundContractStatus !== 'Opened'"
+      class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
+    >
       <span>Fund end:</span> <b class="truncate"> {{ new Date(fundEndTime.toNumber() * 1000) }}</b>
     </li>
 
@@ -80,7 +86,7 @@ import { FundService } from "../services/fundService";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
-import { utimesSync } from "fs";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "FundInfo",
@@ -109,6 +115,7 @@ export default {
   },
   async mounted() {
     console.log("found info: ", JSON.stringify(this.boughtTokensAddresses));
+    console.log("start: ", this.fundStartTimestamp.toNumber());
 
     this.interval = setInterval(() => this.updateBalance(), 10000);
 
@@ -130,16 +137,37 @@ export default {
       this.fundDuration = await this.fundContract.fundDuration();
     },
     async setFundStatusActive() {
-      await this.fundContract.setFundStatusActive();
-      this.updateStoreFundStatus(fundStatuses[1].value);
+      const tx = await this.fundContract.setFundStatusActive();
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[1].value);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
     },
     async setFundStatusCompleted() {
-      await this.fundContract.setFundStatusCompleted();
-      this.updateStoreFundStatus(fundStatuses[2].value);
+      const tx = await this.fundContract.setFundStatusCompleted();
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[2].value);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
     },
     async setFundStatusClosed() {
-      await this.fundContract.setFundStatusClosed();
-      this.updateStoreFundStatus(fundStatuses[3].value);
+      const tx = await this.fundContract.setFundStatusClosed();
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[3].value);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
     },
 
     async updateBalance() {
@@ -149,6 +177,39 @@ export default {
     },
     updateStoreFundStatus(newStatus) {
       this.updateFundStatus(newStatus);
+    },
+    formatDuration(durInSeconds) {
+      var r = {};
+
+      var s = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60,
+        second: 1,
+      };
+
+      Object.keys(s).forEach(function (key) {
+        r[key] = Math.floor(durInSeconds / s[key]);
+        durInSeconds -= r[key] * s[key];
+      });
+
+      let emptyStringIfZeroVal = function (val, mod) {
+        return val == 0 ? "" : val.toString() + mod;
+      };
+
+      let eZ = emptyStringIfZeroVal;
+
+      return (
+        eZ(r.year, " years ") +
+        eZ(r.month, " months ") +
+        eZ(r.day, " days ") +
+        eZ(r.hour, " hours ") +
+        eZ(r.minute, " minutes ") +
+        eZ(r.second, " seconds ")
+      );
     },
 
     ...mapMutations([

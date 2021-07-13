@@ -7,7 +7,6 @@
       <h1 class="font-bold text-primary truncate">
         {{ fundContractAddress }}
       </h1>
-      <!--      <p class="text-white">Fund address</p>-->
     </div>
     <div class="row">
       <div class="col-sm-8">
@@ -31,6 +30,7 @@ import FundTrade from "./FundTrade";
 import FundStatistic from "./FundStatistic";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "Fund",
@@ -69,9 +69,19 @@ export default {
       this.fundContract.makeDeposit(overrides);
     },
     async widthdrawal() {
-      const res = await this.fundContract.withdraw();
-      console.log(res);
+      const tx = await this.fundContract.withdraw();
+
+      asyncLoading(tx.wait())
+        .then((txHash) => {
+          console.log(txHash);
+          this.updateiIsDepositsWithdrawed(true);
+        })
+        .catch((ex) => {
+          alert("WitdrawAll Error: ", ex);
+          console.error(ex);
+        });
     },
+    ...mapMutations(["updateiIsDepositsWithdrawed"]),
   },
 };
 </script>

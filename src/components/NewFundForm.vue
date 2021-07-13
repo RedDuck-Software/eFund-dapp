@@ -40,9 +40,12 @@
         </div>
       </div>
       <vue-range-slider
+        class="mt-5"
         v-if="capValues != null"
         :step="rangeStep"
         v-model="capValues"
+        :max="hardCap"
+        :min="softCap"
         :value="capValues"
       ></vue-range-slider>
     </div>
@@ -103,23 +106,24 @@ export default {
     console.log("cap max", hardCapMax);
     console.log("cap min", softCapMin);
 
-    this.hardCap = utils.formatEther(hardCapMax);
-    this.softCap = utils.formatEther(softCapMin);
+    this.hardCap = parseFloat(utils.formatEther(hardCapMax));
+    this.softCap = parseFloat(utils.formatEther(softCapMin));
 
-    this.capValues = [parseFloat(this.softCap), parseFloat(this.hardCap)];
+    this.capValues = [this.softCap, this.hardCap];
   },
   methods: {
     async createNewFund() {
-      const overrides = {
-        value: ethers.utils.parseEther(this.etherValue.toString()), // To convert Ether to Wei:
-      };
+      this.$loading = true;
+      try {
+        const overrides = {
+          value: ethers.utils.parseEther(this.etherValue),
+        };
 
-      console.log("cap values: ", {
-        v1: utils.parseEther(this.capValues[0].toString()),
-        v2: utils.parseEther(this.capValues[1].toString()),
-      });
+        console.log("cap values: ", {
+          v1: utils.parseEther(this.capValues[0].toString()),
+          v2: utils.parseEther(this.capValues[1].toString()),
+        });
 
-      if (this.factoryContract) {
         const tx = await this.factoryContract.createFund(
           PANCACKE_V2_ROUTER,
           this.month,
@@ -129,7 +133,13 @@ export default {
           overrides
         );
 
-        return await tx.wait();
+        const txHash = await tx.wait();
+        console.log("txHash: ", txHash);
+      } catch (ex) {
+        alert("Create fund exception:", ex);
+        console.error(ex);
+      } finally {
+        this.$loading = false;
       }
     },
     newTokenAdded(newTokens) {
