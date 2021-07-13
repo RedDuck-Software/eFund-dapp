@@ -65,6 +65,7 @@ import { BigNumber, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { mapGetters, mapMutations } from "vuex";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "FundTrade",
@@ -210,9 +211,14 @@ export default {
       this.toSwapValue = utils.formatUnits(amounts[1].toString(), 18);
     },
     async swap() {
-      const txhash = await this.sendSwapRequest();
-      console.log(txhash);
-      this.resetInputPriceValues();
+      asyncLoading(this.sendSwapRequest())
+        .then((txHash) => {
+          console.log(txHash);
+          this.resetInputPriceValues();
+        })
+        .catch((ex) => {
+          alert("Swap error: ", ex);
+        });
     },
     resetInputPriceValues() {
       this.toSwapValue = 0;

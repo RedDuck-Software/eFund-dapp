@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="min-vh-100 bg-secondary">
+  <div v-if="isLoaded" id="app" class="min-vh-100 bg-secondary">
     <Header />
     <div class="main container text-gray">
       <router-view></router-view>
@@ -15,6 +15,11 @@ import "./App.scss";
 
 export default {
   name: "App",
+  data() {
+    return {
+      isLoaded: false,
+    };
+  },
   components: {
     Header,
   },
@@ -27,8 +32,9 @@ export default {
       console.log(JSON.stringify(networkSettings[97]));
       this.updateEFundSettings(networkSettings[97]);
     }
-
     console.log("network settings: ", this.eFundNetworkSettings);
+
+    this.isLoaded = true;
   },
   methods: {
     ...mapMutations(["updateEFundSettings"]),
