@@ -29,7 +29,7 @@
                 :tags="allowedTokens"
                 :validation="validation"
                 class="allowed-tokens"
-                :placeholder="`Add allowed for tarde tokens `"
+                :placeholder="`Add allowed for trade tokens `"
                 @tags-changed="newTokenAdded"
               />
             </div>
