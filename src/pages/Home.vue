@@ -1,5 +1,5 @@
 <template>
-  <NewFundForm />
+  <NewFundForm/>
 </template>
 
 <script>

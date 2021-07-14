@@ -49,7 +49,7 @@
         :value="capValues"
       ></vue-range-slider>
     </div>
-    <FundList />
+    <FundList :shouldRedrawList="false" />
   </div>
 </template>
 
@@ -81,6 +81,7 @@ export default {
       allowedTokens: [],
       capValues: null,
       rangeStep: 0.1,
+      shouldRedrawList: false,
       validation: [
         {
           classes: "min-length",
@@ -113,10 +114,13 @@ export default {
   },
   methods: {
     async createNewFund() {
-      this.$loading = true;
+      this.$loading(true);
+
       try {
+        console.log(this.etherValue);
+
         const overrides = {
-          value: ethers.utils.parseEther(this.etherValue),
+          value: ethers.utils.parseEther(this.etherValue.toString()),
         };
 
         console.log("cap values: ", {
@@ -135,11 +139,14 @@ export default {
 
         const txHash = await tx.wait();
         console.log("txHash: ", txHash);
+
+        this.shouldRedrawList = true;
+
       } catch (ex) {
         alert("Create fund exception:", ex);
         console.error(ex);
       } finally {
-        this.$loading = false;
+        this.$loading(false);
       }
     },
     newTokenAdded(newTokens) {
@@ -149,7 +156,6 @@ export default {
           return token.text;
         }
       });
-      //
       console.log(this.allowedTokens);
     },
   },

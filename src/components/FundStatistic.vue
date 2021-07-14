@@ -1,48 +1,116 @@
 <template>
-  <div></div>
+  <div>
+    <div v-if="chartLoaded">
+      <pie-chart :data="tokensChartData" :options="chartOptions" :bind="true"></pie-chart>
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import { currentProvider, getSigner } from "../services/ether";
-import { erc20TokenContractAbi } from "../constants";
-import { Contract, utils } from "ethers";
-import tokens from "../services/tokens.json";
+import { PieChart } from "./TokenChart.ts";
+import { BigNumber, utils, FixedNumber, ethers } from "ethers";
+import { WBNB_ADDRESS } from "@/constants";
+import { FundService } from "@/services/fundService";
+import { currentProvider } from "@/services/ether";
 
 export default {
   name: "FundStatistic",
+  components: { PieChart },
   data() {
     return {
-      tokensList: [],
+      chartLoaded: false,
+      swapRouterContract: null,
+      fundService: null,
+      swapRouterAddress: null,
+      fundSignedContract: null,
+      fullBNBValue: 0,
+      tokensNamesList: [],
+      tokensBNBValuesList: [],
+      chartOptions: {
+        hoverBorderWidth: 20,
+      },
+      tokensChartData: {
+        hoverBackgroundColor: "red",
+        hoverBorderWidth: 10,
+        labels: [],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: ["#41B883", "#E46651", "#00D8FF"],
+            data: [],
+          },
+        ],
+      },
     };
   },
   computed: {
-    ...mapGetters(["fundContractAddress"]),
-  },
-  mounted() {
-    this.tokensList = tokens.data.map((token) => {
-      return {
-        value: token.address,
-        label: token.symbol,
-      };
-    });
-
-    this.getBalances();
+    ...mapGetters(["fundContractAddress", "boughtTokensAddresses", "eFundNetworkSettings"]),
   },
 
+  async mounted() {
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+    this.swapRouterAddress = await this.fundContract.router();
+    this.swapRouterContract = this.fundService.getSwapRouterContractInstance(this.swapRouterAddress);
+
+    await this.calculateValues(this.boughtTokensAddresses);
+  },
+  watch: {
+    boughtTokensAddresses(newVal) {
+      console.log(newVal);
+      this.calculateValues(newVal);
+    },
+  },
   methods: {
-    async getBalances() {
-      const { jsonSigner } = await getSigner();
+    async calculateValues(boughtTokensAddresses) {
+      for (let i = 0; i < boughtTokensAddresses.length; i++) {
+        const token = boughtTokensAddresses[i];
+        const t = this.fundService.getERC20ContractInstance(token.address);
+        const decimals = await t.decimals();
+        const parsedAmount = utils.parseUnits(token.amount, decimals);
 
-      console.log(await currentProvider.getBalance(this.fundContractAddress));
-      for (const token of this.tokensList) {
-        const tokenContract = new Contract(token.value, erc20TokenContractAbi, jsonSigner);
-        const bal = parseFloat(
-          await utils.formatUnits(await tokenContract.balanceOf(this.fundContractAddress.toString()))
-        );
+        const amounts = await this.getPricesPath(parsedAmount, [
+          token.address,
+          this.eFundNetworkSettings.wrappedCryptoAddress,
+        ]);
 
-        console.log(token.label, bal);
+        const value = parseFloat(utils.formatUnits(amounts[1], decimals));
+
+        this.fullBNBValue = this.fullBNBValue + value;
+        this.tokensBNBValuesList.push(value);
       }
+
+      const BNBValue = await this.getBalance();
+
+      this.fullBNBValue = this.fullBNBValue + BNBValue;
+
+      this.tokensBNBValuesList.push(BNBValue);
+
+      boughtTokensAddresses.map((token, index) => {
+        const percent = (this.tokensBNBValuesList[index] / this.fullBNBValue) * 100;
+        const name = `${token.name} ${percent < 1 ? "<1" : percent.toFixed()}%`;
+        this.tokensNamesList.push(name);
+      });
+
+      const percent = (BNBValue / this.fullBNBValue) * 100;
+      const name = `BNB ${percent.toFixed()}%`;
+      this.tokensNamesList.push(name);
+
+      this.tokensChartData.datasets[0].data = this.tokensBNBValuesList;
+      this.tokensChartData.labels = this.tokensNamesList;
+      this.chartLoaded = true;
+    },
+    async getPricesPath(amount, path) {
+      if (!parseFloat(amount)) {
+        return new Array(path.length).fill(BigNumber.from([0]));
+      } else {
+        return await this.swapRouterContract.getAmountsOut(amount, path);
+      }
+    },
+    async getBalance() {
+      const curBalance = await this.fundContract.getCurrentBalanceInWei();
+      return parseFloat(ethers.utils.formatEther(curBalance));
     },
   },
 };

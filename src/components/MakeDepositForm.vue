@@ -9,6 +9,9 @@
               <input
                 v-model="sendValue"
                 type="number"
+                :min="softCap"
+                :max="hardCap"
+                :step="0.1"
                 class="form-control bg-dark border-0"
                 placeholder="Deposit to fund"
               />
@@ -24,8 +27,14 @@
 </template>
 
 <script>
+
+import {mapGetters} from "vuex";
+
 export default {
-  name: "MakeDepositForm",
+  name: "MakeDepositForm",  
+  computed: {
+    ...mapGetters(["softCap", "hardCap"]),
+  },
   data() {
     return {
       sendValue: null,

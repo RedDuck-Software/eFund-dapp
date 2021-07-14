@@ -8,7 +8,7 @@ import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
@@ -69,6 +69,9 @@ export default {
       const allowedTokensAddresses = await this.fundContract.getAllowedTokensAddresses();
       const boughtTokensAddresses = await this.fundContract.getBoughtTokensAddresses();
 
+      const hardCap = parseFloat(utils.formatUnits(await this.fundContract.hardCap()));
+      const softCap = parseFloat(utils.formatUnits(await this.fundContract.softCap()));
+
       const allowedTokens = [];
       const boughtTokens = [];
 
@@ -91,6 +94,8 @@ export default {
       this.updateFundStatus(fundStatus);
       this.updateFundStartTimestamp(fundStartTimestamp);
       this.updateIsDepositsWithdrawed(isDepositsWithdrawed);
+      this.updateHardCap(hardCap);
+      this.updateSoftCap(softCap);
 
       this.isLoaded = true;
     },
@@ -126,6 +131,8 @@ export default {
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
       "updateIsDepositsWithdrawed",
+      "updateHardCap",
+      "updateSoftCap",
     ]),
   },
 };
