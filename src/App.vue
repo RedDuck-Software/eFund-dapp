@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isLoaded" id="app" class="min-vh-100 bg-secondary">
-    <Header />
-    <div class="main container text-gray">
+  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary row ">
+    <Header class="col-lg-1" />
+    <div class="main container-fluid text-gray col-lg-11">
       <router-view></router-view>
     </div>
   </div>
@@ -15,13 +15,13 @@ import "./App.scss";
 
 export default {
   name: "App",
+  components: {
+    Header,
+  },
   data() {
     return {
       isLoaded: false,
     };
-  },
-  components: {
-    Header,
   },
   computed: {
     ...mapGetters["eFundNetworkSettings"],
@@ -43,6 +43,10 @@ export default {
 </script>
 
 <style lang="scss">
+.app {
+  //displayl: flex;
+}
+
 .main {
   padding-top: 120px;
   padding-bottom: 80px;

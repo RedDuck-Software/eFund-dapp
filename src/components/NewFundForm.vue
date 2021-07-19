@@ -40,16 +40,15 @@
         </div>
       </div>
       <vue-range-slider
-        class="mt-5"
         v-if="capValues != null"
-        :step="rangeStep"
         v-model="capValues"
+        class="mt-5"
+        :step="rangeStep"
         :max="hardCap"
         :min="softCap"
         :value="capValues"
       ></vue-range-slider>
     </div>
-    <FundList :shouldRedrawList="false" />
   </div>
 </template>
 
@@ -58,7 +57,6 @@ import { mapGetters } from "vuex";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import FundList from "./FundList";
 import "vue-range-component/dist/vue-range-slider.css";
 import VueRangeSlider from "vue-range-component";
 
@@ -68,7 +66,7 @@ import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
   name: "NewFundForm",
-  components: { FundList, VueTagsInput, VueRangeSlider },
+  components: { VueTagsInput, VueRangeSlider },
   data() {
     return {
       etherValue: 0.1,
@@ -85,7 +83,7 @@ export default {
       validation: [
         {
           classes: "min-length",
-          rule: (address) => address.text.length < 8,
+          rule: address => address.text.length < 8,
         },
       ],
     };
@@ -141,7 +139,6 @@ export default {
         console.log("txHash: ", txHash);
 
         this.shouldRedrawList = true;
-
       } catch (ex) {
         alert("Create fund exception:", ex);
         console.error(ex);
@@ -151,7 +148,7 @@ export default {
     },
     newTokenAdded(newTokens) {
       this.allowedTokens = newTokens;
-      this.allowedTokens = this.allowedTokens.map((token) => {
+      this.allowedTokens = this.allowedTokens.map(token => {
         if (token.text) {
           return token.text;
         }
