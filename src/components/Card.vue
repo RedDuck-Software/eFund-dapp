@@ -4,8 +4,8 @@
       <div class="row">
         <img class="card-img-top col-lg-2" src="#" alt="test fund" />
         <div class="col-lg-5">
-          <h5 class="card-title">{{ title }}</h5>
-          <h6>by {{ author }}</h6>
+          <h2 class="card-title">{{ title }}</h2>
+          <h5>by {{ author }}</h5>
         </div>
         <div class="col-lg-3">55 days to end</div>
       </div>

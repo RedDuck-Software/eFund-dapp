@@ -27,6 +27,7 @@
     "dotenv": "^10.0.0",
     "ethers": "^5.3.1",
     "file-loader": "^6.2.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "portal-vue": "^2.1.7",
     "url-loader": "^4.1.1",
