@@ -14,6 +14,10 @@ import VueLoading from "vuejs-loading-plugin";
 import VueParticles from "vue-particles";
 Vue.use(VueParticles);
 
+import VueFormWizard from "vue-form-wizard";
+import "vue-form-wizard/dist/vue-form-wizard.min.css";
+Vue.use(VueFormWizard);
+
 Vue.use(VueSocialSharing);
 Vue.use(PortalVue);
 Vue.use(VueLoading, { dark: true });

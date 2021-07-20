@@ -26,9 +26,9 @@
         <div class="desc-item">Fee: 2%</div>
       </div>
       <div class="d-flex">
-        <button class="btn btnn-primary btn-small primary">Rules</button>
-        <button class="small dark">About</button>
-        <button class="small primary">Invest</button>
+        <button class="btn btn-dark">Rules</button>
+        <button class="btn  btn-dark">About</button>
+        <button class="btn btn-primary">Invest</button>
       </div>
     </div>
   </div>

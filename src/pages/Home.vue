@@ -15,6 +15,11 @@
           <Card title="Test Fund1" author="Ben Johnson3" />
         </div>
       </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <Card title="Test Fund12" author="Ben Johnson34" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
