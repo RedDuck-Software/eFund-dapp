@@ -82,19 +82,18 @@ export default {
       capValues: null,
       rangeStep: 0.1,
       shouldRedrawList: false,
-      profitFee :0, 
-      minProfitFee: 0, 
+      profitFee: 0,
+      minProfitFee: 0,
       maxProfitFee: 0,
 
-      minTimeUntilFundStart: 0, 
+      minTimeUntilFundStart: 0,
       minMinimumTimeTillFundStart: 0,
-      maxMinimumTimeTillFundStart: 0, 
+      maxMinimumTimeTillFundStart: 0,
 
       fundInfo: {
         name: "",
         description: "",
         imageUrl: "",
-        
       },
       validation: [
         {
@@ -117,11 +116,15 @@ export default {
     const hardCapMax = await this.factoryContract.hardCap();
     const softCapMin = await this.factoryContract.softCap();
 
-    this.minProfitFee =  await this.factoryContract.minimumProfitFee();
-    this.maxProfitFee =  await this.factoryContract.maximumProfitFee();
+    this.minProfitFee = await this.factoryContract.minimumProfitFee();
+    this.maxProfitFee = await this.factoryContract.maximumProfitFee();
 
-    this.minMinimumTimeTillFundStart = Math.floor(parseFloat(await this.factoryContract.minimumTimeUntillFundStart()) / this.dayDur);
-    this.maxMinimumTimeTillFundStart = Math.floor(parseFloat(await this.factoryContract.maximumTimeUntillFundStart()) / this.dayDur);
+    this.minMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.minimumTimeUntillFundStart()) / this.dayDur
+    );
+    this.maxMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.maximumTimeUntillFundStart()) / this.dayDur
+    );
 
     console.log("minMinimumTimeTillFundStart", this.minMinimumTimeTillFundStart);
     console.log("maxMinimumTimeTillFundStart", this.maxMinimumTimeTillFundStart);
@@ -153,16 +156,16 @@ export default {
           v2: utils.parseEther(this.capValues[1].toString()),
         });
 
-        const tx = await this.factoryContract.createFund( 
-            PANCACKE_V2_ROUTER,
-            this.month,
-            utils.parseEther(this.capValues[0].toString()),
-            utils.parseEther(this.capValues[1].toString()),
-            this.profitFee,
-            utils.parseEther('0.0000001'), //this.minimalDepositAmount, 
-            this.minTimeUntilFundStart * this.dayDur,
-            this.allowedTokens,
-            overrides
+        const tx = await this.factoryContract.createFund(
+          PANCACKE_V2_ROUTER,
+          this.month,
+          utils.parseEther(this.capValues[0].toString()),
+          utils.parseEther(this.capValues[1].toString()),
+          this.profitFee,
+          utils.parseEther("0.0000001"), //this.minimalDepositAmount,
+          this.minTimeUntilFundStart * this.dayDur,
+          this.allowedTokens,
+          overrides
         );
 
         const txHash = await tx.wait();

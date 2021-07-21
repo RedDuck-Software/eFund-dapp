@@ -36,16 +36,29 @@
       Manager: <b class="truncate"> {{ fundContractManager }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Min deposit amount: <b class="truncate"> {{ softCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+      Hard Cap: <b class="truncate"> {{ softCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Max deposit amount: <b class="truncate"> {{ hardCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+      Soft Cap: <b class="truncate"> {{ hardCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Minimal deposit amount: <b class="truncate"> {{ minDepositAmount + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+    </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Profit fee: <b class="truncate"> {{ profitFee + `%` }}</b>
+    </li>
+    
     <li
       v-if="fundStartTimestamp != null && fundContractStatus !== 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
     >
       <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
+    </li>
+    <li 
+      v-if="fundContractStatus === 'Opened'"
+      class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
+    >
+      <span>Fund can be started in:</span> <b class="truncate"> {{ formatDuration(fundCanBeStartedAt) }}</b>
     </li>
 
     <li
@@ -118,6 +131,9 @@ export default {
       "fundBalance",
       "hardCap",
       "softCap",
+      "minDepositAmount",
+      "fundCanBeStartedAt",
+      "profitFee",
     ]),
   },
   async mounted() {

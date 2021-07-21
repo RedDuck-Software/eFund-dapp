@@ -1,6 +1,6 @@
 import { ethers, utils } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import { FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, SWAP_PAIR_ABI, ZERO_ADDRESS } from "../constants";
+import { fundStatuses, FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, SWAP_PAIR_ABI, ZERO_ADDRESS } from "../constants";
 
 
 function arrayInsertBefore(arr, index, value) {
@@ -11,9 +11,12 @@ export class FundService {
 
   currentProvider;
 
+  platformContract;
+
   constructor(fundPlatfromAddress: string, provider) {
     this.fundPlatfromAddress = fundPlatfromAddress;
     this.currentProvider = provider;
+    this.platformContract = new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
   }
 
   getCurrentProvider() {
@@ -21,7 +24,7 @@ export class FundService {
   }
 
   getFundPlatformContractInstance() {
-    return new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
+    return this.platformContract;// new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
   }
 
   getFundContractInstance(address) {
@@ -40,7 +43,7 @@ export class FundService {
     return new ethers.Contract(address, SWAP_FACTORY_ABI, this.currentProvider.getSigner());
   }
 
-  getSwapPairContractInstance(address) {
+  getSwapPairContractInstance(address: string) {
     return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
   }
 
@@ -48,6 +51,27 @@ export class FundService {
     const router = this.getSwapRouterContractInstance(swapRouterAddress);
 
     return await router.factory();
+  }
+
+  async getFundDetails(fundAddress: string) {
+    // const platformContract = this.platformContract;
+    const fundContract = this.getFundContractInstance(fundAddress);
+
+    const [fundStatus, hardCap, softCap, managerCollateral] =
+      await Promise.all([
+        fundContract.fundStatus(),
+        fundContract.hardCap(),
+        fundContract.softCap(),
+        fundContract.managerCollateral(),
+      ]);
+
+    return {
+      address: fundContract.address,
+      status: fundStatuses[fundStatus].value,
+      hardCap: hardCap,
+      softCap: softCap,
+      collateral: managerCollateral,
+    };
   }
 
   // erc20 balance of

@@ -29,14 +29,16 @@ export default {
     ...mapGetters(["eFundNetworkSettings"]),
   },
   async mounted() {
-    await this.loadContractInfo();
+    asyncLoading(this.loadContractInfo()).catch((ex) => {
+      console.error(ex);
+    });
   },
   methods: {
     async loadContractInfo() {
       this.fundContractAddress = this.$route.params.address;
 
       console.log("fund address", this.fundContractAddress);
-      console.log("network settings",this.eFundNetworkSettings);
+      console.log("network settings", this.eFundNetworkSettings);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
       this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
@@ -68,6 +70,10 @@ export default {
 
       const hardCap = parseFloat(utils.formatUnits(await this.fundContract.hardCap()));
       const softCap = parseFloat(utils.formatUnits(await this.fundContract.softCap()));
+      
+      const minDepositAmount  = parseFloat(utils.formatUnits(await this.fundContract.minimalDepositAmount()));
+      const fundCanBeStartedAt  = parseFloat(await this.fundContract.fundCanBeStartedMinimumAt());
+      const profitFee  = parseFloat(await this.fundContract.profitFee());
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -93,6 +99,9 @@ export default {
       this.updateIsDepositsWithdrawed(isDepositsWithdrawed);
       this.updateHardCap(hardCap);
       this.updateSoftCap(softCap);
+      this.updateMinDepositAmount(minDepositAmount);
+      this.updateFundCanBeStartedAt(fundCanBeStartedAt);
+      this.updateProfitFee(profitFee);
 
       this.isLoaded = true;
     },
@@ -130,6 +139,9 @@ export default {
       "updateIsDepositsWithdrawed",
       "updateHardCap",
       "updateSoftCap",
+      "updateMinDepositAmount",
+      "updateFundCanBeStartedAt",
+      "updateProfitFee",
     ]),
   },
 };

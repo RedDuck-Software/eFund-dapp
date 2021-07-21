@@ -9,6 +9,13 @@
           :to="{ name: 'Fund', params: { address: fund.address } }"
           >{{ fund.address }}</router-link
         >
+
+         <ul>
+          <li> HardCap: {{ fund.hardCap }} </li>
+          <li> SoftCap: {{fund.softCap}} </li>
+          <li> Manager collateral: {{fund.collateral }}</li>
+          <li> Fund Status collateral: {{ fund.status}} </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -53,19 +60,20 @@ export default {
   },
   methods: {
     async fetchTopFunds() {
-      const topFundsCountToFetch = 5
+      const topFundsCountToFetch = 5;
 
-      const relevantFunds = await this.readOnlyPlatformContract.getTopRelevantFunds(BigNumber.from(topFundsCountToFetch));
+      const relevantFunds = await this.readOnlyPlatformContract.getTopRelevantFunds(
+        BigNumber.from(topFundsCountToFetch)
+      );
 
-      console.log(relevantFunds); 
+      console.log(relevantFunds);
 
       this.funds = await Promise.all(
         relevantFunds
           .slice()
           .reverse()
           .map(async (addr) => {
-            const contract = await this.fundService.getFundContractInstance(addr);
-            return await this.getFundInfo(contract);
+            return await this.fundService.getFundDetails(addr);
           })
       );
     },
@@ -79,28 +87,13 @@ export default {
             .slice()
             .reverse()
             .map(async (addr) => {
-              const contract = await this.fundService.getFundContractInstance(addr);
-              return await this.getFundInfo(contract);
+              return await this.fundService.getFundDetails(addr);
             })
         );
         this.fetchCount += 1;
       } catch (err) {
         console.log("Error: ", err);
       }
-    },
-    async getFundInfo(fundContract) {
-      const fundStatus = await fundContract.fundStatus();
-      const hardCap = await fundContract.hardCap();
-      const softCap = await fundContract.softCap();
-      const managerCollateral = await fundContract.managerCollateral();
-
-      return {
-        address: fundContract.address,
-        status: fundStatus,
-        hardCap: hardCap,
-        softCap: softCap,
-        collateral: managerCollateral,
-      };
     },
     ...mapMutations(["updateFunds"]),
   },

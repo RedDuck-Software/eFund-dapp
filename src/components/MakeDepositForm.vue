@@ -9,8 +9,8 @@
               <input
                 v-model="sendValue"
                 type="number"
-                :min="softCap"
-                :max="hardCap"
+                :min="minDepositAmount"
+                :max="maxDepoistAmount"
                 :step="0.1"
                 class="form-control bg-dark border-0"
                 placeholder="Deposit to fund"
@@ -27,18 +27,26 @@
 </template>
 
 <script>
+import { ethers } from "ethers";
 
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
+import { walletProvider } from "../services/ether";
 
 export default {
-  name: "MakeDepositForm",  
+  name: "MakeDepositForm",
   computed: {
-    ...mapGetters(["softCap", "hardCap"]),
+    ...mapGetters(["softCap", "hardCap", "minDepositAmount", "fundContractAddress"]),
   },
   data() {
     return {
       sendValue: null,
+      maxDepoistAmount: 0,
     };
+  },
+  async mounted() {
+    this.maxDepoistAmount = 
+    this.hardCap - 
+      parseFloat(ethers.utils.formatEther(await walletProvider.currentProvider.getBalance(this.fundContractAddress)));
   },
   methods: {
     makeDeposit() {

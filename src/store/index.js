@@ -7,7 +7,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    walletProviderType: null, 
+    walletProviderType: null,
     signerAddress: null,
     fundContractAddress: null,
     fundContractStatus: null,
@@ -21,6 +21,10 @@ const store = new Vuex.Store({
     fundBalance: null,
     hardCap: null,
     softCap: null,
+    funds: null,
+    minDepositAmount: null,
+    fundCanBeStartedAt: null,
+    profitFee: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -68,25 +72,34 @@ const store = new Vuex.Store({
     updateFunds(state, funds) {
       state.funds = funds;
     },
+    updateMinDepositAmount(state, amount) {
+      state.minDepositAmount = amount;
+    },
+    updateFundCanBeStartedAt(state, fundCanBeStartedAt) {
+      state.fundCanBeStartedAt = fundCanBeStartedAt;
+    },
+    updateProfitFee(state, fee) {
+      state.profitFee = fee;
+    },
     clearFundInfo(state) {
-      state.fundContractAddress= null;
-      state.fundContractStatus= null;
-      state.fundContractManager= null;
-      state.fundContractIsManager= null;
-      state.boughtTokensAddresses= [];
-      state.allowedTokensAddresses= [];
-      state.fundStartTimestamp= null;
-      state.isDepositsWithdrawed= false;
-      state.fundBalance= null;
-      state.hardCap= null;
+      state.fundContractAddress = null;
+      state.fundContractStatus = null;
+      state.fundContractManager = null;
+      state.fundContractIsManager = null;
+      state.boughtTokensAddresses = [];
+      state.allowedTokensAddresses = [];
+      state.fundStartTimestamp = null;
+      state.isDepositsWithdrawed = false;
+      state.fundBalance = null;
+      state.hardCap = null;
       state.softCap = null;
     },
     logout(state) {
       store.commit('clearFundInfo');
-      
+
       state.walletProviderType = null;
-      state.signerAddress= null;
-      state.eFundNetworkSettings= null;
+      state.signerAddress = null;
+      state.eFundNetworkSettings = null;
       state.funds = null;
     },
   },
@@ -104,6 +117,10 @@ const store = new Vuex.Store({
     softCap: state => state.softCap,
     hardCap: state => state.hardCap,
     fundBalance: state => state.fundBalance,
+    funds: state => state.funds,
+    minDepositAmount: state => state.minDepositAmount,
+    fundCanBeStartedAt: state => state.fundCanBeStartedAt,
+    profitFee: state => state.profitFee,
   },
   actions: {
     // async updateBoughtTokensAddresses(context, tokens) {
