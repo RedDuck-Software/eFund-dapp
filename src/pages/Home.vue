@@ -52,12 +52,12 @@ export default {
       window.location.reload();
     });
 
-    walletProvider.currentProvider.provider.on("chainIdChanged", ([newChainId]) => {
-      console.log("new chainId is :", newChainId);
-
+    walletProvider.currentProvider.provider.on("chainChanged", (newChainId) => {
+      alert("new chainId is :", newChainId.toString());
+      
       this.clearFundInfo();
 
-      if(!newChainId || !networkSettings[newChainId]) { 
+      if(!networkSettings[newChainId]) { 
         this.logoutAndRedirectToConnectWalletPage();
         return;
       }

@@ -45,6 +45,8 @@ export const startApp = async (): Promise<string[] | void> => {
   }
 };
 
+
+
 // window.ethereum.on("accountsChanged", ([newAddress]) => {
 //   vm.$store.commit("updateSignerAddress", newAddress ? newAddress : "");
 // });

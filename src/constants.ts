@@ -4,8 +4,8 @@ export const EFUND_TOKEN_BSC = "0xaFFBe0A63337e0B18b44eF835aA649f4baA07dA2";
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
 
-export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x1291Be112d480055DaFd8a610b7d1e203891C274";
-export const EFUND_TOKEN_LOCALDEV = "0x809d550fca64d94Bd9F66E60752A544199cfAC3D";
+export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0";
+export const EFUND_TOKEN_LOCALDEV = "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1";
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
@@ -43,7 +43,7 @@ export const eFundNetworkSettings =
 {
   97: { // BSC Testnet
     chainId : 97,
-    networkName: "BSCT",
+    networkName: "BSC Testnet",
     cryptoSign: "BNB",
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -65,7 +65,7 @@ export const eFundNetworkSettings =
   },
   31337: { // BSC Testnet
     chainId : 31337,
-    networkName: "ETH_HARDHAT",
+    networkName: "ETH HardHat",
     cryptoSign: "ETH",
     wrappedCryptoAddress: WETH_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
