@@ -11,9 +11,12 @@
           <li> HardCap: {{ fund.hardCap }} </li>
           <li> SoftCap: {{fund.softCap}} </li>
           <li> Manager collateral: {{fund.collateral }}</li>
-          <li> Fund Status: {{ fund.status}} </li>
+          <li> Fund Status collateral: {{ fund.status}} </li>
         </ul>
       </div>
+
+      
+
     </div>
   </div>
 </template>   
