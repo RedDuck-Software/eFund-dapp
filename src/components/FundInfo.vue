@@ -30,7 +30,7 @@
       Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li v-if="fundDuration != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Duration: <b>{{ formatDuration(fundDuration) }} </b>
+      Duration: <b>{{ fundDuration }} months </b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager: <b class="truncate"> {{ fundContractManager }}</b>
@@ -130,6 +130,7 @@ export default {
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
+    // this.fundInfo = await this.fundContract.hedgeFundInfo();
     this.fundEndTime = await this.fundContract.getEndTime();
 
     await this.updateInfo();
@@ -141,7 +142,7 @@ export default {
     async updateInfo() {
       await this.updateBalance();
 
-      this.fundDuration = await this.fundContract.fundDuration();
+      this.fundDuration = await this.fundContract.fundDurationMonths();
     },
     async setFundStatusActive() {
       const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
@@ -178,7 +179,7 @@ export default {
     },
 
     async updateBalance() {
-      const balance = utils.formatEther(await this.fundContract.getCurrentBalanceInWei());
+      const balance = utils.formatEther( await currentProvider.getBalance(this.fundContract.address));
       this.updateFundBalance(balance);
       console.log("fund balance is: ", balance);
     },

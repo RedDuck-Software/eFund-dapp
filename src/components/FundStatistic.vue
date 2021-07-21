@@ -109,7 +109,7 @@ export default {
       }
     },
     async getBalance() {
-      const curBalance = await this.fundContract.getCurrentBalanceInWei();
+      const curBalance = await currentProvider.getBalance(this.fundContract.address);
       return parseFloat(ethers.utils.formatEther(curBalance));
     },
   },

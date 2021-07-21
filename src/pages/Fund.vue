@@ -26,14 +26,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters["eFundNetworkSettings"],
+    ...mapGetters(["eFundNetworkSettings"]),
   },
-  mounted() {
-    asyncLoading(this.loadContractInfo()).catch((ex) => {
-      console.error(ex);
-    });
+  async mounted() {
+    await this.loadContractInfo();
   },
-
   methods: {
     async loadContractInfo() {
       this.fundContractAddress = this.$route.params.address;
