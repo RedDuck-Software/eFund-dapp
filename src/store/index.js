@@ -7,12 +7,13 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    walletProviderType: null, 
     signerAddress: null,
     fundContractAddress: null,
     fundContractStatus: null,
     fundContractManager: null,
     fundContractIsManager: null,
-    eFundNetworkSettings: eFundNetworkSettings[97],
+    eFundNetworkSettings: null,
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
     fundStartTimestamp: null,
@@ -39,7 +40,6 @@ const store = new Vuex.Store({
     },
     updateEFundSettings(state, settings) {
       state.eFundNetworkSettings = settings;
-      // console.log(JSON.stringify(state.eFundNetworkSettings));
     },
     updateBoughtTokensAddresses(state, tokens) {
       state.boughtTokensAddresses = tokens;
@@ -65,10 +65,29 @@ const store = new Vuex.Store({
     updateHardCap(state, hardCap) {
       state.hardCap = hardCap;
     },
-    logout: state => {
-      state.signerAddress = null;
+    updateFunds(state, funds) {
+      state.funds = funds;
+    },
+    clearFundInfo(state) {
+      state.fundContractAddress= null;
+      state.fundContractStatus= null;
+      state.fundContractManager= null;
+      state.fundContractIsManager= null;
+      state.boughtTokensAddresses= [];
+      state.allowedTokensAddresses= [];
+      state.fundStartTimestamp= null;
+      state.isDepositsWithdrawed= false;
+      state.fundBalance= null;
+      state.hardCap= null;
+      state.softCap = null;
+    },
+    logout(state) {
+      store.commit('clearFundInfo');
+      
       state.walletProviderType = null;
-      state.signer = null;
+      state.signerAddress= null;
+      state.eFundNetworkSettings= null;
+      state.funds = null;
     },
   },
   getters: {

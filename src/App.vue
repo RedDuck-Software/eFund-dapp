@@ -12,6 +12,8 @@ import Header from "./components/Header";
 import { mapGetters, mapMutations } from "vuex";
 import { eFundNetworkSettings as networkSettings } from "./constants";
 import "./App.scss";
+import router from "./routes";
+import  { isMetaMaskInstalled, currentProvider }  from "./services/ether";
 
 export default {
   name: "App",
@@ -26,18 +28,8 @@ export default {
   computed: {
     ...mapGetters["eFundNetworkSettings"],
   },
-
   async mounted() {
-    if (this.eFundNetworkSettings == undefined) {
-      console.log(JSON.stringify(networkSettings[97]));
-      this.updateEFundSettings(networkSettings[97]);
-    }
-    console.log("network settings: ", this.eFundNetworkSettings);
-
     this.isLoaded = true;
-  },
-  methods: {
-    ...mapMutations(["updateEFundSettings"]),
   },
 };
 </script>

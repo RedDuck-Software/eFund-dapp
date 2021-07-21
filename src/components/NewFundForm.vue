@@ -71,7 +71,7 @@ export default {
     return {
       etherValue: 0.1,
       month: 1,
-      monthList: [1, 3, 6],
+      monthList: [1, 2, 3, 6],
       factoryContract: null,
       token: "",
       softCap: null,
@@ -92,7 +92,7 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
   async mounted() {
-    console.log("eFund platform", this.eFundNetworkSettings.eFundPlatformAddress);
+    console.log("eFund network settings: ", JSON.stringify(this.eFundNetworkSettings));
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
     this.factoryContract = this.fundService.getFundPlatformContractInstance();

@@ -33,9 +33,51 @@ export default {
   name: "Home",
   components: { Card, ConnectWallet },
   computed: {
-    ...mapGetters(["signerAddress"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
-  mounted() {},
+  async mounted() {
+    if ((this.eFundNetworkSettings == null || this.eFundNetworkSettings == undefined) ||
+      !isMetaMaskInstalled() ||
+      (networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined) || 
+      ((await walletProvider.currentProvider.getNetwork()).chainId != this.eFundNetworkSettings.chainId)
+    ) {
+      this.logoutAndRedirectToConnectWalletPage()
+      return;
+    }
+    
+    walletProvider.currentProvider.provider.on("accountsChanged", ([newAddres]) => {
+      console.log("new address is :", newAddres);
+      this.clearFundInfo();
+      this.updateSignerAddress(newAddres);
+      window.location.reload();
+    });
+
+    walletProvider.currentProvider.provider.on("chainIdChanged", ([newChainId]) => {
+      console.log("new chainId is :", newChainId);
+
+      this.clearFundInfo();
+
+      if(!newChainId || !networkSettings[newChainId]) { 
+        this.logoutAndRedirectToConnectWalletPage();
+        return;
+      }
+
+      this.updateEFundSettings(networkSettings[newChainId]);
+
+      router.replace("/");
+    });
+
+    
+    this.isLoaded = true;
+    this.$forceUpdate(); 
+  },
+  methods:  {
+    logoutAndRedirectToConnectWalletPage() { 
+      this.logout();
+      router.replace('connectWallet');
+    },
+    ...mapMutations(["logout", "clearFundInfo", "updateSignerAddress", "updateEFundSettings"]),
+  },
 };
 </script>
 

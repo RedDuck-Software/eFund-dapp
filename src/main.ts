@@ -35,3 +35,6 @@ export const vm = new Vue({
   router,
   store,
 });
+
+// @ts-ignore: cannot assign vm to Event for some reasone
+window.Event = vm;

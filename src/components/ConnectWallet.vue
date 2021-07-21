@@ -8,15 +8,16 @@
     </div>
     <div>
       <p>Please connect to your wallet.</p>
-      <button type="button" :disabled="checkMetaMask()" class="btn btn-primary" @click="handleConnectWallet()">
+      <button type="button" :disabled="!checkMetaMask()" class="btn btn-primary" @click="handleConnectWallet()">
         Connect Wallet
       </button>
     </div>
+      <span v-if="!checkMetaMask()">Metamask is not installed</span>
   </div>
 </template>
 
 <script>
-import { getSigner, isMetaMaskInstalled } from "../services/ether";
+import { createWeb3Provider ,isMetaMaskInstalled, walletProvider} from "../services/ether";
 import { mapMutations } from "vuex";
 
 export default {
@@ -28,21 +29,30 @@ export default {
   },
   methods: {
     checkMetaMask() {
-      return !isMetaMaskInstalled();
+      return isMetaMaskInstalled();
     },
     async handleConnectWallet() {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       if (accounts[0]) {
-        const { address } = await getSigner();
-        this.updateSignerAddress(address);
+        walletProvider.currentProvider = createWeb3Provider(window.ethereum);
+
+        console.log(walletProvider.currentProvider);
+
+        const address  = await walletProvider.currentProvider.getSigner().getAddress();
+        console.log(address);
+
+        const { chainId } = await walletProvider.currentProvider.getNetwork();
+
+        console.log(chainId);
+
+        this.$emit('walletConnected',address, chainId );
       }
     },
-
-    ...mapMutations(["updateSignerAddress"]),
   },
 };
 </script>
 
 <style scoped></style>
+ 
