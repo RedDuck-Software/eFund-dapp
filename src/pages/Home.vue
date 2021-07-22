@@ -9,15 +9,15 @@
       <h3>Try to invest</h3>
       <div class="row">
         <div class="col-sm-4">
-          <Card title="Test Fund" author="Ben Johnson" />
+          <FundCard title="Test Fund" author="Ben Johnson" />
         </div>
         <div class="col-sm-4">
-          <Card title="Test Fund1" author="Ben Johnson3" />
+          <FundCard title="Test Fund1" author="Ben Johnson3" />
         </div>
       </div>
       <div class="row">
         <div class="col-sm-4">
-          <Card title="Test Fund12" author="Ben Johnson34" />
+          <FundCard title="Test Fund12" author="Ben Johnson34" />
         </div>
       </div>
     </div>
@@ -27,11 +27,11 @@
 <script>
 import { mapGetters } from "vuex";
 import ConnectWallet from "../components/ConnectWallet";
-import Card from "@/components/Card";
+import FundCard from "@/components/FundCard";
 
 export default {
   name: "Home",
-  components: { Card, ConnectWallet },
+  components: { FundCard, ConnectWallet },
   computed: {
     ...mapGetters(["signerAddress"]),
   },

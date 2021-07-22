@@ -20,7 +20,14 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        loader: "vue-svg-loader", // `vue-svg` for webpack 1.x
+        loader: "vue-svg-loader",
+      },
+      {
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
+        loader: "url-loader",
+        options: {
+          limit: 10000,
+        },
       },
     ],
   },

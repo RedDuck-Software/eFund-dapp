@@ -2,9 +2,15 @@ $theme-colors: (
   "primary": rgba(3, 166, 120, 1),
   "secondary": #E5E5E5,
   dark: rgb(22,21,34),
-  gray: rgb(127,127,127),
+  gray: rgba(155, 155, 155, 1),
   "gray-dark": rgb(32,34,49),
+  danger: rgba(210, 77, 87, 1),
+  light:rgba(240, 239, 248, 1)
+
+
 );
+
+$border-radius:19px;
 
 @import '~bootstrap/scss/bootstrap';
 
@@ -29,3 +35,20 @@ $theme-colors: (
   min-width: 0;
 }
 
+.text-black{
+  color: #000;
+}
+
+.bg-lightest{
+  background-color: rgba(252, 251, 254, 1);
+
+}
+
+.bg-light-gray{
+  background-color: rgba(244, 244, 244, 1);
+
+}
+
+.flex-auto{
+  flex: 1 1 auto;
+}

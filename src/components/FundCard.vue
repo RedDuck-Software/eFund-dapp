@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  name: "Card",
+  name: "FundCard",
   props: ["title", "author"],
   data() {
     return {};

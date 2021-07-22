@@ -43,6 +43,19 @@
               All
             </router-link>
           </li>
+          <li class="nav-item mx-0 mx-lg-1">
+            <router-link
+              class="nav-link py-3 px-0 px-lg-3 rounded text-white"
+              :to="{
+                name: 'Fund',
+                params: {
+                  address: '0x85c15a561a692be49a0fd3b9e9b1bf8370b33332',
+                },
+              }"
+            >
+              Fund1
+            </router-link>
+          </li>
           <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item mx-0 mx-lg-1">
             <router-link
               class="nav-link py-3 px-0 px-lg-3 rounded text-white"

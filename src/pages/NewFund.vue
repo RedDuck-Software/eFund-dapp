@@ -233,8 +233,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../App";
-
 .check-filled {
   border-radius: 50%;
   width: 87px;

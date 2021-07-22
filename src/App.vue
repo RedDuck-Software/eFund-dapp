@@ -43,8 +43,15 @@ export default {
 </script>
 
 <style lang="scss">
-.app {
-  //displayl: flex;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap");
+
+html,
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+#app {
+  font-family: "Montserrat", sans-serif;
 }
 
 .main {
