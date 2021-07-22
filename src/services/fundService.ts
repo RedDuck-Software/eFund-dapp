@@ -1,7 +1,15 @@
 import { ethers, utils } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import { fundStatuses, FUND_ABI, FUND_PLATFORM_ABI, ERC20_ABI, SWAP_ROUTER_ABI, SWAP_FACTORY_ABI, SWAP_PAIR_ABI, ZERO_ADDRESS } from "../constants";
-
+import {
+  fundStatuses,
+  FUND_ABI,
+  FUND_PLATFORM_ABI,
+  ERC20_ABI,
+  SWAP_ROUTER_ABI,
+  SWAP_FACTORY_ABI,
+  SWAP_PAIR_ABI,
+  ZERO_ADDRESS,
+} from "../constants";
 
 function arrayInsertBefore(arr, index, value) {
   return arr.slice(index, 0, value);
@@ -16,7 +24,11 @@ export class FundService {
   constructor(fundPlatfromAddress: string, provider) {
     this.fundPlatfromAddress = fundPlatfromAddress;
     this.currentProvider = provider;
-    this.platformContract = new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
+    this.platformContract = new ethers.Contract(
+      this.fundPlatfromAddress,
+      FUND_PLATFORM_ABI,
+      this.currentProvider.getSigner()
+    );
   }
 
   getCurrentProvider() {
@@ -24,7 +36,7 @@ export class FundService {
   }
 
   getFundPlatformContractInstance() {
-    return this.platformContract;// new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
+    return this.platformContract; // new ethers.Contract(this.fundPlatfromAddress, FUND_PLATFORM_ABI, this.currentProvider.getSigner());
   }
 
   getFundContractInstance(address) {
@@ -53,24 +65,104 @@ export class FundService {
     return await router.factory();
   }
 
-  async getFundDetails(fundAddress: string) {
-    // const platformContract = this.platformContract;
-    const fundContract = this.getFundContractInstance(fundAddress);
+  async getFundSwapsHistory(address) {
+    const fundContract = this.getFundContractInstance(address);
 
-    const [fundStatus, hardCap, softCap, managerCollateral] =
-      await Promise.all([
-        fundContract.fundStatus(),
-        fundContract.hardCap(),
-        fundContract.softCap(),
-        fundContract.managerCollateral(),
-      ]);
+    return await fundContract.getAllSwaps();
+  }
+
+  async getFundDetailedInfo(address) {
+    // const platformContract = this.platformContract;
+    const fundContract = this.getFundContractInstance(address);
+
+    // @ts-ignore: cannot assign vm to Event for some reasone
+    const signerAddress = await this.getCurrentProvider()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getSigner()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getAddress();
+
+    const [fundInfo, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
+      this.getFundDetails(address),
+      fundContract.getAllowedTokensAddresses(),
+      fundContract.getBoughtTokensAddresses(),
+    ]);
 
     return {
+      ...fundInfo,
+      isManager: fundInfo.managerAddress == signerAddress,
+      allowedTokensAddresses: allowedTokensAddresses,
+      boughtTokensAddresses: boughtTokensAddresses,
+    };
+  }
+
+  async getAllFunds() {
+    const data = (await this.platformContract.getAllFunds()).filter(f => f.toLowerCase() != ZERO_ADDRESS.toLowerCase());
+
+    console.log(data);
+
+    return await Promise.all(
+      data
+        .slice()
+        .reverse()
+        .map(async addr => {
+          return await this.getFundDetails(addr);
+        })
+    );
+  }
+
+  async getTopFunds(count) {
+    const data = await this.platformContract.getTopRelevantFunds(count);
+
+    return await Promise.all(
+      data
+        .slice()
+        .reverse()
+        .map(async addr => {
+          return await this.getFundDetails(addr);
+        })
+    );
+  }
+
+  async getFundDetails(fundAddress: string) {
+    const fundContract = this.getFundContractInstance(fundAddress);
+
+    // const [managerCollateral] = await Promise.all([fundContract.managerCollateral()]);
+
+    /* bool _isDepositsWithdrawed,
+            address _fundManager,
+            uint256 _fundStartTimestamp,
+            uint256 _minDepositAmount,
+            uint256 _fundCanBeStartedAt,
+            uint256 _profitFee,
+            FundStatus _fundStatus,
+            uint256 _currentBalance,
+            uint256 _managerCollateral,
+            uint256 _hardCap,
+            uint256 _softCap
+     
+     */
+
+    const info = await fundContract.getFundInfo();
+
+    console.log("fund info: ", info);
+
+    return {
+      isDepositsWithdrawed: info._isDepositsWithdrawed,
+      managerAddress: info._fundManager,
       address: fundContract.address,
-      status: fundStatuses[fundStatus].value,
-      hardCap: hardCap,
-      softCap: softCap,
-      collateral: managerCollateral,
+      fundStartTimestamp: info._fundStartTimestamp,
+      minDepositAmount: info._minDepositAmount,
+      fundCanBeStartedAt: info._fundCanBeStartedAt,
+      status: fundStatuses[info._fundStatus].value,
+      hardCap: parseFloat(utils.formatEther(info._hardCap)),
+      softCap: parseFloat(utils.formatEther(info._softCap)),
+      profitFee: info._profitFee,
+      collateral: info._managerCollateral,
+      balance: parseFloat(utils.formatEther(info._currentBalance)),
+      title: "Test fund",
+      author: "Ben Thomson",
+      imgUrl: "https://memepedia.ru/wp-content/uploads/2021/02/aboba-aboba-4.jpg",
     };
   }
 
@@ -86,7 +178,6 @@ export class FundService {
   }
 
   async findOptimalPathForSwap(tokenFrom, tokenTo, availableTokens, factoryAddress) {
-
     console.log("factory address: ", factoryAddress);
 
     const factory = this.getSwapFactoryContractInstance(factoryAddress);
@@ -104,8 +195,7 @@ export class FundService {
 
       curPath = arrayInsertBefore(path, curPath.length - 1, availableTokens[i]);
 
-      if (await this.isPathExists(curPath, factory))
-        return curPath;
+      if (await this.isPathExists(curPath, factory)) return curPath;
     }
 
     return null;

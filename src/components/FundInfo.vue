@@ -105,6 +105,7 @@ import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
 import { asyncLoading } from "vuejs-loading-plugin";
 import { utimesSync } from "fs";
+import {formatDuration } from '../services/helpers';
 
 export default {
   name: "FundInfo",
@@ -202,39 +203,7 @@ export default {
     updateStoreFundStatus(newStatus) {
       this.updateFundStatus(newStatus);
     },
-    formatDuration(durInSeconds) {
-      var r = {};
-
-      var s = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        minute: 60,
-        second: 1,
-      };
-
-      Object.keys(s).forEach(function (key) {
-        r[key] = Math.floor(durInSeconds / s[key]);
-        durInSeconds -= r[key] * s[key];
-      });
-
-      let emptyStringIfZeroVal = function (val, mod) {
-        return val == 0 ? "" : val.toString() + mod;
-      };
-
-      let eZ = emptyStringIfZeroVal;
-
-      return (
-        eZ(r.year, " years ") +
-        eZ(r.month, " months ") +
-        eZ(r.day, " days ") +
-        eZ(r.hour, " hours ") +
-        eZ(r.minute, " minutes ") +
-        eZ(r.second, " seconds ")
-      );
-    },
+    
 
     ...mapMutations([
       "updateFundAddress",

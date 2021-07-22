@@ -45,15 +45,21 @@ export default router;
 // let beforeEachExecuted = false;
 
 router.beforeEach(async (to, from, next) => {
-  console.log("to: ", to);
-  console.log("from: ", from);
+  console.log(from);
+
+  if (from.name == null) {
+    reSubscribeWalletEvents();
+  }
+
+  if (to.name == from.name) {
+    console.log("identical pathes");
+    return;
+  }
 
   if (to.name == "ConnectWalletPage") {
     next();
     return;
   }
-
-  console.log("beforeEach");
 
   if (
     (to.fullPath != from.fullPath,
@@ -66,8 +72,6 @@ router.beforeEach(async (to, from, next) => {
     store.commit("logout");
     next({ name: "ConnectWalletPage" });
   } else next();
-
-  reSubscribeWalletEvents();
 });
 
 export const reSubscribeWalletEvents = () => {

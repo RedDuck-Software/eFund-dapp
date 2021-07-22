@@ -56,7 +56,7 @@ export default {
 
     console.log(this.readOnlyPlatformContract);
 
-    await this.fetchAllFunds();
+    await this.fundService.getAllFunds();
   },
   methods: {
     async fetchTopFunds() {
@@ -77,24 +77,7 @@ export default {
           })
       );
     },
-    async fetchAllFunds() {
-      try {
-        const data = await this.readOnlyFactoryContract.getAllFunds();
-        console.log(data);
-
-        this.funds = await Promise.all(
-          data
-            .slice()
-            .reverse()
-            .map(async (addr) => {
-              return await this.fundService.getFundDetails(addr);
-            })
-        );
-        this.fetchCount += 1;
-      } catch (err) {
-        console.log("Error: ", err);
-      }
-    },
+    
     ...mapMutations(["updateFunds"]),
   },
 };
