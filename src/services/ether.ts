@@ -1,8 +1,4 @@
-import { ethers, providers, Contract } from "ethers";
-
-import EFundPlatform from "../artifacts/contracts/EFundPlatform.sol/EFundPlatform.json";
-import { vm } from "../main";
-
+import { providers } from "ethers";
 declare global {
   interface Window {
     ethereum: any;
@@ -17,10 +13,6 @@ export const walletProvider = {
 };
 
 export const currentProvider =  () => walletProvider.currentProvider;
-
-export const BNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-export const ABI = JSON.stringify(EFundPlatform.abi);
-export const CONTRACT_ADDRESS = "0x82Dea86f24dddEd0E0FA42e28c2Acc6429DD1Df8";
 
 export const createWeb3Provider = (wallet) => new providers.Web3Provider(wallet);
 
@@ -44,14 +36,3 @@ export const startApp = async (): Promise<string[] | void> => {
     return;
   }
 };
-
-
-
-// window.ethereum.on("accountsChanged", ([newAddress]) => {
-//   vm.$store.commit("updateSignerAddress", newAddress ? newAddress : "");
-// });
-
-// window.ethereum.on("chainIdChanged", async ([networkId]) => {
-//   const { address } = await getSigner();
-//   vm.$store.commit("updateSignerAddress", address ? address : "");
-// });

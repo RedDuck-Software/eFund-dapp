@@ -39,40 +39,7 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
   async mounted() {
-    if ((this.eFundNetworkSettings == null || this.eFundNetworkSettings == undefined) ||
-      !isMetaMaskInstalled() ||
-      (networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined) || 
-      ((await walletProvider.currentProvider.getNetwork()).chainId != this.eFundNetworkSettings.chainId)
-    ) {
-      this.logoutAndRedirectToConnectWalletPage()
-      return;
-    }
     
-    walletProvider.currentProvider.provider.on("accountsChanged", ([newAddres]) => {
-      console.log("new address is :", newAddres);
-      this.clearFundInfo();
-      this.updateSignerAddress(newAddres);
-      window.location.reload();
-    });
-
-    walletProvider.currentProvider.provider.on("chainChanged", (newChainId) => {
-      alert("new chainId is :", newChainId.toString());
-      
-      this.clearFundInfo();
-
-      if(!networkSettings[newChainId]) { 
-        this.logoutAndRedirectToConnectWalletPage();
-        return;
-      }
-
-      this.updateEFundSettings(networkSettings[newChainId]);
-
-      router.replace("/");
-    });
-
-    
-    this.isLoaded = true;
-    this.$forceUpdate(); 
   },
   methods:  {
     logoutAndRedirectToConnectWalletPage() { 
