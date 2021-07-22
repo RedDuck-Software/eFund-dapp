@@ -1,11 +1,14 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xf25056e27d74D811b08Beaa9B5686c78eEd6FE2d";
-export const EFUND_TOKEN_BSC = "0xaFFBe0A63337e0B18b44eF835aA649f4baA07dA2";
+export const FUND_PLATFROM_ADDRESS_BSC = "0x8AE35f04D8455fC184cb8d4Cb1603B86442D8BEE";
+export const EFUND_TOKEN_BSC = "0x234BedCDFD014d5627f74c487b4a336d55B78120";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
-export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
+export const EFUND_TOKEN_ETH = "";
+
+export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF";
+export const EFUND_TOKEN_LOCALDEV = "0x4826533B4897376654Bb4d4AD88B7faFD0C98528";
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-export const WETH_ADDRESS = "";
+export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -39,7 +42,8 @@ export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: 
 export const eFundNetworkSettings =
 {
   97: { // BSC Testnet
-    networkName: "BSCT",
+    chainId : 97,
+    networkName: "BSC Testnet",
     cryptoSign: "BNB",
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -56,6 +60,28 @@ export const eFundNetworkSettings =
       {
         name: "DAI",
         address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      },
+    ],
+  },
+  31337: { // BSC Testnet
+    chainId : 31337,
+    networkName: "ETH HardHat",
+    cryptoSign: "ETH",
+    wrappedCryptoAddress: WETH_ADDRESS,
+    eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
+    eFundTokenAddress: EFUND_TOKEN_LOCALDEV,
+    tokensAddresses: [
+      {
+        name: "USDT",
+        address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      },
+      {
+        name: "USDC",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      },
+      {
+        name: "BUSD",
+        address: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
       },
     ],
   },

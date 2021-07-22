@@ -80,8 +80,6 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "Header",
-
-  components: {},
   data() {
     return {
       scrollPosition: 0,
@@ -89,7 +87,19 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["signerAddress", "fundContractIsManager"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  destroyed() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  methods: {
+    handleScroll() {
+      this.scrollPosition = window.scrollY;
+      this.isSticky = this.scrollPosition >= 100;
+    },
   },
 };
 </script>

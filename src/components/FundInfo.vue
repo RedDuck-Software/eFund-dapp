@@ -30,22 +30,35 @@
       Balance: <b>{{ fundBalance + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li v-if="fundDuration != null" class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3">
-      Duration: <b>{{ formatDuration(fundDuration) }} </b>
+      Duration: <b>{{ fundDuration }} months </b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Manager: <b class="truncate"> {{ fundContractManager }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Min deposit amount: <b class="truncate"> {{ softCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+      Hard Cap: <b class="truncate"> {{ softCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
-      Max deposit amount: <b class="truncate"> {{ hardCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+      Soft Cap: <b class="truncate"> {{ hardCap + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
     </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Minimal deposit amount: <b class="truncate"> {{ minDepositAmount + ` ${eFundNetworkSettings.cryptoSign}` }}</b>
+    </li>
+    <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
+      Profit fee: <b class="truncate"> {{ profitFee + `%` }}</b>
+    </li>
+    
     <li
       v-if="fundStartTimestamp != null && fundContractStatus !== 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
     >
       <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
+    </li>
+    <li 
+      v-if="fundContractStatus === 'Opened'"
+      class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
+    >
+      <span>Fund can be started in:</span> <b class="truncate"> {{ formatDuration(fundCanBeStartedAt) }}</b>
     </li>
 
     <li
@@ -92,6 +105,7 @@ import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
 import { asyncLoading } from "vuejs-loading-plugin";
 import { utimesSync } from "fs";
+import {formatDuration } from '../services/helpers';
 
 export default {
   name: "FundInfo",
@@ -118,6 +132,9 @@ export default {
       "fundBalance",
       "hardCap",
       "softCap",
+      "minDepositAmount",
+      "fundCanBeStartedAt",
+      "profitFee",
     ]),
   },
   async mounted() {
@@ -126,10 +143,11 @@ export default {
 
     this.interval = setInterval(() => this.updateBalance(), 10000);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
+    // this.fundInfo = await this.fundContract.hedgeFundInfo();
     this.fundEndTime = await this.fundContract.getEndTime();
 
     await this.updateInfo();
@@ -141,7 +159,7 @@ export default {
     async updateInfo() {
       await this.updateBalance();
 
-      this.fundDuration = await this.fundContract.fundDuration();
+      this.fundDuration = await this.fundContract.fundDurationMonths();
     },
     async setFundStatusActive() {
       const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
@@ -178,46 +196,14 @@ export default {
     },
 
     async updateBalance() {
-      const balance = utils.formatEther(await this.fundContract.getCurrentBalanceInWei());
+      const balance = utils.formatEther( await currentProvider().getBalance(this.fundContract.address));
       this.updateFundBalance(balance);
       console.log("fund balance is: ", balance);
     },
     updateStoreFundStatus(newStatus) {
       this.updateFundStatus(newStatus);
     },
-    formatDuration(durInSeconds) {
-      var r = {};
-
-      var s = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        minute: 60,
-        second: 1,
-      };
-
-      Object.keys(s).forEach(function (key) {
-        r[key] = Math.floor(durInSeconds / s[key]);
-        durInSeconds -= r[key] * s[key];
-      });
-
-      let emptyStringIfZeroVal = function (val, mod) {
-        return val == 0 ? "" : val.toString() + mod;
-      };
-
-      let eZ = emptyStringIfZeroVal;
-
-      return (
-        eZ(r.year, " years ") +
-        eZ(r.month, " months ") +
-        eZ(r.day, " days ") +
-        eZ(r.hour, " hours ") +
-        eZ(r.minute, " minutes ") +
-        eZ(r.second, " seconds ")
-      );
-    },
+    
 
     ...mapMutations([
       "updateFundAddress",

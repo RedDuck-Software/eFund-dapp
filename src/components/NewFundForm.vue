@@ -66,12 +66,14 @@ import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
   name: "NewFundForm",
-  components: { VueTagsInput, VueRangeSlider },
+  components: { FundList, VueTagsInput, VueSimpleRangeSlider },
   data() {
     return {
+      dayDur: 60 * 60 * 24,
+      showCreateModal: false,
       etherValue: 0.1,
       month: 1,
-      monthList: [1, 3, 6],
+      monthList: [1, 2, 3, 6],
       factoryContract: null,
       token: "",
       softCap: null,
@@ -80,6 +82,19 @@ export default {
       capValues: null,
       rangeStep: 0.1,
       shouldRedrawList: false,
+      profitFee: 0,
+      minProfitFee: 0,
+      maxProfitFee: 0,
+
+      minTimeUntilFundStart: 0,
+      minMinimumTimeTillFundStart: 0,
+      maxMinimumTimeTillFundStart: 0,
+
+      fundInfo: {
+        name: "",
+        description: "",
+        imageUrl: "",
+      },
       validation: [
         {
           classes: "min-length",
@@ -92,9 +107,8 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
   async mounted() {
-    console.log("eFund platform", this.eFundNetworkSettings.eFundPlatformAddress);
-
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    console.log("eFund network settings: ", JSON.stringify(this.eFundNetworkSettings));
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
 
     console.log(this.factoryContract);
@@ -102,8 +116,24 @@ export default {
     const hardCapMax = await this.factoryContract.hardCap();
     const softCapMin = await this.factoryContract.softCap();
 
+    this.minProfitFee = await this.factoryContract.minimumProfitFee();
+    this.maxProfitFee = await this.factoryContract.maximumProfitFee();
+
+    this.minMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.minimumTimeUntillFundStart()) / this.dayDur
+    );
+    this.maxMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.maximumTimeUntillFundStart()) / this.dayDur
+    );
+
+    console.log("minMinimumTimeTillFundStart", this.minMinimumTimeTillFundStart);
+    console.log("maxMinimumTimeTillFundStart", this.maxMinimumTimeTillFundStart);
+
     console.log("cap max", hardCapMax);
     console.log("cap min", softCapMin);
+
+    console.log("min profit fee", this.minProfitFee);
+    console.log("max profit fee", this.maxProfitFee);
 
     this.hardCap = parseFloat(utils.formatEther(hardCapMax));
     this.softCap = parseFloat(utils.formatEther(softCapMin));
@@ -131,6 +161,9 @@ export default {
           this.month,
           utils.parseEther(this.capValues[0].toString()),
           utils.parseEther(this.capValues[1].toString()),
+          this.profitFee,
+          utils.parseEther("0.0000001"), //this.minimalDepositAmount,
+          this.minTimeUntilFundStart * this.dayDur,
           this.allowedTokens,
           overrides
         );

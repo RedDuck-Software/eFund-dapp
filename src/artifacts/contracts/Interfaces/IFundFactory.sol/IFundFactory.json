@@ -6,44 +6,66 @@
     {
       "inputs": [
         {
-          "internalType": "address payable",
-          "name": "_swapRouterContract",
-          "type": "address"
-        },
-        {
-          "internalType": "address payable",
-          "name": "_eFundToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address payable",
-          "name": "_fundOwner",
-          "type": "address"
-        },
-        {
-          "internalType": "address payable",
-          "name": "_eFundPlatform",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_fundDuration",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_softCap",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_hardCap",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address payable[]",
-          "name": "allowedTokens",
-          "type": "address[]"
+          "components": [
+            {
+              "internalType": "address payable",
+              "name": "swapRouterContract",
+              "type": "address"
+            },
+            {
+              "internalType": "address payable",
+              "name": "eFundTokenContract",
+              "type": "address"
+            },
+            {
+              "internalType": "address payable",
+              "name": "eFundPlatform",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "softCap",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hardCap",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "profitFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minimalDepostitAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minTimeUntilFundStart",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address payable",
+              "name": "managerAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "duration",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address payable[]",
+              "name": "allowedTokenAddresses",
+              "type": "address[]"
+            }
+          ],
+          "internalType": "struct HedgeFundInfo",
+          "name": "_hedgeFundInfo",
+          "type": "tuple"
         }
       ],
       "name": "createFund",
