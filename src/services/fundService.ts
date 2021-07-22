@@ -102,6 +102,21 @@ export class FundService {
     };
   }
 
+  async getAllManagerFunds() {
+    const data = (await this.platformContract.getAllFunds()).filter(f => f.toLowerCase() != ZERO_ADDRESS.toLowerCase());
+
+    console.log(data);
+
+    return await Promise.all(
+      data
+        .slice()
+        .reverse()
+        .map(async addr => {
+          return await this.getFundDetails(addr);
+        })
+    );
+  }
+
   async getAllFunds() {
     const data = (await this.platformContract.getAllFunds()).filter(f => f.toLowerCase() != ZERO_ADDRESS.toLowerCase());
 
@@ -154,7 +169,6 @@ export class FundService {
       author: "Ben Thomson",
       imgUrl: "real_url_here",
       // todo : fetch fund info from backend
-       
     };
   }
 

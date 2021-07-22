@@ -9,6 +9,7 @@ const store = new Vuex.Store({
   state: {
     walletProviderType: null,
     signerAddress: null,
+    userIsManager: null,
     fundContractAddress: null,
     fundContractStatus: null,
     fundContractManager: null,
@@ -78,6 +79,9 @@ const store = new Vuex.Store({
     updateFundCanBeStartedAt(state, fundCanBeStartedAt) {
       state.fundCanBeStartedAt = fundCanBeStartedAt;
     },
+    updateUserIsManager(state, val) {
+      state.userIsManager = val;
+    },
     updateProfitFee(state, fee) {
       state.profitFee = fee;
     },
@@ -95,7 +99,7 @@ const store = new Vuex.Store({
       state.softCap = null;
     },
     logout(state) {
-      store.commit('clearFundInfo');
+      store.commit("clearFundInfo");
 
       state.walletProviderType = null;
       state.signerAddress = null;
@@ -121,6 +125,7 @@ const store = new Vuex.Store({
     minDepositAmount: state => state.minDepositAmount,
     fundCanBeStartedAt: state => state.fundCanBeStartedAt,
     profitFee: state => state.profitFee,
+    userIsManager: state => state.userIsManager,
   },
   actions: {
     // async updateBoughtTokensAddresses(context, tokens) {

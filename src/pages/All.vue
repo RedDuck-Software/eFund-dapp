@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="col-md-8">
-        <div v-if="funds.length != 0">
+        <div v-if="filteredFunds.length != 0">
           <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
             <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
               <Card :fundInfo="fund" />
@@ -39,6 +39,9 @@ export default {
   data() {
     return {
       fundService: null,
+      currentStatusFilter: "Opened",
+      allFunds: [],
+      filteredFunds: [],
       funds: [
         // { title: "Test Fund", author: " Ben Thomson" },
         // { title: "Test Fund1", author: " Ben Thomson1" },
@@ -53,23 +56,30 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings"]),
+    ...mapGetters(["eFundNetworkSettings", "userIsManager", "signerAddress"]),
     fundsChunks() {
-      return _.chunk(Object.values(this.funds), 2);
+      return _.chunk(Object.values(this.filteredFunds), 2);
     },
   },
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    const allFunds = await this.fundService.getAllFunds();
+    await this.getAllFunds();
+    await this.getAllFilteredFunds();
+  },
 
-    console.log("all funds: ", allFunds);
+  async getAllMyFunds() {
+    this.funds = await this.fundService.managerFunds(this.signerAddress);
+  },
 
-    this.funds = allFunds.filter(async (f) => {
-      console.log("fundDeposits: ", await this.fundService.getFundDeposits(f.address));
-      console.log("fundSwapsHistory: ",await  this.fundService.getFundSwapsHistory(f.address));
-
-      f.status == "Opened";
-    });
+  methods: {
+    async getAllFunds() {
+      this.allFunds = await this.fundService.getAllFunds();
+    },
+    async getAllFilteredFunds() {
+      this.filteredFunds = this.allFunds.filter(async (f) => {
+        return f.status == this.currentStatusFilter;
+      });
+    },
   },
 };
 </script>
