@@ -71,6 +71,12 @@ export class FundService {
     return await fundContract.getAllSwaps();
   }
 
+  async getFundDeposits(address) {
+    const fundContract = this.getFundContractInstance(address);
+
+    return await fundContract.getAllDeposits();
+  }
+
   async getFundDetailedInfo(address) {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
@@ -127,22 +133,6 @@ export class FundService {
   async getFundDetails(fundAddress: string) {
     const fundContract = this.getFundContractInstance(fundAddress);
 
-    // const [managerCollateral] = await Promise.all([fundContract.managerCollateral()]);
-
-    /* bool _isDepositsWithdrawed,
-            address _fundManager,
-            uint256 _fundStartTimestamp,
-            uint256 _minDepositAmount,
-            uint256 _fundCanBeStartedAt,
-            uint256 _profitFee,
-            FundStatus _fundStatus,
-            uint256 _currentBalance,
-            uint256 _managerCollateral,
-            uint256 _hardCap,
-            uint256 _softCap
-     
-     */
-
     const info = await fundContract.getFundInfo();
 
     console.log("fund info: ", info);
@@ -158,11 +148,13 @@ export class FundService {
       hardCap: parseFloat(utils.formatEther(info._hardCap)),
       softCap: parseFloat(utils.formatEther(info._softCap)),
       profitFee: info._profitFee,
-      collateral: info._managerCollateral,
+      collateral: parseFloat(utils.formatEther(info._managerCollateral)),
       balance: parseFloat(utils.formatEther(info._currentBalance)),
       title: "Test fund",
       author: "Ben Thomson",
-      imgUrl: "https://memepedia.ru/wp-content/uploads/2021/02/aboba-aboba-4.jpg",
+      imgUrl: "real_url_here",
+      // todo : fetch fund info from backend
+       
     };
   }
 

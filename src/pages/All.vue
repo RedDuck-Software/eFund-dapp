@@ -65,8 +65,9 @@ export default {
     console.log("all funds: ", allFunds);
 
     this.funds = allFunds.filter(async (f) => {
-      const fundContract = this.fundService.getFundContractInstance(f);
-      await fundContract.getFundDetailedInfo(f);
+      console.log("fundDeposits: ", await this.fundService.getFundDeposits(f.address));
+      console.log("fundSwapsHistory: ",await  this.fundService.getFundSwapsHistory(f.address));
+
       f.status == "Opened";
     });
   },

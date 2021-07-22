@@ -2,12 +2,12 @@
   <div class="card">
     <div class="card-body">
       <div class="row">
-        <img class="card-img-top col-lg-2" src="#" alt="test fund" />
+        <img class="card-img-top col-lg-2" src="fundInfo.imgUrl" alt="test fund" />
         <div class="col-lg-5">
           <h2 class="card-title">{{ fundInfo.title }}</h2>
           <h5>by {{ fundInfo.author }}</h5>
         </div>
-        <div class="col-lg-3">Start in: {{ formatedDur }}</div>
+        <div class="col-lg-3">Can be started in: {{ formatedDur }}</div>
       </div>
       <div class="progress" style="height: 17px">
         <div
@@ -20,9 +20,9 @@
         ></div>
       </div>
       <div class="d-flex">
-        <div class="desc-item">Collateral: {{ fundInfo.collateral }},</div>
-        <div class="desc-item">Min: {{ fundInfo.softCap }},</div>
-        <div class="desc-item">Max: {{ fundInfo.hardCap }},</div>
+        <div class="desc-item">Manager collateral: {{ fundInfo.collateral }} {{eFundNetworkSettings.cryptoSign}},</div>
+        <div class="desc-item">Min: {{ fundInfo.softCap }} {{eFundNetworkSettings.cryptoSign}},</div>
+        <div class="desc-item">Max: {{ fundInfo.hardCap }} {{eFundNetworkSettings.cryptoSign}},</div>
         <div class="desc-item">Fee: {{ fundInfo.profitFee }}%</div>
       </div>
       <div class="d-flex">
@@ -37,10 +37,14 @@
 <script>
 import { BigNumber, utils } from "ethers";
 import { formatDuration } from "../services/helpers";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Card",
   props: ["fundInfo"],
+  computed: {
+    ...mapGetters(["eFundNetworkSettings"]),
+  },
   data() {
     return {
       proggressPercentage: "",
@@ -48,12 +52,7 @@ export default {
     };
   },
   mounted() {
-    this.formatedDur = formatDuration((this.fundInfo.fundCanBeStartedAt) - (new Date() / 1000 ));
-   
-   if (this.fundInfo.balance >= this.fundInfo.hardCap) {
-      this.proggressPercentage = 100;
-      return;
-    }
+    this.formatedDur = formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000);
 
     this.proggressPercentage = parseFloat(
       utils.formatEther(

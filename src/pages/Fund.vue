@@ -38,7 +38,6 @@ export default {
       this.fundContractAddress = this.$route.params.address;
 
       console.log("fund address", this.fundContractAddress);
-      console.log("network settings", this.eFundNetworkSettings);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
@@ -51,57 +50,36 @@ export default {
         return;
       }
 
-      const isDepositsWithdrawed = await this.fundContract.isDepositsWithdrawed();
-      const fundManager = await this.fundContract.fundManager();
-      const fundStatus = fundStatuses[await this.fundContract.fundStatus()].value;
-      const fundStartTimestamp = await this.fundContract.fundStartTimestamp();
-
-      console.log("fund start timestamp ", fundStartTimestamp);
-
-      console.log("fund manager ", fundManager);
-
-      const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
-      const isManager = fundManager == signerAddress;
-
-      console.log("isManager: ", isManager);
-
-      const allowedTokensAddresses = await this.fundContract.getAllowedTokensAddresses();
-      const boughtTokensAddresses = await this.fundContract.getBoughtTokensAddresses();
-
-      const hardCap = parseFloat(utils.formatUnits(await this.fundContract.hardCap()));
-      const softCap = parseFloat(utils.formatUnits(await this.fundContract.softCap()));
-      
-      const minDepositAmount  = parseFloat(utils.formatUnits(await this.fundContract.minimalDepositAmount()));
-      const fundCanBeStartedAt  = parseFloat(await this.fundContract.fundCanBeStartedMinimumAt());
-      const profitFee  = parseFloat(await this.fundContract.profitFee());
+      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundContractAddress);
 
       const allowedTokens = [];
       const boughtTokens = [];
 
-      for (let i = 0; i < allowedTokensAddresses.length; i++) {
-        const t = allowedTokensAddresses[i];
+      for (let i = 0; i < fundInfo.allowedTokensAddresses.length; i++) {
+        const t = fundInfo.allowedTokensAddresses[i];
         allowedTokens.push(await this.getTokenInfo(t));
       }
 
-      for (let i = 0; i < boughtTokensAddresses.length; i++) {
-        const t = boughtTokensAddresses[i];
+      for (let i = 0; i < fundInfo.boughtTokensAddresses.length; i++) {
+        const t = fundInfo.boughtTokensAddresses[i];
         boughtTokens.push(await this.getTokenInfo(t));
       }
+      const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
       this.updateSignerAddress(signerAddress);
       this.updateFundAddress(this.fundContractAddress);
-      this.updateFundIsManager(isManager);
-      this.updateFundManager(fundManager);
-      this.updateFundStatus(fundStatus);
-      this.updateFundStartTimestamp(fundStartTimestamp);
-      this.updateIsDepositsWithdrawed(isDepositsWithdrawed);
-      this.updateHardCap(hardCap);
-      this.updateSoftCap(softCap);
-      this.updateMinDepositAmount(minDepositAmount);
-      this.updateFundCanBeStartedAt(fundCanBeStartedAt);
-      this.updateProfitFee(profitFee);
+      this.updateFundIsManager(fundInfo.isManager);
+      this.updateFundManager(fundInfo.managerAddress);
+      this.updateFundStatus(fundInfo.fundStatus);
+      this.updateFundStartTimestamp(fundInfo.fundStartTimestamp);
+      this.updateIsDepositsWithdrawed(fundInfo.isDepositsWithdrawed);
+      this.updateHardCap(fundInfo.hardCap);
+      this.updateSoftCap(fundInfo.softCap);
+      this.updateMinDepositAmount(fundInfo.minDepositAmount);
+      this.updateFundCanBeStartedAt(fundInfo.fundCanBeStartedAt);
+      this.updateProfitFee(fundInfo.profitFee);
 
       this.isLoaded = true;
     },
