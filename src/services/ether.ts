@@ -10,13 +10,13 @@ declare global {
 }
 
 const ethereum: providers.ExternalProvider = window.ethereum;
-export const currentProvider = ethereum ? new providers.Web3Provider(ethereum) : undefined;
-
+export const cProvider = ethereum ? new providers.Web3Provider(ethereum) : undefined;
 
 export const walletProvider = {
   currentProvider: (window.ethereum ? new providers.Web3Provider(ethereum) : undefined),
 };
 
+export const currentProvider =  () => walletProvider.currentProvider;
 
 export const BNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 export const ABI = JSON.stringify(EFundPlatform.abi);
@@ -28,7 +28,7 @@ export const getSigner = async (): Promise<{
   jsonSigner: any;
   address: string;
 }> => {
-  const jsonSigner = await currentProvider.getSigner();
+  const jsonSigner = await currentProvider().getSigner();
   const address = await jsonSigner.getAddress();
 
   return { jsonSigner, address };

@@ -54,7 +54,7 @@ export default {
   async mounted() {
     console.log("network setting: ", this.eFundNetworkSettings);
     console.log("fundContractStatus :", this.fundContractStatus);
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 

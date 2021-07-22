@@ -13,7 +13,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { eFundNetworkSettings as networkSettings } from "./constants";
 import "./App.scss";
 import router from "./routes";
-import  { isMetaMaskInstalled, currentProvider }  from "./services/ether";
+import  { isMetaMaskInstalled }  from "./services/ether";
 
 export default {
   name: "App",

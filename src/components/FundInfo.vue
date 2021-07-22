@@ -142,7 +142,7 @@ export default {
 
     this.interval = setInterval(() => this.updateBalance(), 10000);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
@@ -195,7 +195,7 @@ export default {
     },
 
     async updateBalance() {
-      const balance = utils.formatEther( await currentProvider.getBalance(this.fundContract.address));
+      const balance = utils.formatEther( await currentProvider().getBalance(this.fundContract.address));
       this.updateFundBalance(balance);
       console.log("fund balance is: ", balance);
     },

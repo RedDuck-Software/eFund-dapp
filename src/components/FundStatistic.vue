@@ -49,7 +49,7 @@ export default {
   },
 
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
     this.swapRouterContract = this.fundService.getSwapRouterContractInstance(this.swapRouterAddress);
@@ -109,7 +109,7 @@ export default {
       }
     },
     async getBalance() {
-      const curBalance = await currentProvider.getBalance(this.fundContract.address);
+      const curBalance = await currentProvider().getBalance(this.fundContract.address);
       return parseFloat(ethers.utils.formatEther(curBalance));
     },
   },

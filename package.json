@@ -38,11 +38,7 @@
     "vue-loading-overlay": "^4.0.3",
     "vue-range-component": "^1.0.3",
     "vue-router": "^3.5.2",
-<<<<<<< HEAD
     "vue-slider-component": "^3.2.13",
-=======
-    "vue-simple-range-slider": "^0.1.10",
->>>>>>> aad0a9f (fund creation settings, refactoring)
     "vue-social-sharing": "^3.0.8",
     "vue-stepper": "^1.4.2",
     "vuejs-loading-plugin": "^1.0.51",

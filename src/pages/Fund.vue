@@ -40,7 +40,7 @@ export default {
       console.log("fund address", this.fundContractAddress);
       console.log("network settings", this.eFundNetworkSettings);
 
-      this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+      this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
       const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
 

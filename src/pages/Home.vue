@@ -25,9 +25,12 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import ConnectWallet from "../components/ConnectWallet";
 import Card from "@/components/Card";
+import { isMetaMaskInstalled, walletProvider } from "../services/ether";
+import { networkSettings }  from "../constants";
+import  router from "../routes";
 
 export default {
   name: "Home",
