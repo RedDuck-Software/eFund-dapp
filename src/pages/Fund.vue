@@ -6,7 +6,7 @@
         <div v-show="isActive('coins') || isActive('trade')">
           <div class="d-flex">
             <div>
-              <v-select v-model="selectedToken" :options="tokensList" />
+              <v-select :options="priceInValues" label="name" v-model="priceIn"/>
               <h5>Fund value</h5>
             </div>
             <div>
@@ -580,11 +580,6 @@ export default {
       this.updateMinDepositAmount(fundInfo.minDepositAmount);
       this.updateFundCanBeStartedAt(fundInfo.fundCanBeStartedAt);
       this.updateProfitFee(fundInfo.profitFee);
-
-      console.log("bought tokens addresses: ", this.boughtTokensAddresses);
-
-      console.log("profit fee: ", this.profitFee);
-
 
       this.isLoaded = true;
     },
