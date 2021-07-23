@@ -685,13 +685,6 @@ export default {
   }
 }
 
-.label {
-  color: rgba(155, 155, 155, 1);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 16px;
-}
-
 .token-icon.profile {
   background: rgba(240, 239, 248, 1);
 }

@@ -1,12 +1,13 @@
 <template>
   <div class="container-fluid">
+    <h1 class="mb-3 font-weight-bold">Home</h1>
     <ConnectWallet v-if="!signerAddress" />
     <div v-else class="text-gray truncate ml-2">
       {{ signerAddress }}
     </div>
-    <div class="top-funds">
-      <h1>TOP-3 funds now</h1>
-      <h3>Try to invest</h3>
+    <div class="top-funds mt-4">
+      <h1 class="font-weight-bold">TOP-3 funds now</h1>
+      <h2 class="mb-3">Try to invest</h2>
       <div class="row">
         <div :key="0" class="col-sm-4">
           <FundCard v-if="topFunds[0]" :fund-info="topFunds[0]" />

@@ -1,7 +1,7 @@
 <template>
   <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary d-flex px-3">
     <Header class="header" />
-    <div class="main container-fluid text-gray">
+    <div class="main container-fluid text-gray py-6">
       <router-view></router-view>
     </div>
   </div>
@@ -62,7 +62,5 @@ body {
 }
 
 .main {
-  padding-top: 120px;
-  padding-bottom: 80px;
 }
 </style>
