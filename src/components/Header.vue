@@ -1,6 +1,6 @@
 <template>
   <header class="bg-secondary ml-2">
-    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column my-6 p-0">
+    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column px-0 pt-6 ">
       <button
         class="navbar-toggler"
         type="button"

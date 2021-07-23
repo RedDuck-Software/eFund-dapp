@@ -54,14 +54,19 @@ $border-radius:19px;
   flex: 1 1 auto;
 }
 
-.my-6{
-  margin-top: 56px;
-  margin-bottom: 56px;
+.pt-6{
+  padding-top: 56px;
 }
 
 .py-6{
   padding-top: 56px;
   padding-bottom: 56px;
+}
+
+ul {
+  list-style-type: none;
+  padding:0;
+  margin: 0;
 }
 
 h1{
@@ -83,6 +88,26 @@ h2{
 .px-2-3{
   padding-left: 12px;
   padding-right: 12px;
+}
+
+.btn.green-button {
+  background-color: rgba(3, 166, 120, 1);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 8px 39px;
+}
+
+.btn.black-button {
+  background-color: black;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 8px 39px;
 }
 
 

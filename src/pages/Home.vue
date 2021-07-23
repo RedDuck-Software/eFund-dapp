@@ -1,7 +1,10 @@
 <template>
   <div class="container-fluid">
     <h1 class="mb-3 font-weight-bold">Home</h1>
-    <ConnectWallet v-if="!signerAddress" />
+    <div v-if="!signerAddress" class="connect-container box-shadow bg-lightest rounded p-4">
+      <ConnectWallet />
+    </div>
+
     <div v-else class="text-gray truncate ml-2">
       {{ signerAddress }}
     </div>
@@ -64,4 +67,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.connect-container {
+  width: 334px;
+}
+</style>
