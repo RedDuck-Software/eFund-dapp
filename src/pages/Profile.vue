@@ -22,7 +22,6 @@
               </button>
             </div>
           </fieldset>
-
           <fieldset v-if="step === 2" class="mb-0 form-group d-flex flex-column">
             <div class="">
               <h2>Your Your avatar</h2>
@@ -39,28 +38,12 @@
           </fieldset>
           <fieldset v-if="step === 3" class="form-group">
             <ConnectWallet />
-            <!--            <div class="row">-->
-            <!--              <div class="col-sm-12">-->
-            <!--                <div class="">-->
-            <!--                  <h2>Connection</h2>-->
-            <!--                  <p>Please connect your wallet</p>-->
-            <!--                  <button-->
-            <!--                    type="button"-->
-            <!--                    :disabled="checkMetaMask()"-->
-            <!--                    class="btn btn-primary"-->
-            <!--                    @click="handleConnectWallet()"-->
-            <!--                  >-->
-            <!--                    Connect Wallet-->
-            <!--                  </button>-->
-            <!--                </div>-->
-            <!--              </div>-->
-            <!--            </div>-->
           </fieldset>
           <fieldset v-if="step === 4" class="form-group">
             <div class="row">
               <div class="col-sm-12">
                 <div class="text-center">
-                  <h2>Your Profile is successfully filled</h2>
+                  <h2 class="mb-3">Your Profile is successfully filled</h2>
                   <div class="check-filled bg-primary">
                     <img src="../assets/images/check_white.png" />
                   </div>
@@ -83,20 +66,26 @@
           </div>
         </form>
       </div>
-      <div class="col-sm-3">
-        <div class="card">
+      <div class="col-sm-4">
+        <div class="card profile-card box-shadow">
           <div class="card-body">
-            <div class="row">
-              <img class="card-img-top col-lg-3" src="#" alt="test fund" />
-              <div class="col-lg-9">
-                <h5 class="card-title">Ben Thomson</h5>
-                <h6>Manager/investor</h6>
+            <div class="row no-gutters">
+              <div class="col-sm-4">
+                <img class="card-img-top " src="/img/avatar.png" alt="test fund" />
+              </div>
+
+              <div class="col-sm-8">
+                <h2 class="card-title m-0 pb-2">Ben Thomson</h2>
+                <h3>Manager/investor</h3>
               </div>
             </div>
-            <div class="d-flex">
-              <div class="desc-item">Fonds: 3</div>
-              <div class="desc-item">Average ROI: 150%</div>
-              <div class="desc-item">Invested: 1,000$</div>
+            <div class="d-flex flex-wrap mt-2 mb-3">
+              <div class="desc-item label mr-3">Fonds: <span class="text-black">3</span></div>
+              <div class="desc-item label mr-3">
+                Average ROI:
+                <span class="text-black">150%</span>
+              </div>
+              <div class="desc-item label mr-3">Invested: <span class="text-black">1,000$</span></div>
             </div>
           </div>
         </div>
@@ -178,5 +167,17 @@ export default {
   width: 60px;
   height: 3px;
   background: #9b9b9b;
+}
+
+.profile-card {
+  border: none;
+
+  .card-body {
+    padding: 20px 22px 16px 26px;
+  }
+
+  .card-img-top {
+    padding-right: 26px;
+  }
 }
 </style>
