@@ -150,8 +150,6 @@ export class FundService {
 
     const info = await fundContract.getFundInfo();
 
-    console.log("fund info: ", info);
-
     return {
       isDepositsWithdrawed: info._isDepositsWithdrawed,
       managerAddress: info._fundManager,

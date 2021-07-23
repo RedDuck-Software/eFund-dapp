@@ -56,11 +56,6 @@
             <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
               <FundCard :fundInfo="fund" />
             </div>
-            <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-              <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-                <FundCard :title="fund.title" :author="fund.author" />
-              </div>
-            </div>
           </div>
         </div>
         <div v-else>no active funds</div>

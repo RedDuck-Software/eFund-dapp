@@ -1,9 +1,12 @@
 <template>
-  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary row">
-    <Header class="col-lg-1" />
-    <div class="main container-fluid text-gray col-lg-11">
-      <router-view></router-view>
+  <div id="app">
+    <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary row">
+      <Header class="col-lg-1" />
+      <div class="main container-fluid text-gray col-lg-11">
+        <router-view></router-view>
+      </div>
     </div>
+    <div v-else>loading...</div>
   </div>
 </template>
 
@@ -30,17 +33,27 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
   },
   async mounted() {
-    // this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    // const platformContract = this.fundService.getFundPlatformContractInstance();
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    const platformContract = this.fundService.getFundPlatformContractInstance();
 
-    const isUserManager = false; //(await platformContract.managerFundActivity(this.signerAddress)).isValue;
+    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+  
+    console.log("Is user manager: ", isUserManager);
+    if (isUserManager) {
+      const curUserFundsAsManager = await platformContract.getManagerFunds(this.signerAddress);
+      this.updateMyFundsAsManager(curUserFundsAsManager);
+
+      console.log("User funds", curUserFundsAsManager);
+    }
+
+    // todo : fetch user`s funds as a investor
+    // todo : Investigate, what would be better - fetching backend or modify a smart contract
 
     this.updateUserIsManager(isUserManager);
-
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager"]),
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager"]),
   },
 };
 </script>

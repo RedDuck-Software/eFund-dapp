@@ -1,9 +1,7 @@
 <template>
   <header class="bg-secondary">
     <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column">
-      <a class="navbar-brand" href="/">
-        Awesome EFund
-      </a>
+      <a class="navbar-brand" href="/"> Awesome EFund </a>
       <button
         class="navbar-toggler"
         type="button"
@@ -43,7 +41,12 @@
               All
             </router-link>
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
+          <div v-if="myFundsAsManager.length > 0">
+            <div v-for="(fund, index) in myFundsAsManager" :key="index" :value="item">
+              <SmallFundCard :fundAddress="fund"> </SmallFundCard>
+            </div>
+          </div>
+          <!-- <li class="nav-item mx-0 mx-lg-1">
             <router-link
               class="nav-link py-3 px-0 px-lg-3 rounded text-white"
               :to="{
@@ -55,7 +58,7 @@
             >
               Fund1
             </router-link>
-          </li>
+          </li> -->
           <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item mx-0 mx-lg-1">
             <router-link
               class="nav-link py-3 px-0 px-lg-3 rounded text-white"
@@ -87,7 +90,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll);
