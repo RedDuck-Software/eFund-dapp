@@ -1,13 +1,11 @@
 <template>
-  <div id="app">
-    <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary row">
-      <Header class="col-lg-1" />
-      <div class="main container-fluid text-gray col-lg-11">
-        <router-view></router-view>
-      </div>
+  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary d-flex px-3">
+    <Header class="header" />
+    <div class="main container-fluid text-gray py-6">
+      <router-view></router-view>
     </div>
-    <div v-else>loading...</div>
   </div>
+
 </template>
 
 <script>
@@ -33,7 +31,7 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
   },
   async mounted() {
-   
+    
     this.isLoaded = true;
   },
   methods: {
@@ -50,12 +48,14 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 
-#app {
+.app {
   font-family: "Montserrat", sans-serif;
 }
 
+.header {
+  width: 8%;
+}
+
 .main {
-  padding-top: 120px;
-  padding-bottom: 80px;
 }
 </style>

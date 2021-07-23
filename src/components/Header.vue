@@ -1,7 +1,6 @@
 <template>
-  <header class="bg-secondary">
-    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column">
-      <a class="navbar-brand" href="/"> Awesome EFund </a>
+  <header class="bg-secondary ml-2">
+    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column my-6 p-0">
       <button
         class="navbar-toggler"
         type="button"
@@ -30,8 +29,7 @@
           <li class="nav-item">
             <HeaderItem :menu="menu.newFund" :to="{ name: 'All Funds' }" :text="'All'" />
           </li>
-
-          <li v-for="(fund, index) in myFundsAsManager" :key="index" :v-bind="myFundsAsManager" class="nav-item">
+          <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
             <HeaderItem
               :menu="menu.fund"
               :text="'fund 1'"
@@ -64,47 +62,75 @@ import { FundService } from "../services/fundService";
 
 export default {
   name: "Header",
+  components: { HeaderItem },
   data() {
     return {
       scrollPosition: 0,
       fundsIsManager: [],
+      hover: false,
+      menu: {
+        home: {
+          icon: "menu_home.svg",
+          activeIcon: "menu_active_home.svg",
+        },
+        profile: {
+          icon: "menu_profile.svg",
+          activeIcon: "menu_active_profile.svg",
+        },
+        newFund: {
+          icon: "menu_new.svg",
+          activeIcon: "menu_active_new.svg",
+        },
+        allFunds: {
+          icon: "menu_all.svg",
+          activeIcon: "menu_active_all.svg",
+        },
+        fund: {
+          icon: "menu_fund.svg",
+          activeIcon: "menu_active_fund.svg",
+        },
+      },
     };
   },
+
   computed: {
     ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
   },
   async mounted() {
+    if(this.eFundNetworkSettings == null) return;
+    
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     const platformContract = this.fundService.getFundPlatformContractInstance();
-
     const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
 
     console.log("Is user manager: ", isUserManager);
 
     if (isUserManager) {
-      const curUserFundsAsManager = Array.from(await this.fundService.getAllManagerFunds(this.signerAddress));
+      const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
       this.updateMyFundsAsManager(curUserFundsAsManager);
 
       console.log("User funds", curUserFundsAsManager);
-
-      console.log("User funds", this.myFundsAsManager);
-
     }
 
     // todo : fetch user`s funds as a investor
     // todo : Investigate, what would be better - fetching backend or modify a smart contract
-
     this.updateUserIsManager(isUserManager);
-    this.$forceUpdate();
   },
 
   methods: {
-    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager"]),
+    ...mapMutations([
+      "logout",
+      "clearFundInfo",
+      "updateSignerAddress",
+      "updateEFundSettings",
+      "updateMyFundsAsManager",
+      "updateUserIsManager",
+    ]),
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 header {
   min-height: 100vh;
 }

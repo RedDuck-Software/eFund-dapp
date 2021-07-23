@@ -1,11 +1,12 @@
 $theme-colors: (
   "primary": rgba(3, 166, 120, 1),
-  "secondary": #E5E5E5,
+  "secondary": #f5f3fa,
   dark: rgb(22,21,34),
-  gray: rgba(155, 155, 155, 1),
+  darken:rgb(29, 34, 44),
+gray: rgb(155, 155, 155),
   "gray-dark": rgb(32,34,49),
-  danger: rgba(210, 77, 87, 1),
-  light:rgba(240, 239, 248, 1)
+  danger: rgb(210, 77, 87),
+  light:rgb(240, 239, 248)
 
 
 );
@@ -52,3 +53,56 @@ $border-radius:19px;
 .flex-auto{
   flex: 1 1 auto;
 }
+
+.my-6{
+  margin-top: 56px;
+  margin-bottom: 56px;
+}
+
+.py-6{
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+h1{
+  font-size: 36px;
+  line-height: 44px;
+  margin:0;
+  padding: 0;
+  color: black;
+}
+
+h2{
+  font-size: 22px;
+  line-height: 27px;
+  margin:0;
+  padding: 0;
+  color: black;
+}
+
+.px-2-3{
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+
+
+.label {
+  color: rgba(155, 155, 155, 1);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+.font-weight-bold{
+  font-weight: 600;
+}
+
+.box-shadow{
+  box-shadow: 1px 4px 10px 4px rgba(221, 221, 221, 0.25);
+}
+
+.bg-black{
+  background: black;
+}
+

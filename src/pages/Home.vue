@@ -1,15 +1,24 @@
 <template>
   <div class="container-fluid">
+    <h1 class="mb-3 font-weight-bold">Home</h1>
     <ConnectWallet v-if="!signerAddress" />
     <div v-else class="text-gray truncate ml-2">
       {{ signerAddress }}
     </div>
-    <div class="top-funds">
-      <h1>TOP-3 funds now</h1>
-      <h3>Try to invest</h3>
+    <div class="top-funds mt-4">
+      <h1 class="font-weight-bold">TOP-3 funds now</h1>
+      <h2 class="mb-3">Try to invest</h2>
       <div class="row">
-        <div v-for="(fund, index) in topFunds" :key="index">
-          <FundCard :fundInfo="fund" />
+        <div :key="0" class="col-sm-4">
+          <FundCard v-if="topFunds[0]" :fund-info="topFunds[0]" />
+        </div>
+        <div :key="1" class="col-sm-4">
+          <FundCard v-if="topFunds[1]" :fund-info="topFunds[1]" />
+        </div>
+      </div>
+      <div class="row">
+        <div :key="2" class="col-sm-4">
+          <FundCard v-if="topFunds[2]" :fund-info="topFunds[2]" />
         </div>
       </div>
     </div>
@@ -19,7 +28,6 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import ConnectWallet from "../components/ConnectWallet";
-// import Card from "../components/Card";
 import { currentProvider } from "../services/ether";
 import router from "../routes";
 import { FundService } from "../services/fundService";
@@ -28,12 +36,12 @@ import FundCard from "@/components/FundCard";
 
 export default {
   name: "Home",
+  components: { FundCard, ConnectWallet },
   data() {
     return {
       topFunds: [],
     };
   },
-  components: { FundCard, ConnectWallet },
   computed: {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },

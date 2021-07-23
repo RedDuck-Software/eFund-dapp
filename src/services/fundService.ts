@@ -32,7 +32,7 @@ export class FundService {
   }
 
   getCurrentProvider() {
-    return currentProvider;
+    return this.currentProvider;
   }
 
   getFundPlatformContractInstance() {
@@ -80,6 +80,9 @@ export class FundService {
   async getFundDetailedInfo(address) {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
+
+
+    console.log("current provider ", this.getCurrentProvider());
 
     // @ts-ignore: cannot assign vm to Event for some reasone
     const signerAddress = await this.getCurrentProvider()

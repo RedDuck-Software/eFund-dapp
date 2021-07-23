@@ -35,11 +35,10 @@
             <ToggleButton
               :isActive="signerAddress!=null"
               @click="getAllFilteredFunds"
-              @toggleOn="filters.filterByAddress=signerAddress"
-              @toggleOff="filters.filterByAddress=null"
-              
+              @toggleOn="filters.address=signerAddress"
+              @toggleOff="filters.address=null"
             >
-              My Funds
+              My funds
             </ToggleButton>
           </div>
           <div class="sliders mb-5">
@@ -82,9 +81,10 @@
       </div>
       <div class="col-md-8">
         <div v-if="filteredFunds.length != 0">
-          <div v-for="(fund) in filteredFunds" :key="fund.address" class="row">
-            <FundCard :fundInfo="fund" />
-            <!-- why for loop doesnt rerender anything on filters selecting? -->
+          <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
+            <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
+              <FundCard :fund-info="fund" />
+            </div>
           </div>
         </div>
         <div v-else>no funds found</div>
@@ -99,7 +99,6 @@ import FundList from "../components/FundList";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
-// import Card from "../components/Card";
 import { mapGetters } from "vuex";
 import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
@@ -115,22 +114,12 @@ export default {
         minTime: 1,
         cap: 0.1,
         investors: 0,
-        filterByAddress: null,
+        address: null, 
       },
-      restoreStatusFilter: false, 
+
       fundService: null,
       allFunds: [],
       filteredFunds: [],
-      funds: [
-        // { title: "Test Fund", author: " Ben Thomson" },
-        // { title: "Test Fund1", author: " Ben Thomson1" },
-        // { title: "Test Fund2", author: " Ben Thomson2" },
-        // { title: "Test Fund3", author: " Ben Thomson3" },
-        // { title: "Test Fund4", author: " Ben Thomson3" },
-        // { title: "Test Fund5", author: " Ben Thomson5" },
-        // { title: "Test Fund6", author: " Ben Thomson6" },
-      ],
-
       marks: {
         1: 1,
         2: 2,
@@ -164,6 +153,8 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     await this.getAllFunds();
     await this.getAllFilteredFunds();
+
+    console.log(this.allFunds);
   },
 
   async getAllMyFunds() {
@@ -176,12 +167,15 @@ export default {
     },
     async getAllFilteredFunds() {
       this.filteredFunds = Array.from(this.allFunds).filter((f) => {
+          console.log(this.filters);
+
+
         return (
           1 >= this.filters.minTime &&
           10 >= this.filters.investors &&
           // f.fundDurationInMonths >= this.filters.minTime &&
           f.balance >= parseFloat(this.filters.cap) &&
-          (this.filters.filterByAddress == null ? true : f.managerAddress.toLowerCase() == this.filters.filterByAddress.toLowerCase()) &&
+          (this.filters.address==null ?  true : f.managerAddress.toLowerCase()==this.filters.address.toLowerCase()) && 
           (this.filters.currentStatusFilter.size == 0 ? 
             true : Array.from(this.filters.currentStatusFilter).includes(f.status))
         );
