@@ -8,7 +8,7 @@
           <h5>Status</h5>
           <div class="d-flex">
             <button class="btn btn-dark">Open</button>
-            <button class="btn  btn-light">Active</button>
+            <button class="btn btn-light">Active</button>
             <button class="btn btn-light">Ended</button>
             <button class="btn btn-light">My Funds</button>
           </div>
@@ -41,8 +41,8 @@
           </div>
           <div>
             <h5>Buy best</h5>
-            <button class="btn  btn-light">ROI</button>
-            <button class="btn  btn-light">Managers</button>
+            <button class="btn btn-light">ROI</button>
+            <button class="btn btn-light">Managers</button>
           </div>
           <div>
             <h5>Definite manager</h5>
@@ -54,20 +54,19 @@
         <div v-if="filteredFunds.length != 0">
           <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
             <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-              <Card :fundInfo="fund" />
+              <FundCard :fundInfo="fund" />
             </div>
-        <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-          <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-            <FundCard :title="fund.title" :author="fund.author" />
+            <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
+              <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
+                <FundCard :title="fund.title" :author="fund.author" />
+              </div>
+            </div>
           </div>
         </div>
         <div v-else>no active funds</div>
       </div>
     </div>
-    <!--    <FundList :shouldredrawlist="false" />-->
   </div>
-
-  <!--  <FundList :shouldredrawlist="false" />-->
 </template>
 
 <script>
@@ -76,9 +75,9 @@ import FundList from "../components/FundList";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
-import Card from "@/components/Card";
+// import Card from "../components/Card";
 import { mapGetters } from "vuex";
-import FundCard from "@/components/FundCard";
+import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
 
 export default {
@@ -144,8 +143,6 @@ export default {
         return f.status == this.currentStatusFilter;
       });
     },
-  },
-  methods: {
     changeCap(val) {
       this.filters.capVal = val / 10;
       console.log(this.filters.capVal);

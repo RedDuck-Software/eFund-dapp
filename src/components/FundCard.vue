@@ -40,7 +40,7 @@ import { formatDuration } from "../services/helpers";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "Card",
+  name: "FundCard",
   props: ["fundInfo"],
   computed: {
     ...mapGetters(["eFundNetworkSettings"]),

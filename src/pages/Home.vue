@@ -9,17 +9,7 @@
       <h3>Try to invest</h3>
       <div class="row">
         <div v-for="(fund, index) in topFunds" :key="index">
-          <Card :fundInfo="fund" />
-        <div class="col-sm-4">
-          <FundCard title="Test Fund" author="Ben Johnson" />
-        </div>
-        <div class="col-sm-4">
-          <FundCard title="Test Fund1" author="Ben Johnson3" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-4">
-          <FundCard title="Test Fund12" author="Ben Johnson34" />
+          <FundCard :fundInfo="fund" />
         </div>
       </div>
     </div>
@@ -29,7 +19,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import ConnectWallet from "../components/ConnectWallet";
-import Card from "@/components/Card";
+// import Card from "../components/Card";
 import { currentProvider } from "../services/ether";
 import router from "../routes";
 import { FundService } from "../services/fundService";
@@ -38,7 +28,6 @@ import FundCard from "@/components/FundCard";
 
 export default {
   name: "Home",
-  components: { Card, ConnectWallet },
   data() {
     return {
       topFunds: [],
