@@ -3,19 +3,27 @@
     :class="`btn ${isOn ? 'btn-dark' : 'btn-light'}`"
     @click="
       () => {
-        this.$emit('toggled', isOn);
+        if (isOn) this.$emit('toggleOff');
+        else this.$emit('toggleOn');
+        this.$emit('click');
+        isOn = !isOn;
       }
     "
-  ></button>
+  >
+    <slot></slot>
+  </button>
 </template>
 
 <script>
+import { isNullOrUndefined } from "util";
+
 export default {
   name: "ToggleButton",
-  data() { 
-      return  {
-          isOn = false,
-      };
-  }
+  props: ["togled"],
+  data() {
+    return {
+      isOn: this.togled === null || this.togled === undefined ? false : this.togled,
+    };
+  },
 };
 </script>

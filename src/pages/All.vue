@@ -7,9 +7,31 @@
           <h2>Fund Settings</h2>
           <h5>Status</h5>
           <div class="d-flex">
-            <button class="btn btn-dark">Open</button>
-            <button class="btn btn-light">Active</button>
-            <button class="btn btn-light">Ended</button>
+            <ToggleButton
+              :togled="true"
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Opened')"
+              @toggleOff="filters.currentStatusFilter['delete']('Opened')"
+            >
+              Opened</ToggleButton
+            >
+
+            <ToggleButton
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Active')"
+              @toggleOff="filters.currentStatusFilter['delete']('Active')"
+            >
+              Active</ToggleButton
+            >
+
+            <ToggleButton
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Completed')"
+              @toggleOff="filters.currentStatusFilter['delete']('Completed')"
+            >
+              Completed
+            </ToggleButton>
+
             <button class="btn btn-light">My Funds</button>
           </div>
           <div class="sliders mb-5">
@@ -18,7 +40,7 @@
                 <p>Min trading time to the end</p>
                 <span>{{ filters.minTime }} days</span>
               </div>
-              <vue-slider v-model="filters.minTime" :min="1" :max="90" :step="3" :marks="marks"></vue-slider>
+              <vue-slider v-model="filters.minTime" :min="1" :max="6" :step="1" :marks="marks" @change="getAllFilteredFunds"></vue-slider>
             </div>
           </div>
           <div class="sliders mb-5">
@@ -27,7 +49,7 @@
                 <p>Cap</p>
                 <span>{{ filters.cap }} BNB</span>
               </div>
-              <vue-slider v-model="filters.cap" :min="0.1" :max="10" :marks="marksCap" :interval="0.1"></vue-slider>
+              <vue-slider v-model="filters.cap" :min="0.1" :max="10" :marks="marksCap" :interval="0.1" @change="getAllFilteredFunds"></vue-slider>
             </div>
           </div>
           <div class="sliders mb-5">
@@ -36,7 +58,7 @@
                 <p>Number of investors</p>
                 <span>{{ filters.investors }}</span>
               </div>
-              <vue-slider v-model="filters.investors" :min="1" :max="90" :step="3" :marks="marks"></vue-slider>
+              <vue-slider v-model="filters.investors" :min="0" :max="100" :step="3" :marks="marksInvestors" @change="getAllFilteredFunds"></vue-slider>
             </div>
           </div>
           <div>
@@ -52,13 +74,12 @@
       </div>
       <div class="col-md-8">
         <div v-if="filteredFunds.length != 0">
-          <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-            <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-              <FundCard :fundInfo="fund" />
-            </div>
+          <div v-for="(fund) in filteredFunds" :key="fund.address" class="row">
+            <FundCard :fundInfo="fund" />
+            <!-- why for loop doesnt rerender anything on filters selecting? -->
           </div>
         </div>
-        <div v-else>no active funds</div>
+        <div v-else>no funds found</div>
       </div>
     </div>
   </div>
@@ -74,14 +95,21 @@ import { currentProvider } from "../services/ether";
 import { mapGetters } from "vuex";
 import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
+import ToggleButton from "../components/ToggleBtn.vue";
 
 export default {
   name: "All",
-  components: { FundCard, VueSlider },
+  components: { FundCard, VueSlider, ToggleButton },
   data() {
     return {
+      filters: { 
+        currentStatusFilter: new Set(['Opened']),
+        minTime: 1,
+        cap: 0.1,
+        investors: 0,
+      },
+
       fundService: null,
-      currentStatusFilter: "Opened",
       allFunds: [],
       filteredFunds: [],
       funds: [
@@ -93,20 +121,24 @@ export default {
         // { title: "Test Fund5", author: " Ben Thomson5" },
         // { title: "Test Fund6", author: " Ben Thomson6" },
       ],
+
       marks: {
         1: 1,
-        45: 45,
-        90: 90,
+        2: 2,
+        3: 3,
+        6: 6,
+      },
+      marksInvestors: {
+        0: 0,
+        10: 10,
+        30: 30,
+        70: 70,
+        100: 100,
       },
       marksCap: {
         1: 1,
         5: 5,
         10: 10,
-      },
-      filters: {
-        minTime: 1,
-        cap: 0.1,
-        investors: 5,
       },
       readOnlyFactoryContract: null,
       fetchCount: 0,
@@ -134,8 +166,15 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = this.allFunds.filter(async (f) => {
-        return f.status == this.currentStatusFilter;
+      this.filteredFunds = Array.from(this.allFunds).filter((f) => {
+        return (
+          1 >= this.filters.minTime &&
+          10 >= this.filters.investors &&
+          // f.fundDurationInMonths >= this.filters.minTime &&
+          f.balance >= parseFloat(this.filters.cap) &&
+          (this.filters.currentStatusFilter.size == 0 ? 
+            true : Array.from(this.filters.currentStatusFilter).includes(f.status))
+        );
       });
     },
     changeCap(val) {
