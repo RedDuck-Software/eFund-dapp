@@ -9,6 +9,7 @@
         isOn = !isOn;
       }
     "
+    :disabled="!isActive"
   >
     <slot></slot>
   </button>
@@ -19,7 +20,14 @@ import { isNullOrUndefined } from "util";
 
 export default {
   name: "ToggleButton",
-  props: ["togled"],
+  props: {
+    togled: {
+      default: false,
+    },
+    isActive: {
+      default: true,
+    },
+  },
   data() {
     return {
       isOn: this.togled === null || this.togled === undefined ? false : this.togled,

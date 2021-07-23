@@ -64,7 +64,7 @@ const store = new Vuex.Store({
       state.myFundsAsManager.push(newFund);
     },
     addMyFundsAsInvestor(state, newFund) {
-      state.myFundsAsManager.push(newFund);
+      state.myFundsAsInvestor.push(newFund);
     },
     updateMyFundsAsInvestor(state, funds) {
       state.myFundsAsInvestor = funds;
@@ -142,7 +142,7 @@ const store = new Vuex.Store({
     fundCanBeStartedAt: state => state.fundCanBeStartedAt,
     profitFee: state => state.profitFee,
     userIsManager: state => state.userIsManager,
-    myFundsAsManager: state => state.myFundsAsInvestor,
+    myFundsAsManager: state => state.myFundsAsManager,
     myFundsAsInvestor: state => state.myFundsAsInvestor,
   },
   plugins: [createPersistedState()],

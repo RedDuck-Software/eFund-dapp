@@ -32,7 +32,15 @@
               Completed
             </ToggleButton>
 
-            <button class="btn btn-light">My Funds</button>
+            <ToggleButton
+              :isActive="signerAddress!=null"
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.filterByAddress=signerAddress"
+              @toggleOff="filters.filterByAddress=null"
+              
+            >
+              My Funds
+            </ToggleButton>
           </div>
           <div class="sliders mb-5">
             <div>
@@ -107,8 +115,9 @@ export default {
         minTime: 1,
         cap: 0.1,
         investors: 0,
+        filterByAddress: null,
       },
-
+      restoreStatusFilter: false, 
       fundService: null,
       allFunds: [],
       filteredFunds: [],
@@ -172,6 +181,7 @@ export default {
           10 >= this.filters.investors &&
           // f.fundDurationInMonths >= this.filters.minTime &&
           f.balance >= parseFloat(this.filters.cap) &&
+          (this.filters.filterByAddress == null ? true : f.managerAddress.toLowerCase() == this.filters.filterByAddress.toLowerCase()) &&
           (this.filters.currentStatusFilter.size == 0 ? 
             true : Array.from(this.filters.currentStatusFilter).includes(f.status))
         );

@@ -14,63 +14,41 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div
-        id="navbarSupportedContent"
-        class="collapse navbar-collapse d-flex justify-content-between min-w-0 d-flex flex-column"
-      >
-        <ul class="navbar-nav ms-auto flex-column">
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Home' }">
-              Home
-            </router-link>
+      <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex min-w-0 d-flex flex-column">
+        <ul class="navbar-nav ms-auto flex-column bg-darken rounded w-100">
+          <li class="nav-item">
+            <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Profile' }">
-              Profile
-            </router-link>
+          <li class="nav-item">
+            <HeaderItem :menu="menu.profile" :to="{ name: 'Profile' }" :text="'Profile'" />
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'New Fund' }">
-              New Fund
-            </router-link>
+          <li class="nav-item">
+            <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto flex-column">
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'All Funds' }">
-              All
-            </router-link>
+        <ul class="navbar-nav ms-auto flex-column bg-darken mt-1 rounded w-100">
+          <li class="nav-item">
+            <HeaderItem :menu="menu.newFund" :to="{ name: 'All Funds' }" :text="'All'" />
           </li>
-          <div v-if="myFundsAsManager.length > 0">
-            <div v-for="(fund, index) in myFundsAsManager" :key="index" :value="item">
-              <SmallFundCard :fundAddress="fund"> </SmallFundCard>
-            </div>
-          </div>
-          <!-- <li class="nav-item mx-0 mx-lg-1">
-            <router-link
-              class="nav-link py-3 px-0 px-lg-3 rounded text-white"
+
+          <li v-for="(fund, index) in myFundsAsManager" :key="index" :v-bind="myFundsAsManager" class="nav-item">
+            <HeaderItem
+              :menu="menu.fund"
+              :text="'fund 1'"
               :to="{
                 name: 'Fund',
                 params: {
-                  address: '0x85c15a561a692be49a0fd3b9e9b1bf8370b33332',
+                  address: fund.address,
                 },
               }"
-            >
-              Fund1
-            </router-link>
-          </li> -->
-          <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item mx-0 mx-lg-1">
-            <router-link
-              class="nav-link py-3 px-0 px-lg-3 rounded text-white"
-              :to="{
-                name: 'Fund',
-                params: {
-                  address: fundIsManager.id,
-                },
-              }"
-            >
-              Home
-            </router-link>
+            />
+          </li>
+          <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item rounded">
+            <HeaderItem
+              :menu="menu.fund"
+              :to="{ name: 'Fund', params: { address: fundIsManager.id } }"
+              :text="fundIsManager.text"
+            />
           </li>
         </ul>
       </div>
@@ -79,7 +57,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import HeaderItem from "@/components/HeaderItem";
+import { isMetaMaskInstalled, currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
 
 export default {
   name: "Header",
@@ -92,17 +73,33 @@ export default {
   computed: {
     ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
   },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
+  async mounted() {
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    const platformContract = this.fundService.getFundPlatformContractInstance();
+
+    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+
+    console.log("Is user manager: ", isUserManager);
+
+    if (isUserManager) {
+      const curUserFundsAsManager = Array.from(await this.fundService.getAllManagerFunds(this.signerAddress));
+      this.updateMyFundsAsManager(curUserFundsAsManager);
+
+      console.log("User funds", curUserFundsAsManager);
+
+      console.log("User funds", this.myFundsAsManager);
+
+    }
+
+    // todo : fetch user`s funds as a investor
+    // todo : Investigate, what would be better - fetching backend or modify a smart contract
+
+    this.updateUserIsManager(isUserManager);
+    this.$forceUpdate();
   },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
+
   methods: {
-    handleScroll() {
-      this.scrollPosition = window.scrollY;
-      this.isSticky = this.scrollPosition >= 100;
-    },
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager"]),
   },
 };
 </script>
