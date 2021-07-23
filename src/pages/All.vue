@@ -1,59 +1,101 @@
 <template>
   <div class="container-fluid">
-    <h1>All Funds</h1>
+    <h2 class="font-weight-bold mb-1">All Funds</h2>
     <div class="row">
       <div class="col-md-4">
-        <div class="fund-filters">
-          <h2>Fund Settings</h2>
-          <h5>Status</h5>
-          <div class="d-flex">
-            <button class="btn btn-dark">Open</button>
-            <button class="btn  btn-light">Active</button>
-            <button class="btn btn-light">Ended</button>
-            <button class="btn btn-light">My Funds</button>
+        <div class="fund-filters bg-lightest rounded">
+          <h2 class="font-weight-bold pb-2">Fund Settings</h2>
+          <div class="label">Status</div>
+          <div class="d-flex flex-wrap pt-2">
+            <div class="badge bg-black text-white">Open</div>
+            <div class="badge bg-light text-black">Active</div>
+            <div class="badge bg-light text-black">Ended</div>
+            <div class="badge bg-light text-black">My Funds</div>
           </div>
-          <div class="sliders mb-5">
-            <div>
-              <div class="d-flex justify-content-between">
-                <p>Min trading time to the end</p>
-                <span>{{ filters.minTime }} days</span>
-              </div>
-              <vue-slider v-model="filters.minTime" :min="1" :max="90" :step="3" :marks="marks"></vue-slider>
+          <div class="pt-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="label">Min trading time to the end</div>
+              <div class="badge bg-black text-white">{{ filters.minTime }} days</div>
             </div>
+            <vue-slider
+              v-model="filters.minTime"
+              :min="1"
+              :max="90"
+              :step="3"
+              :marks="marks"
+              :tooltip="'none'"
+              :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
+              :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+            >
+              <template #dot="{ focus }">
+                <div :class="['custom-dot', { focus }]"></div>
+              </template>
+            </vue-slider>
           </div>
-          <div class="sliders mb-5">
-            <div>
-              <div class="d-flex justify-content-between">
-                <p>Cap</p>
-                <span>{{ filters.cap }} BNB</span>
-              </div>
-              <vue-slider v-model="filters.cap" :min="0.1" :max="10" :marks="marksCap" :interval="0.1"></vue-slider>
+          <div class="sliders mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="label">Cap</div>
+              <div class="badge bg-black text-white">{{ filters.cap }} BNB</div>
             </div>
+            <vue-slider
+              v-model="filters.cap"
+              :min="0.1"
+              :max="10"
+              :marks="marksCap"
+              :interval="0.1"
+              :tooltip="'none'"
+              :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
+              :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+            >
+              <template #dot="{ focus }">
+                <div :class="['custom-dot', { focus }]"></div>
+              </template>
+            </vue-slider>
+            <div></div>
           </div>
-          <div class="sliders mb-5">
-            <div>
-              <div class="d-flex justify-content-between">
-                <p>Number of investors</p>
-                <span>{{ filters.investors }}</span>
-              </div>
-              <vue-slider v-model="filters.investors" :min="1" :max="90" :step="3" :marks="marks"></vue-slider>
+          <div class="sliders mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="label">Number of investors</div>
+              <div class="badge bg-black text-white">{{ filters.investors }}</div>
             </div>
+            <vue-slider
+              v-model="filters.investors"
+              :min="1"
+              :max="90"
+              :step="3"
+              :marks="marks"
+              :tooltip="'none'"
+              :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
+              :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+            >
+              <template #dot="{ focus }">
+                <div :class="['custom-dot', { focus }]"></div>
+              </template>
+            </vue-slider>
           </div>
           <div>
-            <h5>Buy best</h5>
-            <button class="btn  btn-light">ROI</button>
-            <button class="btn  btn-light">Managers</button>
+            <div class="label">Buy best</div>
+            <div class="d-flex flex-wrap pt-2">
+              <div class="badge bg-light text-black">ROI</div>
+              <div class="badge bg-light text-black">Managers</div>
+            </div>
           </div>
-          <div>
-            <h5>Definite manager</h5>
-            <input id="managerName" v-model="managerName" class="" name="manager_name" placeholder="Enter name" />
+          <div class="mt-3">
+            <div class="label mb-2">Definite manager</div>
+            <input
+              id="managerName"
+              v-model="managerName"
+              name="manager_name"
+              placeholder="Enter name"
+              class="form-control custom-input"
+            />
           </div>
         </div>
       </div>
       <div class="col-md-8">
         <div v-if="filteredFunds.length != 0">
           <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-            <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
+            <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6 col-12">
               <FundCard :fund-info="fund" />
             </div>
           </div>
@@ -132,7 +174,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.fund-filters {
+  padding: 22px 12px;
+}
+</style>
 <style lang="scss">
 .vue-slider-rail {
   height: 3px;

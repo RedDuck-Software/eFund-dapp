@@ -46,7 +46,7 @@
                 <div class="badge bg-light text-black">Large Fund</div>
               </div>
             </div>
-            <div class="sliders pt-3 mb-5">
+            <div class="sliders pt-3 mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Collateral</div>
                 <div class="badge bg-black text-white">{{ form.collateral }} ETH</div>
@@ -64,7 +64,7 @@
                 </template>
               </vue-slider>
             </div>
-            <div class="sliders mb-5">
+            <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Min starting fund size</div>
                 <div class="badge bg-black text-white">{{ form.minSize }}ETH</div>
@@ -82,7 +82,7 @@
                 </template>
               </vue-slider>
             </div>
-            <div class="sliders mb-5">
+            <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Max starting fund size</div>
                 <div class="badge bg-black text-white">{{ form.maxSize }}ETH</div>
@@ -115,7 +115,7 @@
                 <div class="badge bg-light text-black">6 month</div>
               </div>
             </div>
-            <div class="sliders pt-3 mb-5">
+            <div class="sliders pt-3 mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Max time till start</div>
                 <div class="badge bg-black text-white">{{ form.tillStart }} days</div>
@@ -133,7 +133,7 @@
                 </template>
               </vue-slider>
             </div>
-            <div class="sliders mb-5">
+            <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Manager fee</div>
                 <div class="badge bg-black text-white">{{ form.fee }}%</div>
@@ -295,19 +295,6 @@ export default {
   .form-group {
     flex: 1 0 100%;
   }
-}
-
-.custom-input {
-  font-size: 16px;
-  border: none;
-  background: #f0eff8;
-  color: #9b9b9b;
-}
-
-.line {
-  width: 60px;
-  height: 3px;
-  background: #9b9b9b;
 }
 </style>
 
