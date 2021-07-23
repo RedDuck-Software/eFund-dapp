@@ -139,3 +139,21 @@ h3{
   background: black;
 }
 
+.badge:not(:first-of-type) {
+  margin-left: 6px;
+}
+
+.badge {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 16px;
+  padding: 6px 13px;
+  margin: 4px 0;
+  display: block;
+  cursor: pointer;
+}
+
+.card {
+  border: none;
+}
+

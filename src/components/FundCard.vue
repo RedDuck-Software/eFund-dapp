@@ -43,9 +43,6 @@
         <div class="badge bg-black text-white">Rules</div>
         <div class="badge bg-black text-white">About</div>
         <div class="badge bg-primary text-white">Invest</div>
-
-        <!--        <button class="btn btn-dark">About</button>-->
-        <!--        <button class="btn btn-primary">Invest</button>-->
       </div>
     </div>
   </div>
@@ -90,10 +87,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.card {
-  border: none;
-}
-
 .author {
   font-size: 16px;
   line-height: 20px;
@@ -117,14 +110,5 @@ export default {
   img {
     padding-right: 12px;
   }
-}
-
-.badge {
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 16px;
-  padding: 6px 13px;
-  margin: 4px 6px;
-  display: block;
 }
 </style>
