@@ -8,18 +8,16 @@
       <h1>TOP-3 funds now</h1>
       <h3>Try to invest</h3>
       <div class="row">
-        <div v-for="(fund, index) in topFunds" :key="index">
-          <Card :fundInfo="fund" />
-        <div class="col-sm-4">
-          <FundCard title="Test Fund" author="Ben Johnson" />
+        <div :key="0" class="col-sm-4">
+          <FundCard v-if="topFunds[0]" :fund-info="topFunds[0]" />
         </div>
-        <div class="col-sm-4">
-          <FundCard title="Test Fund1" author="Ben Johnson3" />
+        <div :key="1" class="col-sm-4">
+          <FundCard v-if="topFunds[1]" :fund-info="topFunds[1]" />
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4">
-          <FundCard title="Test Fund12" author="Ben Johnson34" />
+        <div :key="2" class="col-sm-4">
+          <FundCard v-if="topFunds[2]" :fund-info="topFunds[2]" />
         </div>
       </div>
     </div>
@@ -29,7 +27,6 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import ConnectWallet from "../components/ConnectWallet";
-import Card from "@/components/Card";
 import { currentProvider } from "../services/ether";
 import router from "../routes";
 import { FundService } from "../services/fundService";
@@ -38,13 +35,12 @@ import FundCard from "@/components/FundCard";
 
 export default {
   name: "Home",
-  components: { Card, ConnectWallet },
+  components: { FundCard, ConnectWallet },
   data() {
     return {
       topFunds: [],
     };
   },
-  components: { FundCard, ConnectWallet },
   computed: {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },

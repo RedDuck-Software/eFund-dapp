@@ -1,9 +1,6 @@
 <template>
-  <header class="bg-secondary">
-    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column">
-      <a class="navbar-brand" href="/">
-        Awesome EFund
-      </a>
+  <header class="bg-secondary ml-2">
+    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column my-6 p-0">
       <button
         class="navbar-toggler"
         type="button"
@@ -16,58 +13,40 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div
-        id="navbarSupportedContent"
-        class="collapse navbar-collapse d-flex justify-content-between min-w-0 d-flex flex-column"
-      >
-        <ul class="navbar-nav ms-auto flex-column">
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Home' }">
-              Home
-            </router-link>
+      <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex min-w-0  d-flex flex-column">
+        <ul class="navbar-nav ms-auto flex-column bg-darken rounded w-100">
+          <li class="nav-item ">
+            <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Profile' }">
-              Profile
-            </router-link>
+          <li class="nav-item ">
+            <HeaderItem :menu="menu.profile" :to="{ name: 'Profile' }" :text="'Profile'" />
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'New Fund' }">
-              New Fund
-            </router-link>
+          <li class="nav-item  ">
+            <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto flex-column">
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'All Funds' }">
-              All
-            </router-link>
+        <ul class="navbar-nav ms-auto flex-column bg-darken mt-1 rounded w-100">
+          <li class="nav-item  ">
+            <HeaderItem :menu="menu.newFund" :to="{ name: 'All Funds' }" :text="'All'" />
           </li>
-          <li class="nav-item mx-0 mx-lg-1">
-            <router-link
-              class="nav-link py-3 px-0 px-lg-3 rounded text-white"
+          <li class="nav-item ">
+            <HeaderItem
+              :menu="menu.fund"
+              :text="'fund 1'"
               :to="{
                 name: 'Fund',
                 params: {
                   address: '0x85c15a561a692be49a0fd3b9e9b1bf8370b33332',
                 },
               }"
-            >
-              Fund1
-            </router-link>
+            />
           </li>
-          <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item mx-0 mx-lg-1">
-            <router-link
-              class="nav-link py-3 px-0 px-lg-3 rounded text-white"
-              :to="{
-                name: 'Fund',
-                params: {
-                  address: fundIsManager.id,
-                },
-              }"
-            >
-              Home
-            </router-link>
+          <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item rounded ">
+            <HeaderItem
+              :menu="menu.fund"
+              :to="{ name: 'Fund', params: { address: fundIsManager.id } }"
+              :text="fundIsManager.text"
+            />
           </li>
         </ul>
       </div>
@@ -77,34 +56,47 @@
 
 <script>
 import { mapGetters } from "vuex";
+import HeaderItem from "@/components/HeaderItem";
 
 export default {
   name: "Header",
+  components: { HeaderItem },
   data() {
     return {
       scrollPosition: 0,
       fundsIsManager: [],
+      hover: false,
+      menu: {
+        home: {
+          icon: "menu_home.svg",
+          activeIcon: "menu_active_home.svg",
+        },
+        profile: {
+          icon: "menu_profile.svg",
+          activeIcon: "menu_active_profile.svg",
+        },
+        newFund: {
+          icon: "menu_new.svg",
+          activeIcon: "menu_active_new.svg",
+        },
+        allFunds: {
+          icon: "menu_all.svg",
+          activeIcon: "menu_active_all.svg",
+        },
+        fund: {
+          icon: "menu_fund.svg",
+          activeIcon: "menu_active_fund.svg",
+        },
+      },
     };
   },
   computed: {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  methods: {
-    handleScroll() {
-      this.scrollPosition = window.scrollY;
-      this.isSticky = this.scrollPosition >= 100;
-    },
-  },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 header {
   min-height: 100vh;
 }

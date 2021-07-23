@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary row">
-    <Header class="col-lg-1" />
-    <div class="main container-fluid text-gray col-lg-11">
+  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary d-flex px-3">
+    <Header class="header" />
+    <div class="main container-fluid text-gray">
       <router-view></router-view>
     </div>
   </div>
@@ -53,8 +53,12 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 
-#app {
+.app {
   font-family: "Montserrat", sans-serif;
+}
+
+.header {
+  width: 8%;
 }
 
 .main {

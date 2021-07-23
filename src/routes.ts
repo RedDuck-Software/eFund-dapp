@@ -15,7 +15,7 @@ import { walletProvider, isMetaMaskInstalled } from "./services/ether";
 Vue.use(VueRouter);
 
 const routes: RouteConfig[] = [
-  { path: "/", component: Home, name: "Home" },
+  { path: "", component: Home, name: "Home" },
   { path: "/new-fund", component: NewFund, name: "New Fund" },
   { path: "/all-funds", component: All, name: "All Funds" },
   { path: "/profile", component: Profile, name: "Profile" },

@@ -54,20 +54,14 @@
         <div v-if="filteredFunds.length != 0">
           <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
             <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-              <Card :fundInfo="fund" />
+              <FundCard :fund-info="fund" />
             </div>
-        <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-          <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6">
-            <FundCard :title="fund.title" :author="fund.author" />
           </div>
         </div>
         <div v-else>no active funds</div>
       </div>
     </div>
-    <!--    <FundList :shouldredrawlist="false" />-->
   </div>
-
-  <!--  <FundList :shouldredrawlist="false" />-->
 </template>
 
 <script>
@@ -76,7 +70,6 @@ import FundList from "../components/FundList";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
-import Card from "@/components/Card";
 import { mapGetters } from "vuex";
 import FundCard from "@/components/FundCard";
 import VueSlider from "vue-slider-component";
@@ -90,15 +83,6 @@ export default {
       currentStatusFilter: "Opened",
       allFunds: [],
       filteredFunds: [],
-      funds: [
-        // { title: "Test Fund", author: " Ben Thomson" },
-        // { title: "Test Fund1", author: " Ben Thomson1" },
-        // { title: "Test Fund2", author: " Ben Thomson2" },
-        // { title: "Test Fund3", author: " Ben Thomson3" },
-        // { title: "Test Fund4", author: " Ben Thomson3" },
-        // { title: "Test Fund5", author: " Ben Thomson5" },
-        // { title: "Test Fund6", author: " Ben Thomson6" },
-      ],
       marks: {
         1: 1,
         45: 45,
@@ -140,15 +124,9 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = this.allFunds.filter(async (f) => {
+      this.filteredFunds = this.allFunds.filter(async f => {
         return f.status == this.currentStatusFilter;
       });
-    },
-  },
-  methods: {
-    changeCap(val) {
-      this.filters.capVal = val / 10;
-      console.log(this.filters.capVal);
     },
   },
 };

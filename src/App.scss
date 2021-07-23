@@ -1,11 +1,12 @@
 $theme-colors: (
   "primary": rgba(3, 166, 120, 1),
-  "secondary": #E5E5E5,
+  "secondary": #f5f3fa,
   dark: rgb(22,21,34),
-  gray: rgba(155, 155, 155, 1),
+  darken:rgb(29, 34, 44),
+gray: rgb(155, 155, 155),
   "gray-dark": rgb(32,34,49),
-  danger: rgba(210, 77, 87, 1),
-  light:rgba(240, 239, 248, 1)
+  danger: rgb(210, 77, 87),
+  light:rgb(240, 239, 248)
 
 
 );
@@ -51,4 +52,8 @@ $border-radius:19px;
 
 .flex-auto{
   flex: 1 1 auto;
+}
+
+.my-6{
+  margin: 56px 0;
 }

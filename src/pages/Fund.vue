@@ -352,7 +352,10 @@
           TRADE
         </div>
         <div v-show="isActive('about')">
-          <div class="row">
+          <div v-if="showAllInvestors">
+            <AllInvestors />
+          </div>
+          <div v-else class="row">
             <div class="col-md-8">
               <div class="d-flex">
                 <div>
@@ -520,7 +523,7 @@
                     </div>
                   </div>
                 </div>
-                <button class="btn btn-light">See all investors</button>
+                <button class="btn btn-light" @click="showAllInvestors = true">See all investors</button>
               </div>
             </div>
           </div>
@@ -539,10 +542,11 @@ import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers, utils } from "ethers";
 import VSelect from "@alfsnd/vue-bootstrap-select";
 import ProfileIcon from "../assets/images/profile.svg?inline";
+import AllInvestors from "../components/AllInvestors";
 
 export default {
   name: "Fund",
-  components: { VSelect, ProfileIcon },
+  components: { VSelect, ProfileIcon, AllInvestors },
   data() {
     return {
       fundContract: null,
@@ -553,6 +557,7 @@ export default {
       tokensList: ["BNB", "ETH", "DAI"],
       selectedToken: "BNB",
       activeItem: "trade",
+      showAllInvestors: false,
     };
   },
   computed: {
@@ -594,7 +599,10 @@ export default {
         const t = fundInfo.boughtTokensAddresses[i];
         boughtTokens.push(await this.getTokenInfo(t));
       }
-      const signerAddress = await this.fundService.getCurrentProvider().getSigner().getAddress();
+      const signerAddress = await this.fundService
+        .getCurrentProvider()
+        .getSigner()
+        .getAddress();
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);

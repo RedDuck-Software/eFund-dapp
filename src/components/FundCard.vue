@@ -20,9 +20,11 @@
         ></div>
       </div>
       <div class="d-flex">
-        <div class="desc-item">Manager collateral: {{ fundInfo.collateral }} {{eFundNetworkSettings.cryptoSign}},</div>
-        <div class="desc-item">Min: {{ fundInfo.softCap }} {{eFundNetworkSettings.cryptoSign}},</div>
-        <div class="desc-item">Max: {{ fundInfo.hardCap }} {{eFundNetworkSettings.cryptoSign}},</div>
+        <div class="desc-item">
+          Manager collateral: {{ fundInfo.collateral }} {{ eFundNetworkSettings.cryptoSign }},
+        </div>
+        <div class="desc-item">Min: {{ fundInfo.softCap }} {{ eFundNetworkSettings.cryptoSign }},</div>
+        <div class="desc-item">Max: {{ fundInfo.hardCap }} {{ eFundNetworkSettings.cryptoSign }},</div>
         <div class="desc-item">Fee: {{ fundInfo.profitFee }}%</div>
       </div>
       <div class="d-flex">
@@ -40,7 +42,7 @@ import { formatDuration } from "../services/helpers";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "Card",
+  name: "FundCard",
   props: ["fundInfo"],
   computed: {
     ...mapGetters(["eFundNetworkSettings"]),
