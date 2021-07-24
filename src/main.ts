@@ -18,6 +18,17 @@ import VueFormWizard from "vue-form-wizard";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
 Vue.use(VueFormWizard);
 
+import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
+
+// Import Bootstrap an BootstrapVue CSS files (order is important)
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+
+// Make BootstrapVue available throughout your project
+Vue.use(BootstrapVue);
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin);
+
 Vue.use(VueSocialSharing);
 Vue.use(PortalVue);
 Vue.use(VueLoading, { dark: true });

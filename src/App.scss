@@ -202,3 +202,14 @@ h5{
   background: #9b9b9b;
 }
 
+.token-icon {
+  width: 54px;
+  height: 54px;
+  background: white;
+  border-radius: 50%;
+
+  img {
+    max-width: 100%;
+  }
+}
+

@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     addName() {},
-    nextStep: function() {
+    nextStep() {
       this.step++;
     },
     checkMetaMask() {

@@ -178,17 +178,6 @@ export default {
 
 <style scoped lang="scss">
 @import "../App";
-
-.token-icon {
-  width: 54px;
-  height: 54px;
-  background: white;
-  border-radius: 50%;
-
-  img {
-    max-width: 100%;
-  }
-}
 </style>
 
 <style lang="scss"></style>
