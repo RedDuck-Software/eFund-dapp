@@ -1,23 +1,23 @@
 <template>
   <div class="bg-lightest p-4 rounded box-shadow">
     <div class="row position-relative">
-      <div class="swap-icon">
+      <div class="swap-icon d-none d-md-block">
         <img :src="require('../assets/images/swap-icon.png')" />
       </div>
-      <div class="col-sm-6 px-5 pt-2">
+      <div class="col-md-6 px-lg-5 pt-2">
         <div>
-          <v-select v-model="selectedFrom" :options="tokensList" class="swap-select">
+          <v-select v-model="selectedFrom" :options="tokensList" class="swap-select mr-md-3 mr-lg-0">
             <template slot="selected-option" slot-scope="option" :value="option.id">
               <div class="selected d-flex justify-content-between">
                 {{ option.label }}
-                <div class="token-icon d-flex mr-3 justify-content-center align-items-center">
+                <div class="token-icon d-flex ml-lg-3 ml-1 justify-content-center align-items-center">
                   <img :src="require(`../assets/images/${option.icon}`)" />
                 </div>
               </div> </template
           ></v-select>
         </div>
         <div class="trade-inputs d-flex flex-column">
-          <div class="w-75">
+          <div class="w-lg-75">
             <div class="label">You spend</div>
             <div class="d-flex">
               <div class="input-group mb-3 font-weight-bold">
@@ -34,20 +34,23 @@
               </div>
             </div>
           </div>
-          <div class="mt-4">
+          <div class="gas-fee">
             <div class="label">Gas fee</div>
             <h3 class="middle font-weight-lighter">0.002024 BNB</h3>
           </div>
         </div>
       </div>
-      <div class="vl"></div>
-      <div class="col-sm-6 px-5 pt-2">
+      <div class="vl d-none d-md-block"></div>
+      <div class="swap-icon-mobile d-block d-md-none">
+        <img :src="require('../assets/images/swap-icon.png')" />
+      </div>
+      <div class="col-md-6 px-lg-5 pt-2">
         <div>
-          <v-select v-model="selectedTo" :options="tokensList" class="swap-select">
+          <v-select v-model="selectedTo" :options="tokensList" class="swap-select ml-md-3 ml-lg-0">
             <template slot="selected-option" slot-scope="option" :value="option.id">
               <div class="selected d-flex justify-content-between">
                 {{ option.label }}
-                <div class="token-icon d-flex mr-3 justify-content-center align-items-center">
+                <div class="token-icon d-flex ml-lg-3 ml-1  justify-content-center align-items-center">
                   <img :src="require(`../assets/images/${option.icon}`)" />
                 </div>
               </div> </template
@@ -73,7 +76,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class=" mx-auto">
         <button type="button" class="btn black-button mt-4 swap-button">
           Converte now
         </button>
@@ -134,11 +137,13 @@ export default {
   font-size: 22px;
   color: black;
   flex-wrap: nowrap;
+  max-width: 100%;
 }
 .light-input {
   border: none;
   background: none;
   color: black;
+  width: auto;
 }
 
 .light-input:focus {
@@ -146,10 +151,24 @@ export default {
 }
 
 .swap-button {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 0);
+  //position: absolute;
+  //left: 50%;
+  //bottom: 0;
+  //transform: translate(-50%, 0);
+}
+
+@media screen and (min-width: 768px) {
+  .swap-button {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 0);
+  }
+
+  .light-input {
+    width: 218px;
+    max-width: 80%;
+  }
 }
 </style>
 
@@ -173,7 +192,9 @@ export default {
   }
 
   .vs__search {
-    height: 100%;
+    padding: 0;
+    margin: 0;
+    width: 1px;
   }
 
   .vs__selected,
@@ -195,6 +216,12 @@ export default {
   }
 }
 
+//@media screen and (min-width: 768px) and (max-width: 1024px) {
+//  .swap-select {
+//    margin-left: 22px;
+//  }
+//}
+
 .vl {
   border-left: 2px solid #f0f0f0;
   height: 100%;
@@ -204,8 +231,8 @@ export default {
 }
 
 .trade-inputs {
-  margin-top: 102px;
-  margin-bottom: 102px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .swap-icon {
@@ -216,6 +243,26 @@ export default {
   z-index: 3;
   img {
     width: 48px;
+  }
+}
+.gas-fee {
+  margin-top: 12px;
+}
+.swap-icon-mobile {
+  margin: 24px auto;
+  img {
+    width: 48px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .trade-inputs {
+    margin-top: 102px;
+    margin-bottom: 102px;
+  }
+
+  .gas-fee {
+    margin-top: 36px;
   }
 }
 </style>

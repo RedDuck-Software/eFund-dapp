@@ -1,14 +1,14 @@
 <template>
   <div class="container-fluid">
-    <h2 class="font-weight-bold mb-1">All Funds</h2>
+    <h1 class="font-weight-bold mb-1">All Funds</h1>
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-12 col-lg-4">
         <div class="fund-filters bg-lightest rounded">
           <h2 class="font-weight-bold pb-2">Fund Settings</h2>
           <div class="label">Status</div>
           <div class="d-flex flex-wrap pt-2">
             <ToggleButton
-              :initialTogled="true"
+              :initial-togled="true"
               @click="getAllFilteredFunds"
               @toggleOn="filters.currentStatusFilter.add('Opened')"
               @toggleOff="filters.currentStatusFilter['delete']('Opened')"
@@ -33,7 +33,7 @@
             </ToggleButton>
 
             <ToggleButton
-              :isActive="signerAddress != null"
+              :is-active="signerAddress != null"
               @click="getAllFilteredFunds"
               @toggleOn="filters.address = signerAddress"
               @toggleOff="filters.address = null"
@@ -47,7 +47,6 @@
               <div class="badge bg-black text-white">{{ filters.minTime }} days</div>
             </div>
             <vue-slider
-              @change="getAllFilteredFunds"
               v-model="filters.minTime"
               :min="1"
               :max="6"
@@ -56,6 +55,7 @@
               :tooltip="'none'"
               :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
               :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+              @change="getAllFilteredFunds"
             >
               <template #dot="{ focus }">
                 <div :class="['custom-dot', { focus }]"></div>
@@ -68,7 +68,6 @@
               <div class="badge bg-black text-white">{{ filters.cap }} BNB</div>
             </div>
             <vue-slider
-              @change="getAllFilteredFunds"
               v-model="filters.cap"
               :min="0"
               :max="10"
@@ -77,6 +76,7 @@
               :tooltip="'none'"
               :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
               :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+              @change="getAllFilteredFunds"
             >
               <template #dot="{ focus }">
                 <div :class="['custom-dot', { focus }]"></div>
@@ -90,7 +90,6 @@
               <div class="badge bg-black text-white">{{ filters.investors }}</div>
             </div>
             <vue-slider
-              @change="getAllFilteredFunds"
               v-model="filters.investors"
               :min="0"
               :max="100"
@@ -99,6 +98,7 @@
               :tooltip="'none'"
               :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
               :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+              @change="getAllFilteredFunds"
             >
               <template #dot="{ focus }">
                 <div :class="['custom-dot', { focus }]"></div>
@@ -124,10 +124,19 @@
           </div>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-12 col-lg-8">
         <div v-if="filteredFunds.length != 0">
-          <div v-for="(fundChunk, index) in fundsChunks" :key="index" class="row">
-            <div v-for="(fund, findex) in fundChunk" :key="findex" class="col-sm-6 col-12">
+          <div class="row flex-wrap">
+            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
+              <FundCard :fund-info="fund" />
+            </div>
+            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
+              <FundCard :fund-info="fund" />
+            </div>
+            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
+              <FundCard :fund-info="fund" />
+            </div>
+            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
               <FundCard :fund-info="fund" />
             </div>
           </div>
@@ -212,7 +221,7 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = Array.from(this.allFunds).filter((f) => {
+      this.filteredFunds = Array.from(this.allFunds).filter(f => {
         console.log(this.filters);
 
         return (

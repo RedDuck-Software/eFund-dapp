@@ -68,7 +68,13 @@ body {
 }
 
 .header {
-  width: 8%;
+  width: 0%;
+}
+
+@media screen and (min-width: 768px) {
+  .header {
+    width: 8%;
+  }
 }
 
 .main {

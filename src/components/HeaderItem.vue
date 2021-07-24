@@ -28,11 +28,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.nav-link {
+.navbar-light .navbar-nav .nav-link {
   color: white;
   text-align: center;
   font-size: 14px;
   line-height: 17px;
+
+  &:hover {
+    color: white;
+  }
 
   &.active {
     color: black;

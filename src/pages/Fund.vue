@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-lg-4">
         <h1 class="font-weight-bold">The name of the Fund</h1>
         <div v-show="isActive('coins') || isActive('trade')">
           <Balances />
@@ -10,7 +10,7 @@
           <TradeHistory />
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-lg-8 mt-4">
         <div class="d-flex justify-content-between mb-4">
           <ul class="nav nav-tabs rounded">
             <li class="nav-item">
@@ -29,7 +29,7 @@
               >
             </li>
           </ul>
-          <button class="btn btn-danger box-shadow" @click="showAllInvestors = true">
+          <button class="btn btn-danger box-shadow completed d-none d-md-block" @click="showAllInvestors = true">
             <h5 class="text-white">Set completed</h5>
           </button>
         </div>
@@ -38,6 +38,9 @@
         </div>
         <div v-show="isActive('trade')">
           <Trade />
+          <button class="btn btn-danger box-shadow completed d-block d-md-none" @click="showAllInvestors = true">
+            <h5 class="text-white">Set completed</h5>
+          </button>
         </div>
         <div v-show="isActive('about')">
           <AboutToken />

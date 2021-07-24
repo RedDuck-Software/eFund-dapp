@@ -12,15 +12,15 @@
       <h1 class="font-weight-bold">TOP-3 funds now</h1>
       <h2 class="mb-3">Try to invest</h2>
       <div class="row">
-        <div :key="0" class="col-sm-4 col-12">
+        <div :key="0" class="col-12 col-sm-6 col-lg-4 ">
           <FundCard v-if="topFunds[0]" :fund-info="topFunds[0]" />
         </div>
-        <div :key="1" class="col-sm-4 col-12">
+        <div :key="1" class="col-12 col-sm-6 col-lg-4 ">
           <FundCard v-if="topFunds[1]" :fund-info="topFunds[1]" />
         </div>
       </div>
       <div class="row">
-        <div :key="2" class="col-sm-4 col-12">
+        <div :key="2" class="col-12 col-sm-6 col-lg-4">
           <FundCard v-if="topFunds[2]" :fund-info="topFunds[2]" />
         </div>
       </div>

@@ -3,7 +3,7 @@
     <h1 class="mb-3 font-weight-bold">Profile</h1>
 
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-sm-6 col-lg-4">
         <form class="form-create bg-lightest box-shadow rounded d-flex flex-column">
           <fieldset v-if="step === 1" class="mb-0 form-group d-flex flex-column">
             <div class="">
@@ -66,7 +66,7 @@
           </div>
         </form>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-6 col-lg-4 d-none d-sm-block">
         <div class="card profile-card box-shadow">
           <div class="card-body">
             <div class="row no-gutters">
