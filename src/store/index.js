@@ -26,6 +26,7 @@ const store = new Vuex.Store({
     minDepositAmount: null,
     fundCanBeStartedAt: null,
     profitFee: null,
+    platformSettings: null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
   },
@@ -99,6 +100,9 @@ const store = new Vuex.Store({
     updateProfitFee(state, fee) {
       state.profitFee = fee;
     },
+    updatePlatformSettings(state, settings) { 
+      state.platformSettings = settings;
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -144,6 +148,7 @@ const store = new Vuex.Store({
     userIsManager: state => state.userIsManager,
     myFundsAsManager: state => state.myFundsAsManager,
     myFundsAsInvestor: state => state.myFundsAsInvestor,
+    platformSettings: state => state.platformSettings,
   },
   plugins: [createPersistedState()],
 });

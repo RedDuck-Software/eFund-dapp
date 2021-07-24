@@ -100,12 +100,8 @@ export default {
     if(this.eFundNetworkSettings == null) return;
     
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    const platformContract = this.fundService.getFundPlatformContractInstance();
-    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
 
-    console.log("Is user manager: ", isUserManager);
-
-    if (isUserManager) {
+    if (this.userIsManager) {
       const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
       this.updateMyFundsAsManager(curUserFundsAsManager);
 
@@ -114,7 +110,6 @@ export default {
 
     // todo : fetch user`s funds as a investor
     // todo : Investigate, what would be better - fetching backend or modify a smart contract
-    this.updateUserIsManager(isUserManager);
   },
 
   methods: {

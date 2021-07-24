@@ -13,10 +13,20 @@ module.exports = {
           test: /\.svg$/,
           loader: "vue-svg-loader",
         },
+        {
+          test: /\.scss$/,
+          use: [
+            {
+              loader: 'sass-loader',
+              options: {
+                includePaths: ['node_modules']
+              }
+            }
+          ]
+        }
       ],
     },
   },
-
   chainWebpack: config => {
     config.module.rules.delete("svg");
     config.module

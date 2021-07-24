@@ -115,11 +115,11 @@ import { currentProvider } from "../services/ether";
 import { mapGetters } from "vuex";
 import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
-import ToggleButton from "../components/ToggleBtn.vue";
+// import ToggleButton from "../components/ToggleBtn.vue";
 
 export default {
   name: "All",
-  components: { FundCard, VueSlider, ToggleButton },
+  components: { FundCard, VueSlider },
   data() {
     return {
       filters: { 

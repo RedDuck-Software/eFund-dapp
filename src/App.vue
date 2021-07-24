@@ -5,7 +5,6 @@
       <router-view></router-view>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -28,20 +27,30 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
+    ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
   async mounted() {
+    if (this.eFundNetworkSettings == null) {
+      this.isLoaded = true;
+      return;
+    }
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     const platformContract = this.fundService.getFundPlatformContractInstance();
 
     const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
-    const platformSettings = ;
+
+    if (this.platformSettings == null) {
+      const platformSettings = await this.fundService.getPlatformSettings();
+      this.updatePlatformSettings(platformSettings);
+    }
+
     this.updateUserIsManager(isUserManager);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager"]),
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager", "updatePlatformSettings"]),
   },
 };
 </script>

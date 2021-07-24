@@ -41,9 +41,9 @@
               <div class="label">Start with recommended settings</div>
 
               <div class="d-flex flex-wrap pt-2">
-                <div class="badge bg-black text-white">Small Fund</div>
-                <div class="badge bg-light text-black">Medium Fund</div>
-                <div class="badge bg-light text-black">Large Fund</div>
+                <ToggleBtn :shouldAutoTogle="false" :togled="fundPresetIndex==0" @click="updateFundPreset(0)">Small fund</ToggleBtn>
+                <ToggleBtn :shouldAutoTogle="false" :togled="fundPresetIndex==1" @click="updateFundPreset(1)">Medium fund</ToggleBtn>
+                <ToggleBtn :shouldAutoTogle="false" :togled="fundPresetIndex==2" @click="updateFundPreset(2)">Large fund</ToggleBtn>
               </div>
             </div>
             <div class="sliders pt-3 mb-4">
@@ -53,8 +53,9 @@
               </div>
               <vue-slider
                 v-model="form.collateral"
-                :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                :marks="true"
+                :interval="0.1"
+                :min="0.1"
+                :max="platformSettings.hardCap - 0.1"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -71,9 +72,9 @@
               </div>
               <vue-slider
                 v-model="form.minSize"
-                :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                :marks="true"
-
+                :interval="0.1"
+                :min="platformSettings.softCap"
+                :max="platformSettings.hardCap"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -91,8 +92,9 @@
 
               <vue-slider
                 v-model="form.maxSize"
-                :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                :marks="true"
+                :interval="0.1"
+                :min="platformSettings.softCap"
+                :max="platformSettings.hardCap"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -111,9 +113,10 @@
               <div class="label">Max trading time</div>
 
               <div class="d-flex flex-wrap pt-2">
-                <div class="badge bg-black text-white">1 month</div>
-                <div class="badge bg-light text-black">3 month</div>
-                <div class="badge bg-light text-black">6 month</div>
+                <ToggleBtn :shouldAutoTogle="false" :togled="form.duration==1" @click="form.duration=1">1 month</ToggleBtn>
+                <ToggleBtn :shouldAutoTogle="false" :togled="form.duration==2" @click="form.duration=2">2 month</ToggleBtn>
+                <ToggleBtn :shouldAutoTogle="false" :togled="form.duration==3" @click="form.duration=3">3 month</ToggleBtn>
+                <ToggleBtn :shouldAutoTogle="false" :togled="form.duration==6" @click="form.duration=6">6 month</ToggleBtn>
               </div>
             </div>
             <div class="sliders pt-3 mb-4">
@@ -123,7 +126,7 @@
               </div>
               <vue-slider
                 v-model="form.tillStart"
-                :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                :data="getTillStartData()"
                 :marks="true"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
@@ -141,7 +144,7 @@
               </div>
               <vue-slider
                 v-model="form.fee"
-                :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                :data="getFeeData()"
                 :marks="true"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
@@ -205,17 +208,17 @@
               <div
                 class="progress-bar"
                 role="progressbar"
-                style="width: 25%;"
-                aria-valuenow="15"
+                :style="`width: ${(100 / form.maxSize ) * form.collateral}%;`"
+                :aria-valuenow="form.collateral"
                 aria-valuemin="0"
-                aria-valuemax="100"
+                :aria-valuemax="form.maxSize"
               ></div>
             </div>
             <div class="d-flex flex-wrap mt-2 mb-3">
-              <div class="desc-item label mr-3">Collateral: <span class="text-black">10</span></div>
-              <div class="desc-item label mr-3">Min: <span class="text-black">2</span></div>
-              <div class="desc-item label mr-3">Max: <span class="text-black">8</span></div>
-              <div class="desc-item label">Fee: <span class="text-black">2%</span></div>
+              <div class="desc-item label mr-3">Collateral: <span class="text-black">{{ form.collateral}}</span></div>
+              <div class="desc-item label mr-3">Min: <span class="text-black">{{ form.minSize}}</span></div>
+              <div class="desc-item label mr-3">Max: <span class="text-black">{{ form.maxSize}}</span></div>
+              <div class="desc-item label">Fee: <span class="text-black">{{ form.fee }}</span></div>
             </div>
             <div class="d-flex flex-wrap pt-2">
               <div class="badge bg-black text-white">Rules</div>
@@ -231,47 +234,126 @@
 
 <script>
 import { getSigner, isMetaMaskInstalled } from "@/services/ether";
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
+import { oneDayDurationInSeconds }  from "../services/helpers";
+import ToggleBtn from "../components/ToggleBtn.vue";
+import { ethers, utils } from 'ethers';
+import { asyncLoading } from "vuejs-loading-plugin";
+import { currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
+
 
 export default {
   name: "Profile",
-  components: { VueSlider },
+  components: { VueSlider, ToggleBtn},
+  computed: { 
+    ...mapGetters(["platformSettings", "eFundNetworkSettings"]),
+    
+  },
   data() {
     return {
       step: 1,
       totalSteps: 5,
       publicPath: process.env.BASE_URL,
-      form: {
-        name: null,
-        collateral: 4,
-        minSize: 3,
-        maxSize: 9,
-        tillStart: 1,
-        fee: 2,
-      },
+      form: {},
+      fundPresetIndex: 0,
+      platformContract: null, 
+      fundService: null,
+      fundPreset :  [
+        {
+          name: null,
+          collateral: 2,
+          minSize: 0.1,
+          maxSize: 5,
+          tillStart: 1,
+          fee: 2,
+          duration: 1,
+        },
+        {
+          name: null,
+          collateral: 4,
+          minSize: 10,
+          maxSize: 30,
+          tillStart: 6,
+          fee: 5,
+          duration: 3,
+        },
+        {
+          name: null,
+          collateral: 7,
+          minSize: 15,
+          maxSize: 75,
+          tillStart: 10,
+          fee: 8,
+          duration: 6,
+        },
+      ],
     };
+  },
+  async mounted(){ 
+    this.updateFundPreset(this.fundPresetIndex);
+
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.platformContract = this.fundService.getFundPlatformContractInstance();
+
+    console.log(this.getTillStartData());
+
+    console.log(this.platformSettings.minimumTimeUntillFundStart);
   },
   methods: {
     addName() {},
     nextStep: function() {
+      if(this.step + 1==this.totalSteps) { 
+        asyncLoading(this.createNewFund()).then((v)=>{ this.step++;}).catch((ex)=>console.error(ex));
+        return;
+      }
+
       this.step++;
     },
-    checkMetaMask() {
-      return !isMetaMaskInstalled();
-    },
-    async handleConnectWallet() {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      if (accounts[0]) {
-        const { address } = await getSigner();
-        this.updateSignerAddress(address);
-        this.step++;
-      }
-    },
 
+    async createNewFund() { 
+      const overrides = {
+        value: ethers.utils.parseEther(this.form.collateral.toString()),
+      };  
+      console.log(overrides);
+
+      console.log(this.form);
+
+      const tx = await this.platformContract.createFund(
+          this.eFundNetworkSettings.router,
+          this.form.duration,
+          utils.parseEther(this.form.minSize.toString()),
+          utils.parseEther(this.form.maxSize.toString()),
+          this.form.fee,
+          utils.parseEther("0.0000001"), //this.minimalDepositAmount,
+          this.form.tillStart * oneDayDurationInSeconds,
+          [],
+          overrides
+        );
+
+      await tx.wait();
+    },
+    generateArrayInRange(start, end) {
+      return Array(end - start + 1).fill().map((_, idx) => start + idx);
+    },
+    getTillStartData(){ 
+      return this.generateArrayInRange(
+        Math.ceil(this.platformSettings.minimumTimeUntillFundStart / oneDayDurationInSeconds), 
+        Math.floor(this.platformSettings.maximumTimeUntillFundStart / oneDayDurationInSeconds)
+      );
+    },
+    getFeeData() { 
+      return this.generateArrayInRange(
+        this.platformSettings.minimumProfitFee, 
+        this.platformSettings.maximumProfitFee
+      );
+    },
+    updateFundPreset(index)  {
+      this.fundPresetIndex=index;
+      this.form = this.fundPreset[index];
+    },
     ...mapMutations(["updateSignerAddress"]),
   },
 };

@@ -1,28 +1,35 @@
 <template>
-  <button
-    :class="`btn ${isOn ? 'btn-dark' : 'btn-light'}`"
-    @click="
+  <div
+    :class="`badge ${(togled ? true: isOn) ? 'bg-black text-white' : 'bg-light text-black'}`"
+    v-on:click="
       () => {
         if (isOn) this.$emit('toggleOff');
         else this.$emit('toggleOn');
         this.$emit('click');
-        isOn = !isOn;
+
+        if(shouldAutoTogle)
+          isOn = !isOn;
       }
     "
     :disabled="!isActive"
   >
     <slot></slot>
-  </button>
+  </div>
 </template>
 
 <script>
-import { isNullOrUndefined } from "util";
-
 export default {
   name: "ToggleButton",
   props: {
-    togled: {},
-
+    shouldAutoTogle:  {
+      default: true,
+    },
+    togled: {
+      default: false,
+    },
+    initialTogled: {
+      default: false,
+    },
     isActive: {
       default: true,
     },
@@ -30,7 +37,7 @@ export default {
 
   data() {
     return {
-      isOn: this.togled === null || this.togled === undefined ? false : this.togled,
+      isOn: this.initialTogled,
     };
   },
 };

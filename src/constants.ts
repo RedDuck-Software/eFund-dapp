@@ -1,5 +1,5 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0x8AE35f04D8455fC184cb8d4Cb1603B86442D8BEE";
-export const EFUND_TOKEN_BSC = "0x234BedCDFD014d5627f74c487b4a336d55B78120";
+export const FUND_PLATFROM_ADDRESS_BSC = "0xdB4a07D4eA8F69047EC29d008aBD299A1aFF2b71";
+export const EFUND_TOKEN_BSC = "0x109663438Ff20c8391E6431F3455bD5179e50E20";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
@@ -9,6 +9,10 @@ export const EFUND_TOKEN_LOCALDEV = "0x4826533B4897376654Bb4d4AD88B7faFD0C98528"
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+
+
+export const PANCACKE_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
+export const UNISWAP_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -34,9 +38,7 @@ export const SWAP_FACTORY_ABI = JSON.stringify(SwapFactory.abi);
 
 export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 
-
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
-
 
 
 export const eFundNetworkSettings =
@@ -48,6 +50,7 @@ export const eFundNetworkSettings =
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
+    router: PANCACKE_ROUTER,
     tokensAddresses: [
       {
         name: "USDT",
@@ -70,6 +73,7 @@ export const eFundNetworkSettings =
     wrappedCryptoAddress: WETH_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
     eFundTokenAddress: EFUND_TOKEN_LOCALDEV,
+    router: UNISWAP_ROUTER,
     tokensAddresses: [
       {
         name: "USDT",
