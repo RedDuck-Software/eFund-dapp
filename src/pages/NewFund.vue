@@ -73,6 +73,7 @@
                 v-model="form.minSize"
                 :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
                 :marks="true"
+
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -84,7 +85,7 @@
             </div>
             <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
-                <div class="label">Max starting fund size</div>
+                <div class="label">Max fund size</div>
                 <div class="badge bg-black text-white">{{ form.maxSize }}ETH</div>
               </div>
 
