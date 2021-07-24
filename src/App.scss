@@ -101,7 +101,6 @@ h3{
   &.middle{
     font-size: 18px;
     line-height: 22px;
-    font-weight:400;
 }
 }
 
@@ -160,7 +159,12 @@ h5{
 }
 
 .font-weight-bold{
-  font-weight: 600;
+  font-weight: 600 !important;
+}
+
+.font-weight-lighter{
+  font-weight: 400 !important;
+
 }
 
 .box-shadow{

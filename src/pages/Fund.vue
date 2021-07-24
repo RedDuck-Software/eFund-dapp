@@ -11,28 +11,33 @@
         </div>
       </div>
       <div class="col-md-8">
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a class="nav-link " :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
-              >Trade</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" :class="{ 'active show': isActive('about') }" href="#" @click="setActive('about')"
-              >About</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
-              >Coins Price</a
-            >
-          </li>
-        </ul>
+        <div class="d-flex justify-content-between mb-4">
+          <ul class="nav nav-tabs rounded">
+            <li class="nav-item">
+              <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
+                >Trade</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" :class="{ 'active show': isActive('about') }" href="#" @click="setActive('about')"
+                >About</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
+                >Coins Price</a
+              >
+            </li>
+          </ul>
+          <button class="btn btn-danger box-shadow" @click="showAllInvestors = true">
+            <h5 class="text-white">Set completed</h5>
+          </button>
+        </div>
         <div v-show="isActive('coins')">
           <CoinsPriceTab />
         </div>
         <div v-show="isActive('trade')">
-          TRADE
+          <Trade />
         </div>
         <div v-show="isActive('about')">
           <AboutToken />
@@ -53,10 +58,11 @@ import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
 import TradeHistory from "@/components/TradeHistory";
 import AboutToken from "@/components/AboutToken";
+import Trade from "@/components/Trade";
 
 export default {
   name: "Fund",
-  components: { Balances, CoinsPriceTab, TradeHistory, AboutToken },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutToken, Trade },
   data() {
     return {
       fundContract: null,
@@ -64,7 +70,7 @@ export default {
       fundContractAddress: null,
       isLoaded: false,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      activeItem: "about",
+      activeItem: "trade",
     };
   },
   computed: {
@@ -177,7 +183,25 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../App";
+.nav-tabs {
+  background: white;
+  box-shadow: 0px 4px 14px rgba(180, 180, 180, 0.25);
+
+  .nav-link {
+    border: none;
+    border-radius: unset;
+    background: none;
+    color: rgb(155, 155, 155);
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 400;
+    padding: 8px 30px;
+  }
+
+  .nav-link.active {
+    color: black;
+  }
+}
 </style>
 
 <style lang="scss"></style>
