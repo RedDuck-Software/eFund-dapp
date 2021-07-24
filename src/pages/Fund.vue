@@ -4,96 +4,7 @@
       <div class="col-md-4">
         <h1>The name of the Fund</h1>
         <div v-show="isActive('coins') || isActive('trade')">
-          <div class="d-flex">
-            <div>
-              <v-select v-model="selectedToken" :options="tokensList" />
-              <h5>Fund value</h5>
-            </div>
-            <div>
-              240.05
-              <h5>Total Balance</h5>
-            </div>
-            <div>
-              <span>+120.21 </span>
-              <h5>Revenue</h5>
-            </div>
-          </div>
-          <div class="balances">
-            <ul>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex">
-                  <img src="../assets/images/Dai_icon.png" />
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      Dai
-                    </div>
-                    <div>44.54</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-primary">+11.524367254</div>
-                  </div>
-                </div>
-              </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/busdt_icon_transparent.png" />
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      Busdt
-                    </div>
-                    <div>115.75</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-danger">-6.524767254</div>
-                  </div>
-                </div>
-              </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <div>
-                    <img src="../assets/images/usdt_icon_transparent.png" />
-                  </div>
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      usdt
-                    </div>
-                    <div>77.50</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-primary">+11.524367254</div>
-                  </div>
-                </div>
-              </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <div>
-                    <img src="../assets/images/bnb_icon_transparent.png" />
-                  </div>
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      bnb
-                    </div>
-                    <div>32.05</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-primary">-1.524367254</div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+          <Balances />
         </div>
         <div v-show="isActive('about')">
           <h4 class="text-gray">Bought Tokens</h4>
@@ -218,135 +129,7 @@
           </li>
         </ul>
         <div v-show="isActive('coins')">
-          <div class="bordered bg-lightest p-4">
-            <div class="d-flex flex-wrap">
-              <button class="btn btn-dark">1 day</button>
-              <button class="btn btn-light">1 week</button>
-              <button class="btn btn-light">1 month</button>
-              <button class="btn btn-light">3 month</button>
-              <button class="btn btn-light">6 month</button>
-              <button class="btn btn-light">1 year</button>
-              <button class="btn btn-light">2 years</button>
-            </div>
-          </div>
-          <ul class="list-group">
-            <li class="bg-light-gray d-flex mt-3">
-              <div class="col-md-4 px-0 d-flex">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/bnb_icon_transparent.png" />
-                </div>
-                <div>
-                  <h3 class="text-black">Binance</h3>
-                  <span class="text-black">$308.29 USD </span>
-                </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="label text-gray">USD</div>
-                <div class="text-primary">+1.42%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">BNB</div>
-                <div class="text-primary">+0.48%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">Market cap</div>
-                <div class="text-black">$51.79B</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray text-center">24h volume</div>
-                <div class="text-black text-center">$1.198B</div>
-              </div>
-              <div></div>
-            </li>
-            <li class=" bg-light-gray d-flex mt-3">
-              <div class="col-md-4 px-0 d-flex">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/Dai_icon.png" />
-                </div>
-                <div>
-                  <h3 class="text-black">Dai</h3>
-                  <span class="text-black">$308.29 USD </span>
-                </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="label text-gray">USD</div>
-                <div class="text-primary">+1.42%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">BNB</div>
-                <div class="text-primary">+0.48%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">Market cap</div>
-                <div class="text-black">$51.79B</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray text-center">24h volume</div>
-                <div class="text-black text-center">$1.198B</div>
-              </div>
-              <div></div>
-            </li>
-            <li class=" bg-light-gray d-flex mt-3">
-              <div class="col-md-4 px-0 d-flex">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/busdt_icon_transparent.png" />
-                </div>
-                <div>
-                  <h3 class="text-black">BUSDT</h3>
-                  <span class="text-black">$308.29 USD </span>
-                </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="label text-gray">USD</div>
-                <div class="text-primary">+1.42%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">BNB</div>
-                <div class="text-primary">+0.48%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">Market cap</div>
-                <div class="text-black">$51.79B</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray text-center">24h volume</div>
-                <div class="text-black text-center">$1.198B</div>
-              </div>
-              <div></div>
-            </li>
-            <li class=" bg-light-gray d-flex mt-3">
-              <div class="col-md-4 px-0 d-flex">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/usdt_icon_transparent.png" />
-                </div>
-                <div>
-                  <h3 class="text-black">Tether</h3>
-                  <span class="text-black">$308.29 USD </span>
-                </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="label text-gray">USD</div>
-                <div class="text-primary">+1.42%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">BNB</div>
-                <div class="text-primary">+0.48%</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray">Market cap</div>
-                <div class="text-black">$51.79B</div>
-              </div>
-              <div class="col-md-2">
-                <div class="label text-gray text-center">24h volume</div>
-                <div class="text-black text-center">$1.198B</div>
-              </div>
-              <div></div>
-            </li>
-          </ul>
+          <CoinsPriceTab />
         </div>
         <div v-show="isActive('trade')">
           TRADE
@@ -543,10 +326,12 @@ import { ethers, utils } from "ethers";
 import VSelect from "@alfsnd/vue-bootstrap-select";
 import ProfileIcon from "../assets/images/profile.svg?inline";
 import AllInvestors from "../components/AllInvestors";
+import Balances from "@/components/Balances";
+import CoinsPriceTab from "@/components/CoinsPriceTab";
 
 export default {
   name: "Fund",
-  components: { VSelect, ProfileIcon, AllInvestors },
+  components: { VSelect, ProfileIcon, AllInvestors, Balances, CoinsPriceTab },
   data() {
     return {
       fundContract: null,
