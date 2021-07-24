@@ -5,7 +5,8 @@ $theme-colors: (
   darken:rgb(29, 34, 44),
   gray: rgb(155, 155, 155),
   danger: rgb(210, 77, 87),
-  light:rgb(240, 239, 248)
+  light:rgb(240, 239, 248),
+  "light-gray":#f4f4f4
 );
 
 
@@ -91,7 +92,20 @@ h3{
   margin:0;
   padding: 0;
   color: black;
+
+  &.big{
+  font-size: 20px;
+  line-height: 24px;
 }
+
+  &.middle{
+    font-size: 18px;
+    line-height: 22px;
+}
+}
+
+
+
 
 .px-2-3{
   padding-left: 12px;
