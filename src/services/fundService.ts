@@ -59,7 +59,6 @@ export class FundService {
     return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
   }
 
-
   async getSwapFactoryAddress(swapRouterAddress) {
     const router = this.getSwapRouterContractInstance(swapRouterAddress);
 
@@ -171,18 +170,19 @@ export class FundService {
     const info = await fundContract.getFundInfo();
 
     return {
-      fundDurationInMonths: info._fundDurationInMonths,
+      fundDurationInMonths: parseFloat(info._fundDurationInMonths),
       managerAddress: info._fundManager,
       address: fundContract.address,
-      fundStartTimestamp: info._fundStartTimestamp,
-      minDepositAmount: info._minDepositAmount,
-      fundCanBeStartedAt: info._fundCanBeStartedAt,
+      fundStartTimestamp: parseFloat(info._fundStartTimestamp),
+      minDepositAmount: parseFloat(utils.formatEther(info._minDepositAmount)),
+      fundCanBeStartedAt: parseFloat(info._fundCanBeStartedAt),
       status: fundStatuses[info._fundStatus].value,
       hardCap: parseFloat(utils.formatEther(info._hardCap)),
       softCap: parseFloat(utils.formatEther(info._softCap)),
-      profitFee: info._profitFee,
+      profitFee: parseFloat(info._profitFee),
       collateral: parseFloat(utils.formatEther(info._managerCollateral)),
       balance: parseFloat(utils.formatEther(info._currentBalance)),
+      investorsAmount: parseFloat(info._investorsAmount),
       title: "Test fund",
       author: "Ben Thomson",
       imgUrl: "real_url_here",
