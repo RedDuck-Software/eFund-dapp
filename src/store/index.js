@@ -26,6 +26,9 @@ const store = new Vuex.Store({
     minDepositAmount: null,
     fundCanBeStartedAt: null,
     profitFee: null,
+    platformSettings: null,
+    myFundsAsInvestor: [],
+    myFundsAsManager: [],
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -54,6 +57,18 @@ const store = new Vuex.Store({
     },
     updateAllowedTokensAddresses(state, tokens) {
       state.allowedTokensAddresses = tokens;
+    },
+    updateMyFundsAsManager(state, funds) {
+      state.myFundsAsManager = funds;
+    },
+    addMyFundsAsManager(state, newFund) {
+      state.myFundsAsManager.push(newFund);
+    },
+    addMyFundsAsInvestor(state, newFund) {
+      state.myFundsAsInvestor.push(newFund);
+    },
+    updateMyFundsAsInvestor(state, funds) {
+      state.myFundsAsInvestor = funds;
     },
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
@@ -85,6 +100,9 @@ const store = new Vuex.Store({
     updateProfitFee(state, fee) {
       state.profitFee = fee;
     },
+    updatePlatformSettings(state, settings) { 
+      state.platformSettings = settings;
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -105,6 +123,8 @@ const store = new Vuex.Store({
       state.signerAddress = null;
       state.eFundNetworkSettings = null;
       state.funds = null;
+      state.myFundsAsInvestor = [];
+      state.myFundsAsManager = [];
     },
   },
   getters: {
@@ -126,19 +146,9 @@ const store = new Vuex.Store({
     fundCanBeStartedAt: state => state.fundCanBeStartedAt,
     profitFee: state => state.profitFee,
     userIsManager: state => state.userIsManager,
-  },
-  actions: {
-    // async updateBoughtTokensAddresses(context, tokens) {
-    //   context.commit('updateBoughtTokensAddresses', tokens);
-    //   console.log("commited ", JSON.stringify(context.state.boughtTokensAddresses));
-    // },
-    // async updateAllowedTokensAddresses(context, tokens) {
-    //   context.commit('updateAllowedTokensAddresses', tokens);
-    //   console.log("commited ", JSON.stringify(context.state.allowedTokensAddresses));
-    // },
-    // updateIsInfoLoaded(context, isLoaded) {
-    //   context.commit('updateIsInfoLoaded', isLoaded);
-    // },
+    myFundsAsManager: state => state.myFundsAsManager,
+    myFundsAsInvestor: state => state.myFundsAsInvestor,
+    platformSettings: state => state.platformSettings,
   },
   plugins: [createPersistedState()],
 });

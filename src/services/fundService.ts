@@ -32,7 +32,7 @@ export class FundService {
   }
 
   getCurrentProvider() {
-    return currentProvider;
+    return this.currentProvider;
   }
 
   getFundPlatformContractInstance() {
@@ -77,9 +77,26 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
+
+  async getPlatformSettings() {
+    const res = await this.platformContract.getPlatformData();
+
+    return {
+      softCap: parseFloat(utils.formatEther(res._softCap)),
+      hardCap: parseFloat(utils.formatEther(res._hardCap)),
+      minimumTimeUntillFundStart: parseFloat(res._minimumTimeUntillFundStart),
+      maximumTimeUntillFundStart: parseFloat(res._maximumTimeUntillFundStart),
+      minimumProfitFee: parseFloat(res._minimumProfitFee),
+      maximumProfitFee: parseFloat(res._maximumProfitFee),
+    }
+  }
+
   async getFundDetailedInfo(address) {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
+
+
+    console.log("current provider ", this.getCurrentProvider());
 
     // @ts-ignore: cannot assign vm to Event for some reasone
     const signerAddress = await this.getCurrentProvider()
@@ -88,14 +105,16 @@ export class FundService {
       // @ts-ignore: cannot assign vm to Event for some reasone
       .getAddress();
 
-    const [fundInfo, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
+    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
       this.getFundDetails(address),
+      fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
     ]);
 
     return {
       ...fundInfo,
+      isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
@@ -150,21 +169,20 @@ export class FundService {
 
     const info = await fundContract.getFundInfo();
 
-    console.log("fund info: ", info);
-
     return {
-      isDepositsWithdrawed: info._isDepositsWithdrawed,
+      fundDurationInMonths: parseFloat(info._fundDurationInMonths),
       managerAddress: info._fundManager,
       address: fundContract.address,
-      fundStartTimestamp: info._fundStartTimestamp,
-      minDepositAmount: info._minDepositAmount,
-      fundCanBeStartedAt: info._fundCanBeStartedAt,
+      fundStartTimestamp: parseFloat(info._fundStartTimestamp),
+      minDepositAmount: parseFloat(utils.formatEther(info._minDepositAmount)),
+      fundCanBeStartedAt: parseFloat(info._fundCanBeStartedAt),
       status: fundStatuses[info._fundStatus].value,
       hardCap: parseFloat(utils.formatEther(info._hardCap)),
       softCap: parseFloat(utils.formatEther(info._softCap)),
-      profitFee: info._profitFee,
+      profitFee: parseFloat(info._profitFee),
       collateral: parseFloat(utils.formatEther(info._managerCollateral)),
       balance: parseFloat(utils.formatEther(info._currentBalance)),
+      investorsAmount: parseFloat(info._investorsAmount),
       title: "Test fund",
       author: "Ben Thomson",
       imgUrl: "real_url_here",

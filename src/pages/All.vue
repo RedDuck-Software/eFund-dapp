@@ -7,10 +7,39 @@
           <h2 class="font-weight-bold pb-2">Fund Settings</h2>
           <div class="label">Status</div>
           <div class="d-flex flex-wrap pt-2">
-            <div class="badge bg-black text-white">Open</div>
-            <div class="badge bg-light text-black">Active</div>
-            <div class="badge bg-light text-black">Ended</div>
-            <div class="badge bg-light text-black">My Funds</div>
+            <ToggleButton
+              :initialTogled="true"
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Opened')"
+              @toggleOff="filters.currentStatusFilter['delete']('Opened')"
+            >
+              Opened</ToggleButton
+            >
+
+            <ToggleButton
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Active')"
+              @toggleOff="filters.currentStatusFilter['delete']('Active')"
+            >
+              Active</ToggleButton
+            >
+
+            <ToggleButton
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.currentStatusFilter.add('Completed')"
+              @toggleOff="filters.currentStatusFilter['delete']('Completed')"
+            >
+              Completed
+            </ToggleButton>
+
+            <ToggleButton
+              :isActive="signerAddress != null"
+              @click="getAllFilteredFunds"
+              @toggleOn="filters.address = signerAddress"
+              @toggleOff="filters.address = null"
+            >
+              My funds
+            </ToggleButton>
           </div>
           <div class="pt-3 mb-4">
             <div class="d-flex justify-content-between align-items-center">
@@ -18,10 +47,11 @@
               <div class="badge bg-black text-white">{{ filters.minTime }} days</div>
             </div>
             <vue-slider
+              @change="getAllFilteredFunds"
               v-model="filters.minTime"
               :min="1"
-              :max="90"
-              :step="3"
+              :max="6"
+              :step="1"
               :marks="marks"
               :tooltip="'none'"
               :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
@@ -38,8 +68,9 @@
               <div class="badge bg-black text-white">{{ filters.cap }} BNB</div>
             </div>
             <vue-slider
+              @change="getAllFilteredFunds"
               v-model="filters.cap"
-              :min="0.1"
+              :min="0"
               :max="10"
               :marks="marksCap"
               :interval="0.1"
@@ -59,11 +90,12 @@
               <div class="badge bg-black text-white">{{ filters.investors }}</div>
             </div>
             <vue-slider
+              @change="getAllFilteredFunds"
               v-model="filters.investors"
-              :min="1"
-              :max="90"
+              :min="0"
+              :max="100"
               :step="3"
-              :marks="marks"
+              :marks="marksInvestors"
               :tooltip="'none'"
               :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
               :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -100,7 +132,7 @@
             </div>
           </div>
         </div>
-        <div v-else>no active funds</div>
+        <div v-else>no funds found</div>
       </div>
     </div>
   </div>
@@ -113,33 +145,45 @@ import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
 import { mapGetters } from "vuex";
-import FundCard from "@/components/FundCard";
+import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
+import ToggleButton from "../components/ToggleBtn.vue";
 
 export default {
   name: "All",
-  components: { FundCard, VueSlider },
+  components: { FundCard, VueSlider, ToggleButton },
   data() {
     return {
+      filters: {
+        currentStatusFilter: new Set(["Opened"]),
+        minTime: 1,
+        cap: 0.1,
+        investors: 0,
+        address: null,
+      },
+
       fundService: null,
-      currentStatusFilter: "Opened",
       allFunds: [],
       filteredFunds: [],
       marks: {
         1: 1,
-        45: 45,
-        90: 90,
+        2: 2,
+        3: 3,
+        6: 6,
+      },
+      marksInvestors: {
+        0: 0,
+        10: 10,
+        30: 30,
+        70: 70,
+        100: 100,
       },
       marksCap: {
         1: 1,
         5: 5,
         10: 10,
       },
-      filters: {
-        minTime: 1,
-        cap: 0.1,
-        investors: 5,
-      },
+
       readOnlyFactoryContract: null,
       fetchCount: 0,
       managerName: "",
@@ -155,6 +199,8 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     await this.getAllFunds();
     await this.getAllFilteredFunds();
+
+    console.log(this.allFunds);
   },
 
   async getAllMyFunds() {
@@ -166,9 +212,26 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = this.allFunds.filter(async f => {
-        return f.status == this.currentStatusFilter;
+      this.filteredFunds = Array.from(this.allFunds).filter((f) => {
+        console.log(this.filters);
+
+        return (
+          f.fundDurationInMonths >= this.filters.minTime &&
+          f.investorsAmount >= this.filters.investors &&
+          // f.fundDurationInMonths >= this.filters.minTime &&
+          f.balance >= parseFloat(this.filters.cap) &&
+          (this.filters.address == null
+            ? true
+            : f.managerAddress.toLowerCase() == this.filters.address.toLowerCase()) &&
+          (this.filters.currentStatusFilter.size == 0
+            ? true
+            : Array.from(this.filters.currentStatusFilter).includes(f.status))
+        );
       });
+    },
+    changeCap(val) {
+      this.filters.capVal = val / 10;
+      console.log(this.filters.capVal);
     },
   },
 };

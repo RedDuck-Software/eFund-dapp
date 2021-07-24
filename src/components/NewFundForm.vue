@@ -60,7 +60,6 @@ import { FundService } from "../services/fundService";
 import "vue-range-component/dist/vue-range-slider.css";
 import VueRangeSlider from "vue-range-component";
 
-const PANCACKE_V2_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 
 import VueTagsInput from "@johmun/vue-tags-input";
 

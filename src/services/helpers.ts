@@ -24,6 +24,8 @@ function httpGet(theUrl) {
   return xmlHttp.responseText;
 }
 
+export const oneDayDurationInSeconds = 86_400;
+
 export const formatDuration = durInSeconds => {
   const r = {
     year: 0,

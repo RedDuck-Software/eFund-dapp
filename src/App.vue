@@ -27,20 +27,30 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
+    ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
   async mounted() {
-    // this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    // const platformContract = this.fundService.getFundPlatformContractInstance();
+    if (this.eFundNetworkSettings == null) {
+      this.isLoaded = true;
+      return;
+    }
 
-    const isUserManager = false; //(await platformContract.managerFundActivity(this.signerAddress)).isValue;
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    const platformContract = this.fundService.getFundPlatformContractInstance();
+
+    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+
+    if (this.platformSettings == null) {
+      const platformSettings = await this.fundService.getPlatformSettings();
+      this.updatePlatformSettings(platformSettings);
+    }
 
     this.updateUserIsManager(isUserManager);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager"]),
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager", "updatePlatformSettings"]),
   },
 };
 </script>

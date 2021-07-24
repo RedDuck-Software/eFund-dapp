@@ -58,6 +58,11 @@
               "type": "uint256"
             },
             {
+              "internalType": "uint256",
+              "name": "managerCollateral",
+              "type": "uint256"
+            },
+            {
               "internalType": "address payable[]",
               "name": "allowedTokenAddresses",
               "type": "address[]"
