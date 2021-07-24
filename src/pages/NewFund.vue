@@ -249,7 +249,7 @@ export default {
   name: "Profile",
   components: { VueSlider, ToggleBtn},
   computed: { 
-    ...mapGetters(["platformSettings", "eFundNetworkSettings"]),
+    ...mapGetters(["platformSettings", "eFundNetworkSettings", "signerAddress"]),
     
   },
   data() {
@@ -306,7 +306,13 @@ export default {
     addName() {},
     nextStep: function() {
       if(this.step + 1==this.totalSteps) { 
-        asyncLoading(this.createNewFund()).then((v)=>{ this.step++;}).catch((ex)=>console.error(ex));
+        asyncLoading(this.createNewFund())
+        .then(async (v)=>{ 
+          this.step++;
+          const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+          this.updateMyFundsAsManager(curUserFundsAsManager);
+          
+        }).catch((ex)=>console.error(ex));
         return;
       }
 
@@ -354,7 +360,7 @@ export default {
       this.fundPresetIndex=index;
       this.form = this.fundPreset[index];
     },
-    ...mapMutations(["updateSignerAddress"]),
+    ...mapMutations(["updateMyFundsAsManager"]),
   },
 };
 </script>
