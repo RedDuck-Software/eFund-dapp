@@ -2,112 +2,12 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-4">
-        <h1>The name of the Fund</h1>
+        <h1 class="font-weight-bold">The name of the Fund</h1>
         <div v-show="isActive('coins') || isActive('trade')">
           <Balances />
         </div>
         <div v-show="isActive('about')">
-          <h4 class="text-gray">Bought Tokens</h4>
-          <div class="day text-gray">Jul 15</div>
-          <div>
-            <div class="time">14:43:01 GMT +3</div>
-            <div class="small-card bg-lightest d-flex px-2 py-3 text-gray">
-              <div class="token-icon d-flex">
-                <img src="../assets/images/Dai_icon.png" />
-              </div>
-              <div class=" flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
-                  <div class="text-black">+5.55</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>Purchase price (BNB) </span>
-                  <div class="">9.45927932</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>ROI (BNB) </span>
-                  <div class="text-primary">102%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div class="time">14:43:01 GMT +3</div>
-            <div class="small-card bg-lightest d-flex px-2 py-3 text-gray">
-              <div class="token-icon d-flex">
-                <img src="../assets/images/usdt_icon_transparent.png" />
-              </div>
-              <div class=" flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    USDT to BNB
-                  </div>
-                  <div class="text-black">+5.55</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>Purchase price (BNB) </span>
-                  <div class="">9.45927932</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>ROI (BNB) </span>
-                  <div class="text-danger">90%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="day text-gray">Jul 14</div>
-          <div>
-            <div class="time">14:43:01 GMT +3</div>
-            <div class="small-card bg-lightest d-flex px-2 py-3 text-gray">
-              <div class="token-icon d-flex">
-                <img src="../assets/images/Dai_icon.png" />
-              </div>
-              <div class=" flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
-                  <div class="text-black">+5.55</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>Purchase price (BNB) </span>
-                  <div class="">9.45927932</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>ROI (BNB) </span>
-                  <div class="text-primary">102%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="time">14:43:01 GMT +3</div>
-            <div class="small-card bg-lightest d-flex px-2 py-3 text-gray">
-              <div class="token-icon d-flex">
-                <img src="../assets/images/Dai_icon.png" />
-              </div>
-              <div class=" flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
-                  <div class="text-black">+5.55</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>Purchase price (BNB) </span>
-                  <div class="">9.45927932</div>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>ROI (BNB) </span>
-                  <div class="text-primary">102%</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TradeHistory />
         </div>
       </div>
       <div class="col-md-8">
@@ -135,181 +35,7 @@
           TRADE
         </div>
         <div v-show="isActive('about')">
-          <div v-if="showAllInvestors">
-            <AllInvestors />
-          </div>
-          <div v-else class="row">
-            <div class="col-md-8">
-              <div class="d-flex">
-                <div>
-                  <v-select v-model="selectedToken" :options="tokensList" />
-                  <div class="label">Fund value</div>
-                </div>
-                <div>
-                  240.05
-                  <div class="label">Total Balance</div>
-                </div>
-                <div class="text-primary">
-                  <span>+120.21 </span>
-                  <div class="label">Revenue in BNB</div>
-                </div>
-                <div class="text-primary">
-                  <span>+11% </span>
-                  <div class="label">ROI</div>
-                </div>
-              </div>
-              <div>
-                <div class="progress" style="height: 9px;">
-                  <div
-                    class="progress-bar"
-                    role="progressbar"
-                    style="width: 25%;"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  ></div>
-                </div>
-                <div class="label text-gray">Duration: 1 month (10d to the end) Copy</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6">
-                  <h2 class="text-black">0.1 BNB</h2>
-                  <div class="label">Min deposit amount</div>
-                </div>
-                <div class="col-sm-6">
-                  <h2 class="text-black">100 BNB</h2>
-                  <div class="label">Max deposit amount</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="d-flex">
-                <div class="token-icon profile d-flex">
-                  <ProfileIcon class="icon" />
-                </div>
-                <div>
-                  <h2 class="text-black">Ben Thomson</h2>
-                  <div class="label">Manager</div>
-                </div>
-              </div>
-              <div class="row no-gutters">
-                <div class="col-md-6">
-                  <h2 class="text-black">Jul 11</h2>
-                  <div class="time text-black">09:43 +3 GMT</div>
-                  <div class="label">Fund start</div>
-                </div>
-                <div class="col-md-6">
-                  <h2 class="text-black">Aug 10</h2>
-                  <div class="time text-black">09:43 +3 GMT</div>
-                  <div class="label">Fund start</div>
-                </div>
-              </div>
-              <div>
-                <h2 class="text-gray">Investors</h2>
-                <div class="row">
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 d-flex">
-                    <div class="token-icon profile small d-flex">
-                      <ProfileIcon class="small icon" />
-                    </div>
-                    <div>
-                      <h5>User2400</h5>
-                      <div class="sum">50 BNB</div>
-                    </div>
-                  </div>
-                </div>
-                <button class="btn btn-light" @click="showAllInvestors = true">See all investors</button>
-              </div>
-            </div>
-          </div>
+          <AboutToken />
         </div>
       </div>
     </div>
@@ -323,15 +49,14 @@ import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers, utils } from "ethers";
-import VSelect from "@alfsnd/vue-bootstrap-select";
-import ProfileIcon from "../assets/images/profile.svg?inline";
-import AllInvestors from "../components/AllInvestors";
 import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
+import TradeHistory from "@/components/TradeHistory";
+import AboutToken from "@/components/AboutToken";
 
 export default {
   name: "Fund",
-  components: { VSelect, ProfileIcon, AllInvestors, Balances, CoinsPriceTab },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutToken },
   data() {
     return {
       fundContract: null,
@@ -339,10 +64,7 @@ export default {
       fundContractAddress: null,
       isLoaded: false,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      tokensList: ["BNB", "ETH", "DAI"],
-      selectedToken: "BNB",
-      activeItem: "trade",
-      showAllInvestors: false,
+      activeItem: "about",
     };
   },
   computed: {
@@ -456,9 +178,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../App";
-.small-card {
-  border-radius: 13px;
-}
+
 .token-icon {
   width: 54px;
   height: 54px;
@@ -469,19 +189,6 @@ export default {
     max-width: 100%;
   }
 }
-
-.token-icon.profile {
-  background: rgba(240, 239, 248, 1);
-}
-
-.token-icon.profile.small {
-  width: 37px;
-  height: 37px;
-}
 </style>
 
-<style>
-.icon {
-  color: rgba(155, 155, 155, 1);
-}
-</style>
+<style lang="scss"></style>

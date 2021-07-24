@@ -1,22 +1,6 @@
 <template>
   <div>
-    <div class="tokens-balances d-flex justify-content-between align-items-start">
-      <div class="w-30">
-        <v-select v-model="selectedToken" :options="tokensList" class="token-select" />
-        <div class="label">Fund value</div>
-      </div>
-      <div>
-        <h2 class="">
-          240.05
-        </h2>
-        <div class="label">Total Balance</div>
-      </div>
-
-      <div>
-        <h2>+120.21</h2>
-        <div class="label">Revenue</div>
-      </div>
-    </div>
+    <TokenValues :show-roi="false" class="mt-5" />
     <div class="balances">
       <ul>
         <li class="d-flex justify-content-between">
@@ -93,59 +77,18 @@
 </template>
 
 <script>
-import vSelect from "vue-select";
+import TokenValues from "@/components/TokenValues";
 
 export default {
   name: "Balances",
-  components: { vSelect },
+  components: { TokenValues },
   data() {
-    return {
-      selectedToken: "BNB",
-      tokensList: ["BNB", "ETH", "DAI"],
-    };
+    return {};
   },
 };
 </script>
 
 <style lang="scss">
-@import "~vue-select/src/scss/vue-select.scss";
-
-.w-30 {
-  width: 30%;
-}
-
-.tokens-balances {
-  margin-top: 47px;
-  margin-bottom: 47px;
-}
-
-.tokens-balances h2 {
-  line-height: 30px;
-}
-
-.token-select {
-  .vs__dropdown-toggle {
-    border: none;
-    padding: 0;
-  }
-
-  .vs__selected {
-    font-size: 22px;
-    line-height: 27px;
-    margin: 0;
-    padding: 0;
-    color: black;
-  }
-
-  .vs__actions {
-    padding: 0;
-  }
-
-  .vs__search {
-    color: black;
-  }
-}
-
 .balances {
   li {
     margin-top: 47px;

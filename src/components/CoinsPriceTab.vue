@@ -1,5 +1,5 @@
 <template>
-  <div class="coins-price-wrap bg-lightest p-4 rounded">
+  <div class="coins-price-wrap bg-lightest p-4 rounded box-shadow">
     <div class="d-flex flex-wrap">
       <div class="badge bg-black text-white">1 day</div>
       <div class="badge bg-light text-black">1 week</div>

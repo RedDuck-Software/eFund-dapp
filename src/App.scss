@@ -101,7 +101,21 @@ h3{
   &.middle{
     font-size: 18px;
     line-height: 22px;
+    font-weight:400;
 }
+}
+
+h5{
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  color: black;
+  margin:0;
+  padding:0;
+
+  &.light{
+    font-weight:400
+  }
 }
 
 
@@ -139,6 +153,10 @@ h3{
   font-size: 13px;
   line-height: 16px;
   font-weight: 600;
+
+  &.light{
+    font-weight: 400;
+  }
 }
 
 .font-weight-bold{
