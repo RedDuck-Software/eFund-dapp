@@ -13,7 +13,7 @@
       <div class="col-md-8">
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link " :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
+            <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
               >Trade</a
             >
           </li>
@@ -31,9 +31,7 @@
         <div v-show="isActive('coins')">
           <CoinsPriceTab />
         </div>
-        <div v-show="isActive('trade')">
-          TRADE
-        </div>
+        <div v-show="isActive('trade')">TRADE</div>
         <div v-show="isActive('about')">
           <AboutToken />
         </div>
@@ -47,7 +45,7 @@ import { mapMutations, mapGetters } from "vuex";
 import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
+import { eFundNetworkSettings, fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers, utils } from "ethers";
 import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
@@ -61,38 +59,65 @@ export default {
     return {
       fundContract: null,
       fundService: null,
-      fundContractAddress: null,
       isLoaded: false,
+      fundAddress: null, 
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "about",
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings"]),
+    ...mapGetters([
+      "eFundNetworkSettings",
+      "fundContractAddress",
+      "fundContractStatus",
+      "fundContractManager",
+      "fundContractIsManager",
+      "allowedTokensAddresses",
+      "boughtTokensAddresses",
+      "fundStartTimestamp",
+      "fundBalance",
+      "hardCap",
+      "softCap",
+      "minDepositAmount",
+      "fundCanBeStartedAt",
+      "profitFee",
+      "signerAddress",
+    ]),
   },
-  mounted() {
-    // asyncLoading(this.loadContractInfo()).catch(ex => {
+  async mounted() {
+    // asyncLoading().catch(ex => {
     //   console.error(ex);
     // });
+
+    await this.loadContractInfo()
   },
   methods: {
     async loadContractInfo() {
-      this.fundContractAddress = this.$route.params.address;
+      this.priceInValues = [ 
+          { name: this.eFundNetworkSettings.cryptoSign, address:  this.eFundNetworkSettings.wrappedCryptoAddress }, 
+          { name: this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].name
+          , address:  this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].address },  
+      ];
 
-      console.log("fund address", this.fundContractAddress);
+      this.priceIn=this.priceInValues[0];
+
+      console.log(this.priceIn);
+
+      this.fundAddress = this.$route.params.address;
+      console.log("fund address", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-      this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
-      const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
+      this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
+      const platform = this.fundService.getFundPlatformContractInstance();
 
-      const isFund = await platform.isFund(this.fundContractAddress);
+      const isFund = await platform.isFund(this.fundAddress);
 
       if (!isFund) {
         alert("fund is not found");
         return;
       }
 
-      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundContractAddress);
+      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundAddress);
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -106,15 +131,12 @@ export default {
         const t = fundInfo.boughtTokensAddresses[i];
         boughtTokens.push(await this.getTokenInfo(t));
       }
-      const signerAddress = await this.fundService
-        .getCurrentProvider()
-        .getSigner()
-        .getAddress();
+
+      const signerAddress = this.signerAddress;
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
-      this.updateSignerAddress(signerAddress);
-      this.updateFundAddress(this.fundContractAddress);
+      this.updateFundAddress(this.fundAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);
       this.updateFundStatus(fundInfo.fundStatus);
@@ -134,7 +156,7 @@ export default {
       return {
         address: tokenAddress,
         name: await token.symbol(),
-        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
+        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundAddress), await token.decimals()),
       };
     },
     async isFinished() {

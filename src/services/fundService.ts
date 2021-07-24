@@ -32,7 +32,7 @@ export class FundService {
   }
 
   getCurrentProvider() {
-    return currentProvider;
+    return this.currentProvider;
   }
 
   getFundPlatformContractInstance() {
@@ -59,6 +59,7 @@ export class FundService {
     return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
   }
 
+
   async getSwapFactoryAddress(swapRouterAddress) {
     const router = this.getSwapRouterContractInstance(swapRouterAddress);
 
@@ -77,9 +78,26 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
+
+  async getPlatformSettings() {
+    const res = await this.platformContract.getPlatformData();
+
+    return {
+      softCap: parseFloat(utils.formatEther(res._softCap)),
+      hardCap: parseFloat(utils.formatEther(res._hardCap)),
+      minimumTimeUntillFundStart: parseFloat(res._minimumTimeUntillFundStart),
+      maximumTimeUntillFundStart: parseFloat(res._maximumTimeUntillFundStart),
+      minimumProfitFee: parseFloat(res._minimumProfitFee),
+      maximumProfitFee: parseFloat(res._maximumProfitFee),
+    }
+  }
+
   async getFundDetailedInfo(address) {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
+
+
+    console.log("current provider ", this.getCurrentProvider());
 
     // @ts-ignore: cannot assign vm to Event for some reasone
     const signerAddress = await this.getCurrentProvider()
@@ -88,14 +106,16 @@ export class FundService {
       // @ts-ignore: cannot assign vm to Event for some reasone
       .getAddress();
 
-    const [fundInfo, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
+    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
       this.getFundDetails(address),
+      fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
     ]);
 
     return {
       ...fundInfo,
+      isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
@@ -150,10 +170,8 @@ export class FundService {
 
     const info = await fundContract.getFundInfo();
 
-    console.log("fund info: ", info);
-
     return {
-      isDepositsWithdrawed: info._isDepositsWithdrawed,
+      fundDurationInMonths: info._fundDurationInMonths,
       managerAddress: info._fundManager,
       address: fundContract.address,
       fundStartTimestamp: info._fundStartTimestamp,

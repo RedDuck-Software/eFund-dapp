@@ -25,8 +25,8 @@ export default {
 
         this.updateSignerAddress(signerAddress);
         this.updateEFundSettings(eFundNetworkSettings[chainId]);
-
-        router.replace("/");
+        
+        window.location.replace("/");
       } else {
         alert("unsupported network. Please choose the right one");
       }
