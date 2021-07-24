@@ -24,19 +24,38 @@
         <div class="col-md-8">
           <div class="row no-gutters">
             <div class="col-sm-9">
-              <div class="mt-4 token-progress">
+              
+              <div v-if="fundContractStatus == 'Active'" class="mt-4 token-progress">
                 <div class="progress" style="height: 9px;">
                   <div
                     class="progress-bar"
                     role="progressbar"
-                    style="width: 25%;"
+                    :style="`width: ${fundActivePercentage}%;`"
                     aria-valuenow="25"
                     aria-valuemin="0"
                     aria-valuemax="100"
                   ></div>
                 </div>
-                <div class="label text-gray mt-1">Duration: 1 month (10d to the end) Copy</div>
+                <div class="label text-gray mt-1">Duration: 1 month (10d to the end)</div>
               </div>
+              <div v-else-if=" fundContractStatus == 'Opened'" class="mt-4 token-progress">
+                <div class="progress" style="height: 9px;">
+                  <div
+                    class="progress-bar"
+                    role="progressbar"
+                    :style="`width: ${fundOpenedPercentage}%;`"
+                    aria-valuenow="25"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  ></div>
+                </div>
+                
+                <div v-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">Fund can be started</div>
+                <div v-else class="label text-gray mt-1">Fund starts in: {{fundCanBeStartedInDays}} days</div>
+
+              </div>
+              
+
               <div class="row text-center mt-4 pt-2">
                 <div class="col-sm-6">
                   <h2 class="text-black">0.1 BNB</h2>
@@ -54,20 +73,22 @@
         <div class="col-md-4">
           <div class="start-end-dates row text-center mt-4 pt-2">
             <div class="col-sm-6">
-              <h2 class="text-black">Jul 11</h2>
-              <div class="time text-black">09:43 +3 GMT</div>
+              <h2 class="text-black">{{monthNames[dateStart.getMonth()]}} {{ dateStart.getDate() }}</h2>
+              <div class="time text-black">{{dateStart.getYear() == new Date().getYear() ? '' : dateStart.getYear() }} {{dateStart.getHours()}}:{{dateStart.getMinutes()}} {{dateStart.getTimezoneOffset()}} GMT</div>
               <div class="label">Fund start</div>
             </div>
             <div class="col-sm-6">
-              <h2 class="text-black">Aug 10</h2>
+              <h2 class="text-black">{{  }}</h2>
               <div class="time text-black">09:43 +3 GMT</div>
-              <div class="label">Fund start</div>
+              <div class="label">Fund end</div>
             </div>
           </div>
           <div class="investors-list mt-3 pt-2">
             <h2 class="text-gray font-weight-bold">Investors</h2>
             <div class="row flex-wrap no-gutters mb-3">
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              
+              <div v-if="fundDeposits.length==0">Fund has no deposits yet</div>
+              <div v-else v-for="(investor, index ) in fundDeposits.length > 6 ? fundDeposits.slice(0,6) : fundDeposits" :key="index" class="investor-item col-sm-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -76,58 +97,14 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
-                </div>
-                <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
-                </div>
-              </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
-                </div>
-                <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
-                </div>
-              </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
-                </div>
-                <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
-                </div>
-              </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
-                </div>
-                <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
-                </div>
-              </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
-                </div>
-                <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
-                </div>
-              </div>
-            </div>
-            <button class="btn btn-light box-shadow py-1 px-3 mx-auto d-block" @click="showAllInvestors = true">
+
+            <button v-if="fundDeposits.length > 6" class="btn btn-light box-shadow py-1 px-3 mx-auto d-block" @click="showAllInvestors = true">
               <h5>See all investors</h5>
             </button>
           </div>
         </div>
       </div>
+     </div>
     </div>
   </div>
 </template>
@@ -136,17 +113,49 @@
 import AllInvestors from "../components/AllInvestors";
 import TokenValues from "@/components/TokenValues";
 import TokenBarChart from "@/components/TokenBarChart";
+import { mapGetters } from 'vuex';
+import { MountingPortal } from 'portal-vue';
+import { oneDayDurationInSeconds, formatDuration  } from "../services/helpers";
+import { monthNames } from "../constants";
 
 export default {
-  name: "AboutToken",
+  name: "AboutFund",
   components: { AllInvestors, TokenValues, TokenBarChart },
+  computed: {
+    ...mapGetters(["fundDeposits", "fundContractStatus", "fundStartTimestamp", "fundCanBeStartedAt", "fundDurationMonths", "fundCreatedAt"]),
+  },
   data() {
     return {
       publicPath: process.env.BASE_URL,
-      showAllInvestors: true,
+      showAllInvestors: false,
       tokensList: ["BNB", "ETH", "DAI"],
       selectedToken: "BNB",
+      fundOpenedPercentage: 0, 
+      fundActivePercentage: 0, 
+      fundCanBeStartedInDays:0,
+      dateStart: null,
+      dateEnd: null,
+      monthNames: monthNames,
     };
+  },
+
+  async mounted() { 
+    if(this.fundContractStatus == 'Opened')  {
+      const temp = this.fundCanBeStartedAt - this.fundCreatedAt;
+      
+      console.log("temp :", {temp: temp, at: (this.fundCanBeStartedAt -  (Math.floor(new Date() / 1000)))});
+
+      this.fundOpenedPercentage = Math.floor(((this.fundCanBeStartedAt -  Math.floor(new Date() / 1000)) / temp ) * 100);
+
+      this.fundCanBeStartedInDays = Math.ceil((this.fundCanBeStartedAt - new Date() / 1000) / oneDayDurationInSeconds);
+    }
+
+    if(this.fundContractStatus == 'Active')  {
+      this.fundActivePercentage = (this.fundStartTimestamp * 100) / (this.fundStartTimestamp + oneDayDurationInSeconds * this.fundDurationMonths);
+    }
+
+    this.dateStart = new Date(this.fundStartTimestamp * 1000) ;
+    this.dateEnd = new Date(this.fundStartTimestamp + this.fundDurationMonths * oneDayDurationInSeconds);
   },
 };
 </script>

@@ -12,7 +12,7 @@
       </div>
       <div class="col-md-8">
         <ul class="nav nav-tabs">
-          <li class="nav-item">
+          <li v-if="userIsManager" class="nav-item">
             <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
               >Trade</a
             >
@@ -33,7 +33,7 @@
         </div>
         <div v-show="isActive('trade')">TRADE</div>
         <div v-show="isActive('about')">
-          <AboutToken />
+          <AboutFund />
         </div>
       </div>
     </div>
@@ -50,11 +50,11 @@ import { ethers, utils } from "ethers";
 import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
 import TradeHistory from "@/components/TradeHistory";
-import AboutToken from "@/components/AboutToken";
+import AboutFund from "@/components/AboutFund";
 
 export default {
   name: "Fund",
-  components: { Balances, CoinsPriceTab, TradeHistory, AboutToken },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund },
   data() {
     return {
       fundContract: null,
@@ -82,6 +82,7 @@ export default {
       "fundCanBeStartedAt",
       "profitFee",
       "signerAddress",
+      "userIsManager",
     ]),
   },
   async mounted() {
@@ -133,13 +134,15 @@ export default {
       }
 
       const signerAddress = this.signerAddress;
+      
+      console.log("fund info: ", fundInfo);
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
       this.updateFundAddress(this.fundAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);
-      this.updateFundStatus(fundInfo.fundStatus);
+      this.updateFundStatus(fundInfo.status);
       this.updateFundStartTimestamp(fundInfo.fundStartTimestamp);
       this.updateIsDepositsWithdrawed(fundInfo.isDepositsWithdrawed);
       this.updateHardCap(fundInfo.hardCap);
@@ -147,6 +150,12 @@ export default {
       this.updateMinDepositAmount(fundInfo.minDepositAmount);
       this.updateFundCanBeStartedAt(fundInfo.fundCanBeStartedAt);
       this.updateProfitFee(fundInfo.profitFee);
+      this.updateFundSwapHistory(fundInfo.swaps);
+      this.updateFundDeposits(fundInfo.deposits);
+      this.updateBaseBalance(fundInfo.baseBalance);
+      this.updateEndBalance(fundInfo.endBalance);
+      this.updateFundDurationMonths(fundInfo.fundDurationInMonths);
+      this.updateFundCreatedAt(fundInfo.fundCreatedAt);
 
       this.isLoaded = true;
     },
@@ -193,6 +202,12 @@ export default {
       "updateMinDepositAmount",
       "updateFundCanBeStartedAt",
       "updateProfitFee",
+      "updateFundSwapHistory",
+      "updateFundDeposits",
+      "updateBaseBalance",
+      "updateEndBalance",
+      "updateFundDurationMonths",
+      "updateFundCreatedAt",
     ]),
   },
 };

@@ -68,7 +68,7 @@ export default {
     ...mapGetters(["eFundNetworkSettings"]),
   },
   mounted() {
-    this.formatedDur = formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000);
+    this.formatedDur = formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000).value;
 
     this.proggressPercentage = parseFloat(
       utils.formatEther(

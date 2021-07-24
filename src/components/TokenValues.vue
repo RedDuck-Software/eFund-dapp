@@ -10,10 +10,6 @@
       </h2>
       <div class="label">Total Balance</div>
     </div>
-    <div class="text-center">
-      <h2>+120.21</h2>
-      <div class="label">Revenue</div>
-    </div>
     <div v-if="showRoi" class="text-center">
       <h2 class="text-primary">&#x2191;+120.21</h2>
       <div class="label">ROI</div>

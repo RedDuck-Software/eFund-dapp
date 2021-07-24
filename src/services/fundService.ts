@@ -77,6 +77,15 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
+  async getERC20TokenDetails(tokenAddress, amount,fundAddress) {
+    const token = this.getERC20ContractInstance(tokenAddress);
+
+    return {
+      address: tokenAddress,
+      name: await token.symbol(),
+      amount: ethers.utils.formatUnits(amount? amount : await token.balanceOf(fundAddress), await token.decimals()),
+    };
+  }
 
   async getPlatformSettings() {
     const res = await this.platformContract.getPlatformData();
@@ -105,19 +114,29 @@ export class FundService {
       // @ts-ignore: cannot assign vm to Event for some reasone
       .getAddress();
 
-    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
+    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses, deposits, swapHistory, fundCreatedAt] = await Promise.all([
       this.getFundDetails(address),
       fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
+      fundContract.getAllDeposits(),
+      fundContract.getAllSwaps(),
+      fundContract.fundCreatedAt(),
     ]);
 
     return {
       ...fundInfo,
+      fundCreatedAt : parseFloat(fundCreatedAt), 
       isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
+      deposits: deposits,
+      swaps: swapHistory,
+      baseBalance: fundInfo.status == 'Opened' ? null : 
+          parseFloat(utils.formatEther(await fundContract.baseBalance())),
+      endBalance: fundInfo.status == 'Opened' || fundInfo.status == 'Active' ? null : 
+        parseFloat(utils.formatEther(await fundContract.endBalance())),
     };
   }
 
