@@ -26,17 +26,17 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto flex-column bg-darken mt-1 rounded w-100">
-          <li class="nav-item  ">
+          <li class="nav-item">
             <HeaderItem :menu="menu.newFund" :to="{ name: 'All Funds' }" :text="'All'" />
           </li>
-          <li class="nav-item ">
+          <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
             <HeaderItem
               :menu="menu.fund"
               :text="'fund 1'"
               :to="{
                 name: 'Fund',
                 params: {
-                  address: '0x85c15a561a692be49a0fd3b9e9b1bf8370b33332',
+                  address: fund.address,
                 },
               }"
             />
@@ -55,8 +55,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import HeaderItem from "@/components/HeaderItem";
+import { isMetaMaskInstalled, currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
 
 export default {
   name: "Header",
@@ -90,8 +92,40 @@ export default {
       },
     };
   },
+
   computed: {
-    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
+  },
+  async mounted() {
+    if(this.eFundNetworkSettings == null) return;
+    
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    const platformContract = this.fundService.getFundPlatformContractInstance();
+    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+
+    console.log("Is user manager: ", isUserManager);
+
+    if (isUserManager) {
+      const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+      this.updateMyFundsAsManager(curUserFundsAsManager);
+
+      console.log("User funds", curUserFundsAsManager);
+    }
+
+    // todo : fetch user`s funds as a investor
+    // todo : Investigate, what would be better - fetching backend or modify a smart contract
+    this.updateUserIsManager(isUserManager);
+  },
+
+  methods: {
+    ...mapMutations([
+      "logout",
+      "clearFundInfo",
+      "updateSignerAddress",
+      "updateEFundSettings",
+      "updateMyFundsAsManager",
+      "updateUserIsManager",
+    ]),
   },
 };
 </script>

@@ -5,6 +5,7 @@
       <router-view></router-view>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -30,6 +31,7 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
   },
   async mounted() {
+<<<<<<< HEAD
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     const platformContract = this.fundService.getFundPlatformContractInstance();
 
@@ -37,10 +39,13 @@ export default {
     const platformSettings = ;
     this.updateUserIsManager(isUserManager);
 
+=======
+    
+>>>>>>> new-ui-dev
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager"]),
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager"]),
   },
 };
 </script>

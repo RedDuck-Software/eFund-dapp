@@ -2,11 +2,11 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-4">
-        <h1>The name of the Fund</h1>
+        <h1>{{ fundAddress }}</h1>
         <div v-show="isActive('coins') || isActive('trade')">
           <div class="d-flex">
             <div>
-              <v-select v-model="selectedToken" :options="tokensList" />
+              <v-select :options="priceInValues" label="name" v-model="priceIn"/>
               <h5>Fund value</h5>
             </div>
             <div>
@@ -19,80 +19,26 @@
             </div>
           </div>
           <div class="balances">
-            <ul>
-              <li class="d-flex justify-content-between">
+            <ul v-if="boughtTokensAddresses.length > 0">
+
+              <li v-for="(token, index) in boughtTokensAddresses" :key="index" class="d-flex justify-content-between">
                 <div class="token-icon d-flex">
                   <img src="../assets/images/Dai_icon.png" />
                 </div>
-                <div class=" flex-grow-1">
+                <div class="flex-grow-1">
                   <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      Dai
-                    </div>
-                    <div>44.54</div>
+                    <div class="text-uppercase">token.name</div>
+                    <div>token.amount</div>
                   </div>
                   <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
+                    <span>{{ eFundNetworkSettings.cryptoSign}} value </span>
                     <div class="text-primary">+11.524367254</div>
                   </div>
                 </div>
               </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <img src="../assets/images/busdt_icon_transparent.png" />
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      Busdt
-                    </div>
-                    <div>115.75</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-danger">-6.524767254</div>
-                  </div>
-                </div>
-              </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <div>
-                    <img src="../assets/images/usdt_icon_transparent.png" />
-                  </div>
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      usdt
-                    </div>
-                    <div>77.50</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-primary">+11.524367254</div>
-                  </div>
-                </div>
-              </li>
-              <li class="d-flex justify-content-between">
-                <div class="token-icon d-flex justify-content-center align-items-center">
-                  <div>
-                    <img src="../assets/images/bnb_icon_transparent.png" />
-                  </div>
-                </div>
-                <div class=" flex-grow-1">
-                  <div class="d-flex justify-content-between">
-                    <div class="text-uppercase">
-                      bnb
-                    </div>
-                    <div>32.05</div>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>BNB value </span>
-                    <div class="text-primary">-1.524367254</div>
-                  </div>
-                </div>
-              </li>
+              
             </ul>
+            <div v-else>no boughtTokens</div>
           </div>
         </div>
         <div v-show="isActive('about')">
@@ -104,11 +50,9 @@
               <div class="token-icon d-flex">
                 <img src="../assets/images/Dai_icon.png" />
               </div>
-              <div class=" flex-grow-1">
+              <div class="flex-grow-1">
                 <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
+                  <div class="text-uppercase">BNB to DAI</div>
                   <div class="text-black">+5.55</div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -129,11 +73,9 @@
               <div class="token-icon d-flex">
                 <img src="../assets/images/usdt_icon_transparent.png" />
               </div>
-              <div class=" flex-grow-1">
+              <div class="flex-grow-1">
                 <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    USDT to BNB
-                  </div>
+                  <div class="text-uppercase">USDT to BNB</div>
                   <div class="text-black">+5.55</div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -155,11 +97,9 @@
               <div class="token-icon d-flex">
                 <img src="../assets/images/Dai_icon.png" />
               </div>
-              <div class=" flex-grow-1">
+              <div class="flex-grow-1">
                 <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
+                  <div class="text-uppercase">BNB to DAI</div>
                   <div class="text-black">+5.55</div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -179,11 +119,9 @@
               <div class="token-icon d-flex">
                 <img src="../assets/images/Dai_icon.png" />
               </div>
-              <div class=" flex-grow-1">
+              <div class="flex-grow-1">
                 <div class="d-flex justify-content-between">
-                  <div class="text-uppercase">
-                    BNB to DAI
-                  </div>
+                  <div class="text-uppercase">BNB to DAI</div>
                   <div class="text-black">+5.55</div>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -202,7 +140,7 @@
       <div class="col-md-8">
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link " :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
+            <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
               >Trade</a
             >
           </li>
@@ -259,7 +197,7 @@
               </div>
               <div></div>
             </li>
-            <li class=" bg-light-gray d-flex mt-3">
+            <li class="bg-light-gray d-flex mt-3">
               <div class="col-md-4 px-0 d-flex">
                 <div class="token-icon d-flex justify-content-center align-items-center">
                   <img src="../assets/images/Dai_icon.png" />
@@ -288,7 +226,7 @@
               </div>
               <div></div>
             </li>
-            <li class=" bg-light-gray d-flex mt-3">
+            <li class="bg-light-gray d-flex mt-3">
               <div class="col-md-4 px-0 d-flex">
                 <div class="token-icon d-flex justify-content-center align-items-center">
                   <img src="../assets/images/busdt_icon_transparent.png" />
@@ -317,7 +255,7 @@
               </div>
               <div></div>
             </li>
-            <li class=" bg-light-gray d-flex mt-3">
+            <li class="bg-light-gray d-flex mt-3">
               <div class="col-md-4 px-0 d-flex">
                 <div class="token-icon d-flex justify-content-center align-items-center">
                   <img src="../assets/images/usdt_icon_transparent.png" />
@@ -348,9 +286,7 @@
             </li>
           </ul>
         </div>
-        <div v-show="isActive('trade')">
-          TRADE
-        </div>
+        <div v-show="isActive('trade')">TRADE</div>
         <div v-show="isActive('about')">
           <div v-if="showAllInvestors">
             <AllInvestors />
@@ -376,11 +312,11 @@
                 </div>
               </div>
               <div>
-                <div class="progress" style="height: 9px;">
+                <div class="progress" style="height: 9px">
                   <div
                     class="progress-bar"
                     role="progressbar"
-                    style="width: 25%;"
+                    style="width: 25%"
                     aria-valuenow="25"
                     aria-valuemin="0"
                     aria-valuemax="100"
@@ -538,7 +474,7 @@ import { mapMutations, mapGetters } from "vuex";
 import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
+import { eFundNetworkSettings, fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers, utils } from "ethers";
 import VSelect from "@alfsnd/vue-bootstrap-select";
 import ProfileIcon from "../assets/images/profile.svg?inline";
@@ -551,41 +487,70 @@ export default {
     return {
       fundContract: null,
       fundService: null,
-      fundContractAddress: null,
       isLoaded: false,
+      fundAddress: null, 
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      tokensList: ["BNB", "ETH", "DAI"],
+      tokensList: [],
+      priceInValues: [],
+      priceIn: "",
       selectedToken: "BNB",
       activeItem: "trade",
       showAllInvestors: false,
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings"]),
+    ...mapGetters([
+      "eFundNetworkSettings",
+      "fundContractAddress",
+      "fundContractStatus",
+      "fundContractManager",
+      "fundContractIsManager",
+      "allowedTokensAddresses",
+      "boughtTokensAddresses",
+      "fundStartTimestamp",
+      "fundBalance",
+      "hardCap",
+      "softCap",
+      "minDepositAmount",
+      "fundCanBeStartedAt",
+      "profitFee",
+      "signerAddress",
+    ]),
   },
-  mounted() {
-    // asyncLoading(this.loadContractInfo()).catch(ex => {
+  async mounted() {
+    // asyncLoading().catch(ex => {
     //   console.error(ex);
     // });
+
+    await this.loadContractInfo()
   },
   methods: {
     async loadContractInfo() {
-      this.fundContractAddress = this.$route.params.address;
+      this.priceInValues = [ 
+          { name: this.eFundNetworkSettings.cryptoSign, address:  this.eFundNetworkSettings.wrappedCryptoAddress }, 
+          { name: this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].name
+          , address:  this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].address },  
+      ];
 
-      console.log("fund address", this.fundContractAddress);
+      this.priceIn=this.priceInValues[0];
+
+      console.log(this.priceIn);
+
+      this.fundAddress = this.$route.params.address;
+      console.log("fund address", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-      this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
-      const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
+      this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
+      const platform = this.fundService.getFundPlatformContractInstance();
 
-      const isFund = await platform.isFund(this.fundContractAddress);
+      const isFund = await platform.isFund(this.fundAddress);
 
       if (!isFund) {
         alert("fund is not found");
         return;
       }
 
-      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundContractAddress);
+      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundAddress);
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -599,15 +564,12 @@ export default {
         const t = fundInfo.boughtTokensAddresses[i];
         boughtTokens.push(await this.getTokenInfo(t));
       }
-      const signerAddress = await this.fundService
-        .getCurrentProvider()
-        .getSigner()
-        .getAddress();
+
+      const signerAddress = this.signerAddress;
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
-      this.updateSignerAddress(signerAddress);
-      this.updateFundAddress(this.fundContractAddress);
+      this.updateFundAddress(this.fundAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);
       this.updateFundStatus(fundInfo.fundStatus);
@@ -627,7 +589,7 @@ export default {
       return {
         address: tokenAddress,
         name: await token.symbol(),
-        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
+        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundAddress), await token.decimals()),
       };
     },
     async isFinished() {

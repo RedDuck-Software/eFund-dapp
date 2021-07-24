@@ -100,7 +100,7 @@
             </div>
           </div>
         </div>
-        <div v-else>no active funds</div>
+        <div v-else>no funds found</div>
       </div>
     </div>
   </div>
@@ -113,32 +113,43 @@ import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
 import { mapGetters } from "vuex";
-import FundCard from "@/components/FundCard";
+import FundCard from "../components/FundCard";
 import VueSlider from "vue-slider-component";
+import ToggleButton from "../components/ToggleBtn.vue";
 
 export default {
   name: "All",
-  components: { FundCard, VueSlider },
+  components: { FundCard, VueSlider, ToggleButton },
   data() {
     return {
+      filters: { 
+        currentStatusFilter: new Set(['Opened']),
+        minTime: 1,
+        cap: 0.1,
+        investors: 0,
+        address: null, 
+      },
+
       fundService: null,
-      currentStatusFilter: "Opened",
       allFunds: [],
       filteredFunds: [],
       marks: {
         1: 1,
-        45: 45,
-        90: 90,
+        2: 2,
+        3: 3,
+        6: 6,
+      },
+      marksInvestors: {
+        0: 0,
+        10: 10,
+        30: 30,
+        70: 70,
+        100: 100,
       },
       marksCap: {
         1: 1,
         5: 5,
         10: 10,
-      },
-      filters: {
-        minTime: 1,
-        cap: 0.1,
-        investors: 5,
       },
       readOnlyFactoryContract: null,
       fetchCount: 0,
@@ -155,6 +166,8 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     await this.getAllFunds();
     await this.getAllFilteredFunds();
+
+    console.log(this.allFunds);
   },
 
   async getAllMyFunds() {
@@ -166,9 +179,24 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = this.allFunds.filter(async f => {
-        return f.status == this.currentStatusFilter;
+      this.filteredFunds = Array.from(this.allFunds).filter((f) => {
+          console.log(this.filters);
+
+
+        return (
+          1 >= this.filters.minTime &&
+          10 >= this.filters.investors &&
+          // f.fundDurationInMonths >= this.filters.minTime &&
+          f.balance >= parseFloat(this.filters.cap) &&
+          (this.filters.address==null ?  true : f.managerAddress.toLowerCase()==this.filters.address.toLowerCase()) && 
+          (this.filters.currentStatusFilter.size == 0 ? 
+            true : Array.from(this.filters.currentStatusFilter).includes(f.status))
+        );
       });
+    },
+    changeCap(val) {
+      this.filters.capVal = val / 10;
+      console.log(this.filters.capVal);
     },
   },
 };
