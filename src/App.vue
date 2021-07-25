@@ -35,6 +35,8 @@ export default {
       return;
     }
 
+    console.log("signer: ", this.signerAddress);
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     const platformContract = this.fundService.getFundPlatformContractInstance();
 

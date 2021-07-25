@@ -128,7 +128,7 @@
         <div v-if="filteredFunds.length != 0">
           <div class="row flex-wrap">
             <div v-for="(fund, index) in filteredFunds" :key="index" class="col-md-6 mt-2">
-              <FundCard :fund-info="fund" />
+              <FundCard :fund-info="fund"/>
             </div>
           </div>
         </div>

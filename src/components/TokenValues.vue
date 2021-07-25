@@ -2,21 +2,17 @@
   <div class="tokens-balances d-flex justify-content-start justify-content-lg-between align-items-start flex-wrap">
     <div class="select-wrap flex-grow-1">
       <div>
-        <v-select v-model="selectedToken" :options="tokensList" class="token-select" />
+        <v-select v-model="selectedToken" :clearable="false"  :options="tokensList" class="token-select" />
         <div class="label">Fund value</div>
       </div>
     </div>
     <div class="text-center mt-md-0 mt-3">
       <h2 class="">
-        240.05
+        {{totalBalance}} {{ eFundNetworkSettings.cryptoSign }}
       </h2>
       <div class="label">Total Balance</div>
     </div>
-    <div class="text-center  mt-md-0 mt-3 ml-4 ml-md-0">
-      <h2>+120.21</h2>
-      <div class="label">Revenue</div>
-    </div>
-    <div v-if="showRoi" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
+    <div v-if="fundContractStatus!='Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
       <h2 class="text-primary">&#x2191;+120.21</h2>
       <div class="label">ROI</div>
     </div>

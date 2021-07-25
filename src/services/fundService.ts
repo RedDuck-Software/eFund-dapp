@@ -159,10 +159,8 @@ export class FundService {
     };
   }
 
-  async getAllManagerFunds() {
-    const data = (await this.platformContract.getAllFunds()).filter(f => f.toLowerCase() != ZERO_ADDRESS.toLowerCase());
-
-    console.log(data);
+  async getAllManagerFunds(address) {
+    const data = (await this.platformContract.getManagerFunds(address));
 
     return await Promise.all(
       data

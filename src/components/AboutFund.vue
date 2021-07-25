@@ -133,8 +133,8 @@ export default {
       fundOpenedPercentage: 0, 
       fundActivePercentage: 0, 
       fundCanBeStartedInDays:0,
-      dateStart: null,
-      dateEnd: null,
+      dateStart: new Date(),
+      dateEnd: new Date(),
       monthNames: monthNames,
     };
   },
@@ -154,8 +154,11 @@ export default {
       this.fundActivePercentage = (this.fundStartTimestamp * 100) / (this.fundStartTimestamp + oneDayDurationInSeconds * this.fundDurationMonths);
     }
 
+
     this.dateStart = new Date(this.fundStartTimestamp * 1000) ;
     this.dateEnd = new Date(this.fundStartTimestamp + this.fundDurationMonths * oneDayDurationInSeconds);
+
+
   },
 };
 </script>

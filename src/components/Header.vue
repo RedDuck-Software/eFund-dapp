@@ -83,15 +83,15 @@ export default {
   async mounted() {
     if (this.eFundNetworkSettings == null) return;
 
-    console.log("My funds as manager: ", this.myFundsAsManager);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     if (this.userIsManager) {
-      const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+      console.log("cur signer: ", this.signerAddress)
+      const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress  );
       this.updateMyFundsAsManager(curUserFundsAsManager);
 
-      console.log("User funds", curUserFundsAsManager);
+      console.log("My funds as manager: ", this.myFundsAsManager);
     }
   },
 

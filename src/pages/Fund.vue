@@ -13,7 +13,7 @@
       <div class="col-lg-8 mt-4">
         <div class="d-flex justify-content-between mb-4">
           <ul class="nav nav-tabs rounded">
-            <li class="nav-item">
+            <li v-if="fundContractIsManager" class="nav-item">
               <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
                 >Trade</a
               >
@@ -29,8 +29,28 @@
               >
             </li>
           </ul>
-          <button class="btn btn-danger box-shadow completed d-none d-md-block" @click="showAllInvestors = true">
+          <button
+            v-if="fundContractStatus == 'Opened'"
+            :disabled="!(fundCanBeStartedAt < new Date() / 1000)"
+            class="btn btn-success box-shadow completed d-none d-md-block"
+            @click="setFundStatusActive"
+          >
+            <h3 class="middle text-white">Set active</h3>
+          </button>
+          <button
+            v-if="fundContractStatus == 'Active'"
+            :disabled="!(fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000)"
+            class="btn btn-danger box-shadow completed d-none d-md-block"
+            @click="setFundStatusCompleted"
+          >
             <h3 class="middle text-white">Set completed</h3>
+          </button>
+          <button
+            v-if="fundContractStatus == 'Completed'"
+            class="btn btn-danger box-shadow completed d-none d-md-block"
+            @click="setFundStatusClosed"
+          >
+            <h3 class="middle text-white">Set closed</h3>
           </button>
         </div>
         <div v-show="isActive('coins')">
@@ -39,10 +59,10 @@
         <div v-show="isActive('trade')">
           <Trade />
           <button
-            class="btn btn-danger box-shadow completed d-block d-md-none  mt-3 w-100"
+            class="btn btn-danger box-shadow completed d-block d-md-none mt-3 w-100"
             @click="showAllInvestors = true"
           >
-            <h3 class="middle text-white">Set completed</h3>
+            <h3 class="middle text-white">Show all investors</h3>
           </button>
         </div>
         <div v-show="isActive('about')">
@@ -66,15 +86,15 @@ import TradeHistory from "../components/TradeHistory.vue";
 import AboutFund from "../components/AboutFund.vue";
 import { asyncLoading } from "vuejs-loading-plugin";
 import Trade from "../components/Trade.vue";
+import { oneDayDurationInSeconds }  from "../services/helpers";
 
 export default {
   name: "Fund",
-  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund,Trade },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund, Trade },
   data() {
     return {
       fundContract: null,
       fundService: null,
-      fundContractAddress: null,
       isLoaded: false,
       fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
@@ -84,7 +104,6 @@ export default {
   computed: {
     ...mapGetters([
       "eFundNetworkSettings",
-      "fundContractAddress",
       "fundContractStatus",
       "fundContractManager",
       "fundContractIsManager",
@@ -99,17 +118,21 @@ export default {
       "profitFee",
       "signerAddress",
       "userIsManager",
+      "fundDurationMonths",
     ]),
   },
   async mounted() {
     console.log("naviganted to fund");
-    
-    asyncLoading(this.loadContractInfo()).catch(ex => {
+
+    asyncLoading(this.loadContractInfo()).catch((ex) => {
       console.error(ex);
     });
   },
   methods: {
     async loadContractInfo() {
+      console.log("Fund can be started at");
+
+
       this.priceInValues = [
         { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
         {
@@ -126,17 +149,17 @@ export default {
       console.log("fund address", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-      this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
-      const platform = this.fundService.getFundPlatformContractInstance(this.fundContractAddress);
+      this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
+      const platform = this.fundService.getFundPlatformContractInstance(this.fundAddress);
 
-      const isFund = await platform.isFund(this.fundContractAddress);
+      const isFund = await platform.isFund(this.fundAddress);
 
       if (!isFund) {
         alert("fund is not found");
         return;
       }
 
-      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundContractAddress);
+      const fundInfo = await this.fundService.getFundDetailedInfo(this.fundAddress);
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -153,7 +176,7 @@ export default {
 
       let totalBalance = fundInfo.balance;
 
-        console.log("fund info: ", { ...fundInfo, totalBalance : totalBalance} );
+      console.log("fund info: ", { ...fundInfo, totalBalance: totalBalance });
       (
         await Promise.all(
           boughtTokens.map((token) =>
@@ -166,7 +189,7 @@ export default {
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
-      this.updateFundAddress(this.fundContractAddress);
+      this.updateFundAddress(this.fundAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);
       this.updateFundStatus(fundInfo.status);
@@ -185,6 +208,8 @@ export default {
       this.updateFundCreatedAt(fundInfo.fundCreatedAt);
       this.updateTotalBalance(totalBalance);
 
+
+      console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000))
       this.isLoaded = true;
     },
     async getTokenInfo(tokenAddress) {
@@ -193,7 +218,7 @@ export default {
       return {
         address: tokenAddress,
         name: await token.symbol(),
-        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundContractAddress), await token.decimals()),
+        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundAddress), await token.decimals()),
       };
     },
     async isFinished() {
@@ -214,6 +239,40 @@ export default {
       this.activeItem = menuItem;
     },
 
+    async setFundStatusActive() {
+      const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[1].value);
+          this.updateFundStartTimestamp(new Date() / 1000);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
+    },
+    async setFundStatusCompleted() {
+      const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 150000 });
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[2].value);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
+    },
+    async setFundStatusClosed() {
+      const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 150000 });
+      asyncLoading(tx.wait())
+        .then(() => {
+          this.updateStoreFundStatus(fundStatuses[3].value);
+        })
+        .catch((ex) => {
+          alert("Cannot change status: ", ex);
+          console.error(ex);
+        });
+    },
     ...mapMutations([
       "updateFundAddress",
       "updateFundManager",
