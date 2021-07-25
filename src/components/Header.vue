@@ -1,6 +1,6 @@
 <template>
   <header class="bg-secondary ml-2">
-    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column px-0 pt-6 ">
+    <nav class="navbar navbar-expand-lg navbar-secondary navbar-shrink d-flex flex-column px-0 pt-6">
       <button
         class="navbar-toggler"
         type="button"
@@ -13,15 +13,15 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex min-w-0  d-flex flex-column">
+      <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex min-w-0 d-flex flex-column">
         <ul class="navbar-nav ms-auto flex-column bg-darken rounded w-100">
-          <li class="nav-item ">
+          <li class="nav-item">
             <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
           </li>
-          <li class="nav-item ">
+          <li class="nav-item">
             <HeaderItem :menu="menu.profile" :to="{ name: 'Profile' }" :text="'Profile'" />
           </li>
-          <li class="nav-item  ">
+          <li class="nav-item">
             <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />
           </li>
         </ul>
@@ -31,14 +31,15 @@
           </li>
           <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
             <HeaderItem
-              :menu="menu.fund"
-              :text="'fund 1'"
               :to="{
                 name: 'Fund',
                 params: {
                   address: fund.address,
                 },
               }"
+              :menu="menu.fund"
+              :text="`fund ${index}`"
+
             />
           </li>
         </ul>
@@ -46,12 +47,13 @@
     </nav>
   </header>
 </template>
-
 <script>
+// v-on:click="navigateToFund(fund.address, index)"
 import { mapGetters, mapMutations } from "vuex";
 import HeaderItem from "@/components/HeaderItem";
 import { isMetaMaskInstalled, currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
+import router from "../routes";
 
 export default {
   name: "Header",
@@ -89,8 +91,10 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
   },
   async mounted() {
-    if(this.eFundNetworkSettings == null) return;
-    
+    if (this.eFundNetworkSettings == null) return;
+
+    console.log("My funds as manager: ", this.myFundsAsManager);
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     if (this.userIsManager) {
@@ -99,12 +103,12 @@ export default {
 
       console.log("User funds", curUserFundsAsManager);
     }
-
-    // todo : fetch user`s funds as a investor
-    // todo : Investigate, what would be better - fetching backend or modify a smart contract
   },
 
   methods: {
+    navigateToFund(address, index) {
+      router.push({ name: "Fund", params: { address: address } });
+    },
     ...mapMutations([
       "logout",
       "clearFundInfo",

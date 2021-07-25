@@ -1,13 +1,15 @@
 <template>
-  <router-link v-slot="{ href, isActive, navigate }" :to="to" exact custom>
+  <router-link v-slot="{ href, isActive, navigate }" :to="to" :key="router.fullPath" exact custom>
     <a :href="href" class="nav-link rounded py-3" :class="isActive ? 'active ' : ''" @click="navigate">
       <img :src="`${publicPath}img/${isActive ? menu.activeIcon : menu.icon}`" class="" alt="home" />
       <div>{{ text }}</div>
     </a>
-  </router-link></template
->
+  </router-link>
+</template>
 
 <script>
+import router from "../routes";
+
 export default {
   name: "HeaderItem",
   props: ["menu", "to", "text"],
@@ -17,6 +19,9 @@ export default {
     };
   },
   computed: {
+    router() { 
+      return router;
+    },
     icon() {
       if (this.menu.isActive) {
         return this.menu.activeIcon;

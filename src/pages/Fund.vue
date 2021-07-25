@@ -51,6 +51,7 @@ import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
 import TradeHistory from "@/components/TradeHistory";
 import AboutFund from "@/components/AboutFund";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "Fund",
@@ -86,11 +87,11 @@ export default {
     ]),
   },
   async mounted() {
-    // asyncLoading().catch(ex => {
-    //   console.error(ex);
-    // });
-
-    await this.loadContractInfo();
+    console.log("naviganted to fund");
+    
+    asyncLoading(this.loadContractInfo()).catch(ex => {
+      console.error(ex);
+    });
   },
   methods: {
     async loadContractInfo() {

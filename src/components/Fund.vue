@@ -52,6 +52,8 @@ export default {
     ]),
   },
   async mounted() {
+    console.log("naviganted to fund");
+
     console.log("network setting: ", this.eFundNetworkSettings);
     console.log("fundContractStatus :", this.fundContractStatus);
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());

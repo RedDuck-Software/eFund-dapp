@@ -79,11 +79,14 @@ export class FundService {
 
   async getERC20TokenDetails(tokenAddress, amount, fundAddress) {
     const token = this.getERC20ContractInstance(tokenAddress);
+    
+    const dec = await token.decimals();
 
     return {
       address: tokenAddress,
       name: await token.symbol(),
-      amount: ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), await token.decimals()),
+      amount: ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec),
+      decimals : dec,
     };
   }
 
@@ -100,12 +103,12 @@ export class FundService {
     }
   }
 
-  async getPricesPath(routerAddress, amount: BigNumber, path: string[]) {
+  async getPricesPath(routerAddress, amount: BigNumber, path: string[], overrides) {
     if (amount.isZero()) {
       return new Array(path.length).fill(BigNumber.from([0]));
     } else {
       const contract = await this.getSwapRouterContractInstance(routerAddress);
-      const res = await contract.getAmountsOut(amount, path);
+      const res = await contract.getAmountsOut(amount, path, overrides);
       return res;
     }
   }
