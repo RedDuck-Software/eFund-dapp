@@ -151,10 +151,6 @@ export default {
 }
 
 .swap-button {
-  //position: absolute;
-  //left: 50%;
-  //bottom: 0;
-  //transform: translate(-50%, 0);
 }
 
 @media screen and (min-width: 768px) {
@@ -215,12 +211,6 @@ export default {
     height: 45px;
   }
 }
-
-//@media screen and (min-width: 768px) and (max-width: 1024px) {
-//  .swap-select {
-//    margin-left: 22px;
-//  }
-//}
 
 .vl {
   border-left: 2px solid #f0f0f0;

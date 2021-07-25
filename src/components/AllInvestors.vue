@@ -25,26 +25,6 @@
       </div>
     </div>
   </div>
-
-  <!--      <a class=" carousel-control-next" href="#" role="button" data-slide="next" @click="nextSlide()">-->
-  <!--        <div class="box-shadow arrow-control" :class="slide < totalSlides ? 'bg-white' : 'bg-black'">-->
-  <!--          <img :src="`${publicPath}img/arrow-next.svg`" alt="swap" class=" " />-->
-  <!--        </div>-->
-  <!--      </a>-->
-
-  <!--              <div class="col-sm-6 d-flex justify-content-center align-items-center">-->
-  <!--                <div class="token-icon d-flex mr-3 justify-content-center align-items-center">-->
-  <!--                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />-->
-  <!--                </div>-->
-  <!--                <div class="truncate">-->
-  <!--                  <div class="d-flex justify-content-between">-->
-  <!--                    <h3 class="middle font-weight-normal">User2400</h3>-->
-  <!--                    <h3 class="middle font-weight-normal text-primary">50 BNB</h3>-->
-  <!--                  </div>-->
-
-  <!--                  <div class="label wallet truncate">0x85c15a561a692be49a0fd3b9e9b1bf8370b33332</div>-->
-  <!--                </div>-->
-  <!--              </div>-->
 </template>
 
 <script>

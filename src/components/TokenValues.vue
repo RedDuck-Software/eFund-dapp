@@ -1,20 +1,22 @@
 <template>
-  <div class="tokens-balances d-flex justify-content-between align-items-start ">
-    <div class="w-30">
-      <v-select v-model="selectedToken" :options="tokensList" class="token-select" />
-      <div class="label">Fund value</div>
+  <div class="tokens-balances d-flex justify-content-start justify-content-lg-between align-items-start flex-wrap">
+    <div class="select-wrap flex-grow-1">
+      <div>
+        <v-select v-model="selectedToken" :options="tokensList" class="token-select" />
+        <div class="label">Fund value</div>
+      </div>
     </div>
-    <div class="text-center">
+    <div class="text-center mt-md-0 mt-3">
       <h2 class="">
         240.05
       </h2>
       <div class="label">Total Balance</div>
     </div>
-    <div class="text-center">
+    <div class="text-center  mt-md-0 mt-3 ml-4 ml-md-0">
       <h2>+120.21</h2>
       <div class="label">Revenue</div>
     </div>
-    <div v-if="showRoi" class="text-center">
+    <div v-if="showRoi" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
       <h2 class="text-primary">&#x2191;+120.21</h2>
       <div class="label">ROI</div>
     </div>
@@ -42,11 +44,19 @@ export default {
 .tokens-balances h2 {
   line-height: 30px;
 }
-.w-30 {
-  width: 30%;
-  max-width: 117px;
+
+.select-wrap {
+  flex: 1 1 100%;
+}
+@media screen and (min-width: 1024px) {
+  .select-wrap {
+    width: 30%;
+    max-width: 117px;
+  }
 }
 .token-select {
+  display: inline-block;
+
   .vs__dropdown-toggle {
     border: none;
     padding: 0;

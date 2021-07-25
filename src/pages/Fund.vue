@@ -30,7 +30,7 @@
             </li>
           </ul>
           <button class="btn btn-danger box-shadow completed d-none d-md-block" @click="showAllInvestors = true">
-            <h5 class="text-white">Set completed</h5>
+            <h3 class="middle text-white">Set completed</h3>
           </button>
         </div>
         <div v-show="isActive('coins')">
@@ -38,8 +38,11 @@
         </div>
         <div v-show="isActive('trade')">
           <Trade />
-          <button class="btn btn-danger box-shadow completed d-block d-md-none" @click="showAllInvestors = true">
-            <h5 class="text-white">Set completed</h5>
+          <button
+            class="btn btn-danger box-shadow completed d-block d-md-none  mt-3 w-100"
+            @click="showAllInvestors = true"
+          >
+            <h3 class="middle text-white">Set completed</h3>
           </button>
         </div>
         <div v-show="isActive('about')">
@@ -204,6 +207,11 @@ export default {
   .nav-link.active {
     color: black;
   }
+}
+
+.completed {
+  box-shadow: 1px 3px 6px 3px rgba(159, 159, 159, 0.25);
+  border-radius: 13px;
 }
 </style>
 

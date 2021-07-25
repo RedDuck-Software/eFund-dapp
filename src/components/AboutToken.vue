@@ -2,10 +2,10 @@
   <div class="bg-lightest p-4 rounded box-shadow">
     <div>
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 order-2 order-sm-1">
           <TokenValues :show-roi="true" class="mb-4" />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 order-1 order-sm-2 mb-3 mb-sm-0">
           <div class=" d-flex text-gray">
             <div class="token-icon profile d-flex mr-2">
               <img :src="`${publicPath}img/profile.svg`" alt="swap" class=" image-fluid" />
@@ -53,12 +53,12 @@
         </div>
         <div class="col-md-4">
           <div class="start-end-dates row text-center mt-4 pt-2">
-            <div class="col-sm-6">
+            <div class="col-6">
               <h2 class="text-black">Jul 11</h2>
               <div class="time text-black">09:43 +3 GMT</div>
               <div class="label">Fund start</div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-6">
               <h2 class="text-black">Aug 10</h2>
               <div class="time text-black">09:43 +3 GMT</div>
               <div class="label">Fund start</div>
@@ -67,7 +67,7 @@
           <div class="investors-list mt-3 pt-2">
             <h2 class="text-gray font-weight-bold">Investors</h2>
             <div class="row flex-wrap no-gutters mb-3">
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -76,7 +76,7 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -85,7 +85,7 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -94,7 +94,7 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -103,7 +103,7 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
@@ -112,7 +112,7 @@
                   <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
                 </div>
               </div>
-              <div class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div class="investor-item col-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>

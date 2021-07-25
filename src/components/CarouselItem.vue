@@ -4,7 +4,7 @@
       <div
         v-for="(item, index) in data"
         :key="index"
-        class="col-sm-6 mt-3 d-flex justify-content-center align-items-center"
+        class="col-6 mt-3 d-flex justify-content-center align-items-center"
       >
         <div class="">
           <div class=" token-icon profile d-flex mr-3 justify-content-center align-items-center">

@@ -21,19 +21,19 @@
             <h2 class="text-black">$308.29 USD</h2>
           </div>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class="text-gray">USD</h3>
           <h3 class=" big text-primary">+1.42%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6  mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">BNB</h3>
           <h3 class="big text-primary">+0.48%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6  mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">Market cap</h3>
           <h3 class="middle text-black">$51.79B</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6  mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray text-center">24h volume</h3>
           <h3 class="middle text-black text-center">$1.198B</h3>
         </div>
@@ -49,19 +49,19 @@
           </div>
         </div>
 
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6  mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class="text-gray">USD</h3>
           <h3 class="big text-primary">+1.42%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0  text-center px-2 font-weight-bold">
           <h3 class=" text-gray">BNB</h3>
           <h3 class="big text-primary">+0.48%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">Market cap</h3>
           <h3 class="big text-black">$51.79B</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">24h volume</h3>
           <h3 class="big text-black">$1.198B</h3>
         </div>
@@ -78,19 +78,19 @@
           </div>
         </div>
 
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class="text-gray">USD</h3>
           <h3 class="big text-primary">+1.42%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">BNB</h3>
           <h3 class="big text-primary">+0.48%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">Market cap</h3>
           <h3 class="big text-black">$51.79B</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">24h volume</h3>
           <h3 class="big text-black">$1.198B</h3>
         </div>
@@ -107,19 +107,19 @@
           </div>
         </div>
 
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class="text-gray">USD</h3>
           <h3 class="big text-primary">+1.42%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">BNB</h3>
           <h3 class="big text-primary">+0.48%</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">Market cap</h3>
           <h3 class="big text-black">$51.79B</h3>
         </div>
-        <div class="col-md-2 text-center px-2 font-weight-bold">
+        <div class="col-md-2 col-6 mt-2 mt-md-0 text-center px-2 font-weight-bold">
           <h3 class=" text-gray">24h volume</h3>
           <h3 class="big text-black">$1.198B</h3>
         </div>

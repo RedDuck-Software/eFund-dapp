@@ -70,11 +70,11 @@
         <div class="card profile-card box-shadow">
           <div class="card-body">
             <div class="row no-gutters">
-              <div class="col-sm-4">
+              <div class="col-md-4">
                 <img class="card-img-top " src="/img/avatar.png" alt="test fund" />
               </div>
 
-              <div class="col-sm-8">
+              <div class="col-md-8">
                 <h2 class="card-title m-0 pb-2">Ben Thomson</h2>
                 <h3>Manager/investor</h3>
               </div>
@@ -178,6 +178,18 @@ export default {
 
   .card-img-top {
     padding-right: 26px;
+  }
+}
+
+.card-img-top {
+  //height: 56px;
+  //width: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .card-img-top {
+    height: 56px;
+    width: auto;
   }
 }
 </style>
