@@ -64,7 +64,7 @@
           </div>
           <div class="sliders mb-4">
             <div class="d-flex justify-content-between align-items-center">
-              <div class="label">Cap</div>
+              <div class="label">Current cap</div>
               <div class="badge bg-black text-white">{{ filters.cap }} BNB</div>
             </div>
             <vue-slider

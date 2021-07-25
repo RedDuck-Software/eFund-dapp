@@ -40,6 +40,10 @@ export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
+export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
 
 export const eFundNetworkSettings =
 {

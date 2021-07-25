@@ -17,18 +17,26 @@ const store = new Vuex.Store({
     eFundNetworkSettings: null,
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
+    swaps: [],
+    deposits: [],
+    totalBalance: null,
+    fundCreatedAt: null,
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
     fundBalance: null,
     hardCap: null,
+    baseBalance: null,
+    endBalance: null,
     softCap: null,
     funds: null,
     minDepositAmount: null,
     fundCanBeStartedAt: null,
     profitFee: null,
     platformSettings: null,
+    fundDurationMonths: null, 
     myFundsAsInvestor: [],
     myFundsAsManager: [],
+
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -100,9 +108,33 @@ const store = new Vuex.Store({
     updateProfitFee(state, fee) {
       state.profitFee = fee;
     },
-    updatePlatformSettings(state, settings) { 
+    updateBaseBalance(state, baseBalance) {
+      state.baseBalance = baseBalance;
+    },
+    updateEndBalance(state, endBalance) {
+      state.endBalance = endBalance;
+    },
+    updatePlatformSettings(state, settings) {
       state.platformSettings = settings;
     },
+    updateFundSwapHistory(state, swaps) {
+      state.swaps = swaps;
+    },
+    updateFundDeposits(state, deposits) {
+      state.deposits = deposits;
+    },
+    updateFundDurationMonths( state, newDur) { 
+      state.fundDurationMonths = newDur;
+    },
+    updateFundCreatedAt( state, fundCreatedAt) { 
+      state.fundCreatedAt = fundCreatedAt;
+    },
+    updateTotalBalance(state, balance) { 
+      state.totalBalance = balance
+    },
+
+
+    
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -115,6 +147,8 @@ const store = new Vuex.Store({
       state.fundBalance = null;
       state.hardCap = null;
       state.softCap = null;
+      state.swaps = [];
+      state.deposits = [];
     },
     logout(state) {
       store.commit("clearFundInfo");
@@ -149,6 +183,13 @@ const store = new Vuex.Store({
     myFundsAsManager: state => state.myFundsAsManager,
     myFundsAsInvestor: state => state.myFundsAsInvestor,
     platformSettings: state => state.platformSettings,
+    fundSwapHistory: state=>state.swaps,
+    fundDeposits: state=>state.deposits,
+    baseBalance: state=>state.baseBalance,
+    endBalance: state=>state.endBalance,
+    fundDurationMonths: state=>state.fundDurationMonths,
+    fundCreatedAt: state=>state.fundCreatedAt,
+    totalBalance: state => state.totalBalance,
   },
   plugins: [createPersistedState()],
 });

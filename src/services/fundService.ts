@@ -1,4 +1,4 @@
-import { ethers, utils } from "ethers";
+import { ethers, utils, BigNumber } from "ethers";
 import { currentProvider, getSigner } from "./ether";
 import {
   fundStatuses,
@@ -77,6 +77,18 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
+  async getERC20TokenDetails(tokenAddress, amount, fundAddress) {
+    const token = this.getERC20ContractInstance(tokenAddress);
+    
+    const dec = await token.decimals();
+
+    return {
+      address: tokenAddress,
+      name: await token.symbol(),
+      amount: ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec),
+      decimals : dec,
+    };
+  }
 
   async getPlatformSettings() {
     const res = await this.platformContract.getPlatformData();
@@ -89,6 +101,22 @@ export class FundService {
       minimumProfitFee: parseFloat(res._minimumProfitFee),
       maximumProfitFee: parseFloat(res._maximumProfitFee),
     }
+  }
+
+  async getPricesPath(routerAddress, amount: BigNumber, path: string[], overrides) {
+    if (amount.isZero()) {
+      return new Array(path.length).fill(BigNumber.from([0]));
+    } else {
+      const contract = await this.getSwapRouterContractInstance(routerAddress);
+      const res = await contract.getAmountsOut(amount, path, overrides);
+      return res;
+    }
+  }
+
+  async makeDeposit(fundAddress, amount: BigNumber) {
+    const fundContract = this.getFundContractInstance(fundAddress);
+
+    return await fundContract.makeDeposit({ value: amount });
   }
 
   async getFundDetailedInfo(address) {
@@ -105,19 +133,29 @@ export class FundService {
       // @ts-ignore: cannot assign vm to Event for some reasone
       .getAddress();
 
-    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses] = await Promise.all([
+    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses, deposits, swapHistory, fundCreatedAt] = await Promise.all([
       this.getFundDetails(address),
       fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
+      fundContract.getAllDeposits(),
+      fundContract.getAllSwaps(),
+      fundContract.fundCreatedAt(),
     ]);
 
     return {
       ...fundInfo,
+      fundCreatedAt: parseFloat(fundCreatedAt),
       isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
+      deposits: deposits.map(d => { return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner } }),
+      swaps: swapHistory,
+      baseBalance: fundInfo.status == 'Opened' ? null :
+        parseFloat(utils.formatEther(await fundContract.baseBalance())),
+      endBalance: fundInfo.status == 'Opened' || fundInfo.status == 'Active' ? null :
+        parseFloat(utils.formatEther(await fundContract.endBalance())),
     };
   }
 

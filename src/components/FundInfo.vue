@@ -58,7 +58,7 @@
       v-if="fundContractStatus === 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
     >
-      <span>Fund can be started in:</span> <b class="truncate"> {{ formatDuration(fundCanBeStartedAt) }}</b>
+      <span>Fund can be started in:</span> <b class="truncate"> {{ formatDuration(fundCanBeStartedAt).value }}</b>
     </li>
 
     <li

@@ -25,16 +25,36 @@
 
 <script>
 import vSelect from "vue-select";
+import { mapGetters } from "vuex";
 export default {
   name: "TokenValues",
   components: { vSelect },
   props: ["showRoi"],
+  computed: {
+    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "startBalance"]),
+    currentRoi() { 
+      let roi;
+      if(this.fundContractStatus == `Active`) { 
+        roi =  (this.totalBalance / this.startBalance) * 100 ;
+      }
+      else { 
+        roi = (this.endBalance / this.startBalance) * 100 ;
+      }
+      return roi.toFixed(2);
+    },
+    tokensList() {
+      return [this.eFundNetworkSettings.cryptoSign, "USDT"];
+    },
+  },
   data() {
     return {
-      selectedToken: "BNB",
-      tokensList: ["BNB", "ETH", "DAI"],
+      selectedToken: "",
     };
   },
+  created() {
+    this.selectedToken = this.tokensList[0];
+  },
+  mounted() {},
 };
 </script>
 

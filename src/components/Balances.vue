@@ -3,71 +3,18 @@
     <TokenValues :show-roi="false" class="mt-5" />
     <div class="balances">
       <ul>
-        <li class="d-flex justify-content-between">
+        <li v-for="(token, index) in boughtTokensAddresses" :key="index" class="d-flex justify-content-between">
           <div class="token-icon d-flex mr-3">
             <img src="../assets/images/Dai_icon.png" />
           </div>
-          <div class=" flex-grow-1">
+          <div class="flex-grow-1">
             <div class="d-flex justify-content-between">
-              <h2 class="text-uppercase text-info">
-                Dai
-              </h2>
-              <h2>44.54</h2>
+              <h2 class="text-uppercase text-info">{{ token.name }}</h2>
+              <h2>{{ token.balance.toFixed(5) }}</h2>
             </div>
             <div class="d-flex justify-content-between mt-1">
               <div class="label">BNB value</div>
-              <div class="label text-primary">+11.524367254</div>
-            </div>
-          </div>
-        </li>
-        <li class="d-flex justify-content-between">
-          <div class="token-icon d-flex mr-3 justify-content-center align-items-center">
-            <img src="../assets/images/busdt_icon_transparent.png" />
-          </div>
-          <div class=" flex-grow-1">
-            <div class="d-flex justify-content-between">
-              <h2 class="text-uppercase text-info">Busdt</h2>
-              <h2>115.75</h2>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-              <div class="label">BNB value</div>
-              <div class="label text-danger">-6.524767254</div>
-            </div>
-          </div>
-        </li>
-        <li class="d-flex justify-content-between">
-          <div class="token-icon d-flex mr-3 justify-content-center align-items-center">
-            <img src="../assets/images/usdt_icon_transparent.png" />
-          </div>
-          <div class=" flex-grow-1">
-            <div class="d-flex justify-content-between">
-              <h2 class="text-uppercase text-info">
-                usdt
-              </h2>
-              <h2>77.50</h2>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-              <div class="label">BNB value</div>
-              <div class="label text-primary">+11.524367254</div>
-            </div>
-          </div>
-        </li>
-        <li class="d-flex justify-content-between">
-          <div class="token-icon mr-3  d-flex justify-content-center align-items-center">
-            <div>
-              <img src="../assets/images/bnb_icon_transparent.png" />
-            </div>
-          </div>
-          <div class=" flex-grow-1">
-            <div class="d-flex justify-content-between">
-              <h2 class="text-uppercase text-info">
-                bnb
-              </h2>
-              <h2>32.05</h2>
-            </div>
-            <div class="d-flex justify-content-between mt-1">
-              <div class="label">BNB value</div>
-              <div class="label text-primary">-1.524367254</div>
+              <div class="label text-primary">{{ token.balance.toFixed(5) }}</div>
             </div>
           </div>
         </li>
@@ -78,10 +25,14 @@
 
 <script>
 import TokenValues from "@/components/TokenValues";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Balances",
   components: { TokenValues },
+  computed: {
+    ...mapGetters(["boughtTokensAddresses"]),
+  },
   data() {
     return {};
   },

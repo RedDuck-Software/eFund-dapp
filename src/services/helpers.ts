@@ -24,6 +24,14 @@ function httpGet(theUrl) {
   return xmlHttp.responseText;
 }
 
+
+export const groupArrayBy = function (xs, key) {
+  return xs.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
+
 export const oneDayDurationInSeconds = 86_400;
 
 export const formatDuration = durInSeconds => {
@@ -47,23 +55,26 @@ export const formatDuration = durInSeconds => {
     second: 1,
   };
 
-  Object.keys(s).forEach(function(key) {
+  Object.keys(s).forEach(function (key) {
     r[key] = Math.floor(durInSeconds / s[key]);
     durInSeconds -= r[key] * s[key];
   });
 
-  const emptyStringIfZeroVal = function(val, mod) {
+  const emptyStringIfZeroVal = function (val, mod) {
     return val == 0 ? "" : val.toString() + mod;
   };
 
   const eZ = emptyStringIfZeroVal;
 
-  return (
-    eZ(r.year, " years ") +
-    eZ(r.month, " months ") +
-    eZ(r.day, " days ") +
-    eZ(r.hour, " hours ") +
-    eZ(r.minute, " minutes ") +
-    eZ(r.second, " seconds ")
+  return ({
+    value: (eZ(r.year, " years ") +
+      eZ(r.month, " months ") +
+      eZ(r.day, " days ") +
+      eZ(r.hour, " hours ") +
+      eZ(r.minute, " minutes ") +
+      eZ(r.second, " seconds ")),
+    obj: r,
+  }
+
   );
 };

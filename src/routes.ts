@@ -51,8 +51,8 @@ router.beforeEach(async (to, from, next) => {
     reSubscribeWalletEvents();
   }
 
-  if (to.name == from.name) {
-    console.log("identical pathes");
+  if (to.name == from.name && from.name == 'connectWallet') {
+    console.log("identical pathes (connect wallet)");
     return;
   }
 
@@ -62,8 +62,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (
-    (to.fullPath != from.fullPath,
-    store.state.eFundNetworkSettings == null ||
+    ( store.state.eFundNetworkSettings == null ||
       store.state.eFundNetworkSettings == undefined ||
       !isMetaMaskInstalled() ||
       networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined ||

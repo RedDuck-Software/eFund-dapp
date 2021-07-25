@@ -46,7 +46,7 @@
           </button>
         </div>
         <div v-show="isActive('about')">
-          <AboutToken />
+          <AboutFund />
         </div>
       </div>
     </div>
@@ -63,35 +63,66 @@ import { ethers, utils } from "ethers";
 import Balances from "@/components/Balances";
 import CoinsPriceTab from "@/components/CoinsPriceTab";
 import TradeHistory from "@/components/TradeHistory";
-import AboutToken from "@/components/AboutToken";
-import Trade from "@/components/Trade";
+import AboutFund from "@/components/AboutFund";
+import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "Fund",
-  components: { Balances, CoinsPriceTab, TradeHistory, AboutToken, Trade },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund },
   data() {
     return {
       fundContract: null,
       fundService: null,
       fundContractAddress: null,
       isLoaded: false,
+      fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "trade",
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings"]),
+    ...mapGetters([
+      "eFundNetworkSettings",
+      "fundContractAddress",
+      "fundContractStatus",
+      "fundContractManager",
+      "fundContractIsManager",
+      "allowedTokensAddresses",
+      "boughtTokensAddresses",
+      "fundStartTimestamp",
+      "fundBalance",
+      "hardCap",
+      "softCap",
+      "minDepositAmount",
+      "fundCanBeStartedAt",
+      "profitFee",
+      "signerAddress",
+      "userIsManager",
+    ]),
   },
-  mounted() {
-    // asyncLoading(this.loadContractInfo()).catch(ex => {
-    //   console.error(ex);
-    // });
+  async mounted() {
+    console.log("naviganted to fund");
+    
+    asyncLoading(this.loadContractInfo()).catch(ex => {
+      console.error(ex);
+    });
   },
   methods: {
     async loadContractInfo() {
-      this.fundContractAddress = this.$route.params.address;
+      this.priceInValues = [
+        { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
+        {
+          name: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].name,
+          address: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].address,
+        },
+      ];
 
-      console.log("fund address", this.fundContractAddress);
+      this.priceIn = this.priceInValues[0];
+
+      console.log(this.priceIn);
+
+      this.fundAddress = this.$route.params.address;
+      console.log("fund address", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
@@ -118,10 +149,19 @@ export default {
         const t = fundInfo.boughtTokensAddresses[i];
         boughtTokens.push(await this.getTokenInfo(t));
       }
-      const signerAddress = await this.fundService
-        .getCurrentProvider()
-        .getSigner()
-        .getAddress();
+
+      let totalBalance = fundInfo.balance;
+
+      console.log("fund info: ", { ...fundInfo, totalBalance : totalBalance} );
+      (
+        await Promise.all(
+          boughtTokens.map((token) =>
+            this.fundService.getPricesPath(token.address, this.eFundNetworkSettings.wrappedCryptoAddress)
+          )
+        )
+      ).forEach((prices) => {
+        totalBalance += parseFloat(utils.formatEther(prices[1]));
+      });
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
@@ -129,7 +169,7 @@ export default {
       this.updateFundAddress(this.fundContractAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);
-      this.updateFundStatus(fundInfo.fundStatus);
+      this.updateFundStatus(fundInfo.status);
       this.updateFundStartTimestamp(fundInfo.fundStartTimestamp);
       this.updateIsDepositsWithdrawed(fundInfo.isDepositsWithdrawed);
       this.updateHardCap(fundInfo.hardCap);
@@ -137,6 +177,13 @@ export default {
       this.updateMinDepositAmount(fundInfo.minDepositAmount);
       this.updateFundCanBeStartedAt(fundInfo.fundCanBeStartedAt);
       this.updateProfitFee(fundInfo.profitFee);
+      this.updateFundSwapHistory(fundInfo.swaps);
+      this.updateFundDeposits(fundInfo.deposits);
+      this.updateBaseBalance(fundInfo.baseBalance);
+      this.updateEndBalance(fundInfo.endBalance);
+      this.updateFundDurationMonths(fundInfo.fundDurationInMonths);
+      this.updateFundCreatedAt(fundInfo.fundCreatedAt);
+      this.updateTotalBalance(totalBalance);
 
       this.isLoaded = true;
     },
@@ -183,6 +230,13 @@ export default {
       "updateMinDepositAmount",
       "updateFundCanBeStartedAt",
       "updateProfitFee",
+      "updateFundSwapHistory",
+      "updateFundDeposits",
+      "updateBaseBalance",
+      "updateEndBalance",
+      "updateFundDurationMonths",
+      "updateFundCreatedAt",
+      "updateTotalBalance",
     ]),
   },
 };

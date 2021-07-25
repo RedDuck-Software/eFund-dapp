@@ -44,12 +44,13 @@
     </b-navbar>
   </header>
 </template>
-
 <script>
+// v-on:click="navigateToFund(fund.address, index)"
 import { mapGetters, mapMutations } from "vuex";
 import HeaderItem from "@/components/HeaderItem";
 import { isMetaMaskInstalled, currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
+import router from "../routes";
 
 export default {
   name: "Header",
@@ -57,7 +58,6 @@ export default {
   data() {
     return {
       scrollPosition: 0,
-      fundsIsManager: [],
       hover: false,
       menu: {
         home: {
@@ -90,6 +90,8 @@ export default {
   async mounted() {
     if (this.eFundNetworkSettings == null) return;
 
+    console.log("My funds as manager: ", this.myFundsAsManager);
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     if (this.userIsManager) {
@@ -98,12 +100,12 @@ export default {
 
       console.log("User funds", curUserFundsAsManager);
     }
-
-    // todo : fetch user`s funds as a investor
-    // todo : Investigate, what would be better - fetching backend or modify a smart contract
   },
 
   methods: {
+    navigateToFund(address, index) {
+      router.push({ name: "Fund", params: { address: address } });
+    },
     ...mapMutations([
       "logout",
       "clearFundInfo",
