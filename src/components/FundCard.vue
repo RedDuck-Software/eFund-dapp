@@ -41,7 +41,18 @@
       </div>
       <div class="d-flex flex-wrap">
         <div class="badge bg-black text-white">Rules</div>
-        <div class="badge bg-black text-white">About</div>
+        <div class="badge bg-black text-white">
+          <router-link
+            class="no-link-styles"
+            :to="{
+              name: 'Fund',
+              params: {
+                address: fundContractAddress,
+              },
+            }"
+            >About</router-link
+          >
+        </div>
         <div class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
       </div>
     </div>
@@ -91,16 +102,26 @@ export default {
       const amount = prompt("How much ether you want to invest?");
 
       const tx = await this.fundService.makeDeposit(this.fundContractAddress, utils.parseEther(amount.toString()));
-      
+
       console.log(tx);
 
-      asyncLoading(tx.wait()).catch(ex=>console.error(ex));
+      asyncLoading(tx.wait()).catch((ex) => console.error(ex));
     },
   },
 };
 </script>
 
 <style scoped lang="scss">
+.no-link-styles, .no-link-styles * { 
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
+
+.no-link-styles:hover, .no-link-styles *:hover{ 
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
+
 .author {
   font-size: 16px;
   line-height: 20px;
