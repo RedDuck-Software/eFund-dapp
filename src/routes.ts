@@ -14,12 +14,19 @@ import { walletProvider, isMetaMaskInstalled } from "./services/ether";
 
 Vue.use(VueRouter);
 
+// @ts-ignore:
 const routes: RouteConfig[] = [
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "", component: Home, name: "Home" },
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/new-fund", component: NewFund, name: "New Fund" },
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/all-funds", component: All, name: "All Funds" },
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/profile", component: Profile, name: "Profile" },
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/fund/:address", component: Fund, name: "Fund" },
+// @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/connectWallet", component: ConnectWalletPage, name: "ConnectWalletPage" },
 ];
 

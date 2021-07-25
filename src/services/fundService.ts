@@ -104,11 +104,12 @@ export class FundService {
   }
 
   async getPricesPath(routerAddress, amount: BigNumber, path: string[], overrides) {
+    
     if (amount.isZero()) {
       return new Array(path.length).fill(BigNumber.from([0]));
     } else {
       const contract = await this.getSwapRouterContractInstance(routerAddress);
-      const res = await contract.getAmountsOut(amount, path, overrides);
+      const res = await contract.getAmountsOut(amount, path);
       return res;
     }
   }
@@ -204,6 +205,7 @@ export class FundService {
     const fundContract = this.getFundContractInstance(fundAddress);
 
     const info = await fundContract.getFundInfo();
+    console.log("getFundInfo: " , info );
 
     return {
       fundDurationInMonths: parseFloat(info._fundDurationInMonths),

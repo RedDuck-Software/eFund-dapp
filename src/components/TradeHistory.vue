@@ -61,6 +61,9 @@ export default {
     let currentBalance = this.baseBalance;
 
     for (const swap of this.fundSwapHistory) {
+      
+      console.log(swap);
+      
       const tokenFrom =
         swap.from.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
           ? await this.fundService.getERC20TokenDetails(swap.from, swap.amountFrom)
@@ -69,6 +72,7 @@ export default {
               name: this.eFundNetworkSettings.cryptoSign,
               amount: parseFloat(utils.formatEther(swap.amountFrom)),
             };
+      
 
       const tokenTo =
         swap.to.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
@@ -123,31 +127,31 @@ export default {
     }
 
     // todo : remove mocked data with real one
-    this.swaps = Array(5).fill({
-      tokenTo: {
-        address: this.eFundNetworkSettings.wrappedCryptoAddress,
-        name: this.eFundNetworkSettings.cryptoSign,
-        amount: 0.1, //utils.formatEther(swap.amountFrom),
-      },
+    // this.swaps = Array(5).fill({
+    //   tokenTo: {
+    //     address: this.eFundNetworkSettings.wrappedCryptoAddress,
+    //     name: this.eFundNetworkSettings.cryptoSign,
+    //     amount: 0.1, //utils.formatEther(swap.amountFrom),
+    //   },
 
-      tokenFrom: {
-        address: this.eFundNetworkSettings.wrappedCryptoAddress,
-        name: "USDT",
-        amount: 32, //utils.formatEther(swap.amountFrom),
-      },
-      roi: 100,
-      timestamp: 1594550141,
-      // '12 Jul of 2020',
-      time:
-        new Date(1594550141 * 1000).getDate() +
-        " " +
-        monthNames[new Date(1594550141 * 1000).getMonth()] +
-        (new Date(1594550141 * 1000).getFullYear() == new Date().getFullYear()
-          ? ""
-          : " " + new Date(1594550141 * 1000).getFullYear()),
-    });
+    //   tokenFrom: {
+    //     address: this.eFundNetworkSettings.wrappedCryptoAddress,
+    //     name: "USDT",
+    //     amount: 32, //utils.formatEther(swap.amountFrom),
+    //   },
+    //   roi: 100,
+    //   timestamp: 1594550141,
+    //   // '12 Jul of 2020',
+    //   time:
+    //     new Date(1594550141 * 1000).getDate() +
+    //     " " +
+    //     monthNames[new Date(1594550141 * 1000).getMonth()] +
+    //     (new Date(1594550141 * 1000).getFullYear() == new Date().getFullYear()
+    //       ? ""
+    //       : " " + new Date(1594550141 * 1000).getFullYear()),
+    // });
 
-    console.log(monthNames[new Date(1594550141 * 1000).getMonth()]);
+    // console.log(monthNames[new Date(1594550141 * 1000).getMonth()]);
 
     this.swapsGroupedByTime = groupArrayBy(this.swaps, "time");
   },

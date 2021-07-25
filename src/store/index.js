@@ -34,6 +34,7 @@ const store = new Vuex.Store({
     profitFee: null,
     platformSettings: null,
     fundDurationMonths: null, 
+    balance : null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
 
@@ -132,9 +133,9 @@ const store = new Vuex.Store({
     updateTotalBalance(state, balance) { 
       state.totalBalance = balance
     },
-
-
-    
+    updateCryptoBalance(state, balance) { 
+      state.balance = balance;
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -190,6 +191,7 @@ const store = new Vuex.Store({
     fundDurationMonths: state=>state.fundDurationMonths,
     fundCreatedAt: state=>state.fundCreatedAt,
     totalBalance: state => state.totalBalance,
+    cryptoBalance: state => state.balance, 
   },
   plugins: [createPersistedState()],
 });

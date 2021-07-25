@@ -2,18 +2,18 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-4">
-        <h1 class="font-weight-bold">The name of the Fund</h1>
-        <div v-show="isActive('coins') || isActive('trade')">
+        <h1 class="font-weight-bold">{{ fundAddress != null ? fundAddress.substring(0, 10) : "" }}...</h1>
+        <div v-if="fundContractStatus != 'Opened'" v-show="isActive('coins') || isActive('trade')">
           <Balances />
         </div>
-        <div v-show="isActive('about')">
+        <div v-if="fundContractStatus != 'Opened'" v-show="isActive('about')">
           <TradeHistory />
         </div>
       </div>
       <div class="col-lg-8 mt-4">
         <div class="d-flex justify-content-between mb-4">
           <ul class="nav nav-tabs rounded">
-            <li v-if="fundContractIsManager" class="nav-item">
+            <li v-if="fundContractIsManager && fundContractStatus == 'Active'" class="nav-item">
               <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
                 >Trade</a
               >
@@ -23,7 +23,7 @@
                 >About</a
               >
             </li>
-            <li class="nav-item">
+            <li v-if="fundContractStatus != 'Opened'" class="nav-item">
               <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
                 >Coins Price</a
               >
@@ -31,7 +31,7 @@
           </ul>
           <button
             v-if="fundContractStatus == 'Opened'"
-            :disabled="!(fundCanBeStartedAt < new Date() / 1000)"
+            :disabled="(fundCanBeStartedAt > (new Date() / 1000))"
             class="btn btn-success box-shadow completed d-none d-md-block"
             @click="setFundStatusActive"
           >
@@ -86,7 +86,7 @@ import TradeHistory from "../components/TradeHistory.vue";
 import AboutFund from "../components/AboutFund.vue";
 import { asyncLoading } from "vuejs-loading-plugin";
 import Trade from "../components/Trade.vue";
-import { oneDayDurationInSeconds }  from "../services/helpers";
+import { oneDayDurationInSeconds } from "../services/helpers";
 
 export default {
   name: "Fund",
@@ -98,10 +98,13 @@ export default {
       isLoaded: false,
       fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
-      activeItem: "trade",
+      activeItem: "about",
     };
   },
   computed: {
+    oneDayDurationInSeconds() {
+      return oneDayDurationInSeconds;
+    },
     ...mapGetters([
       "eFundNetworkSettings",
       "fundContractStatus",
@@ -131,7 +134,6 @@ export default {
   methods: {
     async loadContractInfo() {
       console.log("Fund can be started at");
-
 
       this.priceInValues = [
         { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
@@ -174,18 +176,21 @@ export default {
         boughtTokens.push(await this.getTokenInfo(t));
       }
 
+
+      console.log("Bought token addresses: ",boughtTokens);
+
       let totalBalance = fundInfo.balance;
 
-      console.log("fund info: ", { ...fundInfo, totalBalance: totalBalance });
-      (
-        await Promise.all(
-          boughtTokens.map((token) =>
-            this.fundService.getPricesPath(token.address, this.eFundNetworkSettings.wrappedCryptoAddress)
-          )
-        )
-      ).forEach((prices) => {
-        totalBalance += parseFloat(utils.formatEther(prices[1]));
-      });
+      // console.log("fund info: ", { ...fundInfo, totalBalance: totalBalance });
+      // (
+      //   await Promise.all(
+      //     boughtTokens.map((token) =>
+      //       this.fundService.getPricesPath(token.address, this.eFundNetworkSettings.wrappedCryptoAddress)
+      //     )
+      //   )
+      // )[0].forEach((prices) => {
+      //   totalBalance += parseFloat(utils.formatEther(prices[1]));
+      // });
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
@@ -207,19 +212,14 @@ export default {
       this.updateFundDurationMonths(fundInfo.fundDurationInMonths);
       this.updateFundCreatedAt(fundInfo.fundCreatedAt);
       this.updateTotalBalance(totalBalance);
+      this.updateCryptoBalance(fundInfo.balance);
 
 
-      console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000))
+      console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
       this.isLoaded = true;
     },
     async getTokenInfo(tokenAddress) {
-      const token = this.fundService.getERC20ContractInstance(tokenAddress);
-
-      return {
-        address: tokenAddress,
-        name: await token.symbol(),
-        amount: ethers.utils.formatUnits(await token.balanceOf(this.fundAddress), await token.decimals()),
-      };
+      return await this.fundService.getERC20TokenDetails(tokenAddress, undefined, this.fundAddress);
     },
     async isFinished() {
       // d.setMonth(d.getMonth() + 8)
@@ -240,7 +240,7 @@ export default {
     },
 
     async setFundStatusActive() {
-      const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
+      const tx = await this.fundContract.setFundStatusActive({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[1].value);
@@ -252,7 +252,7 @@ export default {
         });
     },
     async setFundStatusCompleted() {
-      const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 150000 });
+      const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[2].value);
@@ -263,7 +263,7 @@ export default {
         });
     },
     async setFundStatusClosed() {
-      const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 150000 });
+      const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
           this.updateStoreFundStatus(fundStatuses[3].value);
@@ -296,6 +296,8 @@ export default {
       "updateFundDurationMonths",
       "updateFundCreatedAt",
       "updateTotalBalance",
+      "updateStoreFundStatus",
+      "updateCryptoBalance",
     ]),
   },
 };

@@ -1,5 +1,5 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xdB4a07D4eA8F69047EC29d008aBD299A1aFF2b71";
-export const EFUND_TOKEN_BSC = "0x109663438Ff20c8391E6431F3455bD5179e50E20";
+export const FUND_PLATFROM_ADDRESS_BSC = "0xCB2fEF9f1ceC77934bE805B6eB26134d67808D1D";
+export const EFUND_TOKEN_BSC = "0x598aB81623972405D82d6Dd91EB2120a7f00F333";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
@@ -41,14 +41,14 @@ export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
 export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
 
 export const eFundNetworkSettings =
 {
   97: { // BSC Testnet
-    chainId : 97,
+    chainId: 97,
     networkName: "BSC Testnet",
     cryptoSign: "BNB",
     wrappedCryptoAddress: WBNB_ADDRESS,
@@ -59,19 +59,22 @@ export const eFundNetworkSettings =
       {
         name: "USDT",
         address: "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+        decimals: 6,
       },
       {
         name: "BUSD",
         address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        decimals: 18,
       },
       {
         name: "DAI",
         address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        decimals: 18,
       },
     ],
   },
   31337: { // BSC Testnet
-    chainId : 31337,
+    chainId: 31337,
     networkName: "ETH HardHat",
     cryptoSign: "ETH",
     wrappedCryptoAddress: WETH_ADDRESS,
