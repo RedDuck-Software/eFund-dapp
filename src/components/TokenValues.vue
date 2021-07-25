@@ -1,17 +1,18 @@
 <template>
-  <div class="tokens-balances d-flex justify-content-between align-items-start ">
+  <div class="tokens-balances d-flex justify-content-between align-items-start">
     <div class="w-30">
-      <v-select v-model="selectedToken" :options="tokensList" class="token-select" />
-      <div class="label">Fund value</div>
+      <v-select v-model="selectedToken"  :clearable="false" :options="tokensList" class="token-select" />
+      <div class="label">Prices in</div>
     </div>
     <div class="text-center">
-      <h2 class="">
-        240.05
-      </h2>
-      <div class="label">Total Balance</div>
+      <h2 class="">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <div class="label">{{ fundContractStatus == "Opened" ? "Current" : `Total` }} Balance</div>
     </div>
-    <div v-if="showRoi" class="text-center">
-      <h2 class="text-primary">&#x2191;+120.21</h2>
+    <div v-if="fundContractStatus != `Opened`" class="text-center">
+      <h2 class="text-primary">
+        {{currentRoi > 100 ?  `&#x2191;` : `&#x2193;`}}
+        {{ currentRoi }}
+      </h2>
       <div class="label">ROI</div>
     </div>
   </div>
@@ -19,16 +20,36 @@
 
 <script>
 import vSelect from "vue-select";
+import { mapGetters } from "vuex";
 export default {
   name: "TokenValues",
   components: { vSelect },
   props: ["showRoi"],
+  computed: {
+    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "startBalance"]),
+    currentRoi() { 
+      let roi;
+      if(this.fundContractStatus == `Active`) { 
+        roi =  (this.totalBalance / this.startBalance) * 100 ;
+      }
+      else { 
+        roi = (this.endBalance / this.startBalance) * 100 ;
+      }
+      return roi.toFixed(2);
+    },
+    tokensList() {
+      return [this.eFundNetworkSettings.cryptoSign, "USDT"];
+    },
+  },
   data() {
     return {
-      selectedToken: "BNB",
-      tokensList: ["BNB", "ETH", "DAI"],
+      selectedToken: "",
     };
   },
+  created() {
+    this.selectedToken = this.tokensList[0];
+  },
+  mounted() {},
 };
 </script>
 

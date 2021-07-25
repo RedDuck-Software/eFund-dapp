@@ -60,7 +60,7 @@ export default {
       fundContract: null,
       fundService: null,
       isLoaded: false,
-      fundAddress: null, 
+      fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "about",
     };
@@ -90,17 +90,19 @@ export default {
     //   console.error(ex);
     // });
 
-    await this.loadContractInfo()
+    await this.loadContractInfo();
   },
   methods: {
     async loadContractInfo() {
-      this.priceInValues = [ 
-          { name: this.eFundNetworkSettings.cryptoSign, address:  this.eFundNetworkSettings.wrappedCryptoAddress }, 
-          { name: this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].name
-          , address:  this.eFundNetworkSettings.tokensAddresses.filter(v=>v.name == "USDT")[0].address },  
+      this.priceInValues = [
+        { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
+        {
+          name: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].name,
+          address: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].address,
+        },
       ];
 
-      this.priceIn=this.priceInValues[0];
+      this.priceIn = this.priceInValues[0];
 
       console.log(this.priceIn);
 
@@ -133,9 +135,18 @@ export default {
         boughtTokens.push(await this.getTokenInfo(t));
       }
 
-      const signerAddress = this.signerAddress;
-      
-      console.log("fund info: ", fundInfo);
+      let totalBalance = fundInfo.balance;
+
+      console.log("fund info: ", { ...fundInfo, totalBalance : totalBalance} );
+      (
+        await Promise.all(
+          boughtTokens.map((token) =>
+            this.fundService.getPricesPath(token.address, this.eFundNetworkSettings.wrappedCryptoAddress)
+          )
+        )
+      ).forEach((prices) => {
+        totalBalance += parseFloat(utils.formatEther(prices[1]));
+      });
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
@@ -156,6 +167,7 @@ export default {
       this.updateEndBalance(fundInfo.endBalance);
       this.updateFundDurationMonths(fundInfo.fundDurationInMonths);
       this.updateFundCreatedAt(fundInfo.fundCreatedAt);
+      this.updateTotalBalance(totalBalance);
 
       this.isLoaded = true;
     },
@@ -208,6 +220,7 @@ export default {
       "updateEndBalance",
       "updateFundDurationMonths",
       "updateFundCreatedAt",
+      "updateTotalBalance",
     ]),
   },
 };

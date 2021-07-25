@@ -1,4 +1,4 @@
-import { ethers, utils } from "ethers";
+import { ethers, utils, BigNumber } from "ethers";
 import { currentProvider, getSigner } from "./ether";
 import {
   fundStatuses,
@@ -77,13 +77,13 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
-  async getERC20TokenDetails(tokenAddress, amount,fundAddress) {
+  async getERC20TokenDetails(tokenAddress, amount, fundAddress) {
     const token = this.getERC20ContractInstance(tokenAddress);
 
     return {
       address: tokenAddress,
       name: await token.symbol(),
-      amount: ethers.utils.formatUnits(amount? amount : await token.balanceOf(fundAddress), await token.decimals()),
+      amount: ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), await token.decimals()),
     };
   }
 
@@ -98,6 +98,22 @@ export class FundService {
       minimumProfitFee: parseFloat(res._minimumProfitFee),
       maximumProfitFee: parseFloat(res._maximumProfitFee),
     }
+  }
+
+  async getPricesPath(routerAddress, amount: BigNumber, path: string[]) {
+    if (amount.isZero()) {
+      return new Array(path.length).fill(BigNumber.from([0]));
+    } else {
+      const contract = await this.getSwapRouterContractInstance(routerAddress);
+      const res = await contract.getAmountsOut(amount, path);
+      return res;
+    }
+  }
+
+  async makeDeposit(fundAddress, amount: BigNumber) {
+    const fundContract = this.getFundContractInstance(fundAddress);
+
+    return await fundContract.makeDeposit({ value: amount });
   }
 
   async getFundDetailedInfo(address) {
@@ -126,16 +142,16 @@ export class FundService {
 
     return {
       ...fundInfo,
-      fundCreatedAt : parseFloat(fundCreatedAt), 
+      fundCreatedAt: parseFloat(fundCreatedAt),
       isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
-      deposits: deposits,
+      deposits: deposits.map(d => { return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner } }),
       swaps: swapHistory,
-      baseBalance: fundInfo.status == 'Opened' ? null : 
-          parseFloat(utils.formatEther(await fundContract.baseBalance())),
-      endBalance: fundInfo.status == 'Opened' || fundInfo.status == 'Active' ? null : 
+      baseBalance: fundInfo.status == 'Opened' ? null :
+        parseFloat(utils.formatEther(await fundContract.baseBalance())),
+      endBalance: fundInfo.status == 'Opened' || fundInfo.status == 'Active' ? null :
         parseFloat(utils.formatEther(await fundContract.endBalance())),
     };
   }

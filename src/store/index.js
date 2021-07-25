@@ -19,6 +19,7 @@ const store = new Vuex.Store({
     allowedTokensAddresses: [],
     swaps: [],
     deposits: [],
+    totalBalance: null,
     fundCreatedAt: null,
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
@@ -128,6 +129,10 @@ const store = new Vuex.Store({
     updateFundCreatedAt( state, fundCreatedAt) { 
       state.fundCreatedAt = fundCreatedAt;
     },
+    updateTotalBalance(state, balance) { 
+      state.totalBalance = balance
+    },
+
 
     
     clearFundInfo(state) {
@@ -184,6 +189,7 @@ const store = new Vuex.Store({
     endBalance: state=>state.endBalance,
     fundDurationMonths: state=>state.fundDurationMonths,
     fundCreatedAt: state=>state.fundCreatedAt,
+    totalBalance: state => state.totalBalance,
   },
   plugins: [createPersistedState()],
 });

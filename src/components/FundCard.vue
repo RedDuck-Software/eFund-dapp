@@ -8,10 +8,10 @@
 
         <div class="col-sm-5 d-flex flex-column align-self-stretch mb-1">
           <h2 class="card-title m-0 font-weight-bold">{{ fundInfo.title }}</h2>
-          <div class="author font-weight-bold ">by {{ fundInfo.author }}</div>
-          <div class="balance mt-auto ">Balance: <span class="text-black">1.276$</span></div>
+          <div class="author font-weight-bold">by {{ fundInfo.author }}</div>
+          <div class="balance mt-auto">Balance: <span class="text-black">1.276$</span></div>
         </div>
-        <div class="col-sm-3 ">
+        <div class="col-sm-3">
           <div class="schedule pl-2">Can be started in: {{ formatedDur }}</div>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <div class="d-flex flex-wrap">
         <div class="badge bg-black text-white">Rules</div>
         <div class="badge bg-black text-white">About</div>
-        <div class="badge bg-primary text-white">Invest</div>
+        <div class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
       </div>
     </div>
   </div>
@@ -53,6 +53,10 @@ import { BigNumber, utils } from "ethers";
 import { formatDuration } from "../services/helpers";
 import { mapGetters } from "vuex";
 
+import { currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
+import { asyncLoading } from "vuejs-loading-plugin";
+
 export default {
   name: "FundCard",
   props: ["fundInfo"],
@@ -60,28 +64,38 @@ export default {
   data() {
     return {
       publicPath: process.env.BASE_URL,
-      proggressPercentage: "",
-      formatedDur: "",
+      fundService: null,
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings"]),
+    ...mapGetters(["eFundNetworkSettings", "fundContractAddress"]),
+    formatedDur() {
+      return formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000).value;
+    },
+    proggressPercentage() {
+      return parseFloat(
+        utils.formatEther(
+          utils
+            .parseEther(this.fundInfo.balance.toString())
+            .mul(BigNumber.from("100"))
+            .div(this.fundInfo.hardCap.toString())
+        )
+      );
+    },
   },
   mounted() {
-    this.formatedDur = formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000).value;
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+  },
+  methods: {
+    async invest() {
+      const amount = prompt("How much ether you want to invest?");
 
-    this.proggressPercentage = parseFloat(
-      utils.formatEther(
-        utils
-          .parseEther(this.fundInfo.balance.toString())
-          .mul(BigNumber.from("100"))
-          .div(this.fundInfo.hardCap.toString())
-      )
-    );
+      const tx = await this.fundService.makeDeposit(this.fundContractAddress, utils.parseEther(amount.toString()));
+      
+      console.log(tx);
 
-    console.log(this.fundInfo.balance);
-
-    console.log(utils.formatEther(this.proggressPercentage));
+      asyncLoading(tx.wait()).catch(ex=>console.error(ex));
+    },
   },
 };
 </script>

@@ -41,13 +41,6 @@
               }"
             />
           </li>
-          <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item rounded ">
-            <HeaderItem
-              :menu="menu.fund"
-              :to="{ name: 'Fund', params: { address: fundIsManager.id } }"
-              :text="fundIsManager.text"
-            />
-          </li>
         </ul>
       </div>
     </nav>
@@ -66,7 +59,6 @@ export default {
   data() {
     return {
       scrollPosition: 0,
-      fundsIsManager: [],
       hover: false,
       menu: {
         home: {

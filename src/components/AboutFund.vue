@@ -58,28 +58,28 @@
 
               <div class="row text-center mt-4 pt-2">
                 <div class="col-sm-6">
-                  <h2 class="text-black">0.1 BNB</h2>
-                  <div class="label">Min deposit amount</div>
+                  <h2 class="text-black">{{softCap}} {{eFundNetworkSettings.cryptoSign }} </h2>
+                  <div class="label">Min fund size</div>
                 </div>
                 <div class="col-sm-6">
-                  <h2 class="text-black">100 BNB</h2>
-                  <div class="label">Max deposit amount</div>
+                  <h2 class="text-black">{{hardCap}} {{eFundNetworkSettings.cryptoSign }}</h2>
+                  <div class="label">Max fund size</div>
                 </div>
               </div>
-              <TokenBarChart />
+              <TokenBarChart v-if="fundContractStatus=='Active'" />
             </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="start-end-dates row text-center mt-4 pt-2">
+          <div v-if="fundContractStatus!='Opened'" class="start-end-dates row text-center mt-4 pt-2">
             <div class="col-sm-6">
               <h2 class="text-black">{{monthNames[dateStart.getMonth()]}} {{ dateStart.getDate() }}</h2>
               <div class="time text-black">{{dateStart.getYear() == new Date().getYear() ? '' : dateStart.getYear() }} {{dateStart.getHours()}}:{{dateStart.getMinutes()}} {{dateStart.getTimezoneOffset()}} GMT</div>
               <div class="label">Fund start</div>
             </div>
             <div class="col-sm-6">
-              <h2 class="text-black">{{  }}</h2>
-              <div class="time text-black">09:43 +3 GMT</div>
+              <h2 class="text-black">{{monthNames[dateEnd.getMonth()]}} {{ dateEnd.getDate() }}</h2>
+              <div class="time text-black">{{dateEnd.getYear() == new Date().getYear() ? '' : dateEnd.getYear() }} {{dateEnd.getHours()}}:{{dateEnd.getMinutes()}} {{dateEnd.getTimezoneOffset()}} GMT</div>
               <div class="label">Fund end</div>
             </div>
           </div>
@@ -88,13 +88,13 @@
             <div class="row flex-wrap no-gutters mb-3">
               
               <div v-if="fundDeposits.length==0">Fund has no deposits yet</div>
-              <div v-else v-for="(investor, index ) in fundDeposits.length > 6 ? fundDeposits.slice(0,6) : fundDeposits" :key="index" class="investor-item col-sm-6 d-flex justify-content-start ">
+              <div v-else v-for="(deposit, index ) in fundDeposits.length > 6 ? fundDeposits.slice(0,6) : fundDeposits" :key="index" class="investor-item col-sm-6 d-flex justify-content-start ">
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
                 <div class="text-center">
-                  <h5>User2400</h5>
-                  <h5 class="sum text-gray font-weight-bold">50 BNB</h5>
+                  <h5 >{{deposit.owner.substring(0, 5)}}..</h5>
+                  <h5 class="sum text-gray font-weight-bold ">{{deposit.amount}} {{eFundNetworkSettings.cryptoSign}}</h5>
                 </div>
               </div>
 
@@ -122,7 +122,7 @@ export default {
   name: "AboutFund",
   components: { AllInvestors, TokenValues, TokenBarChart },
   computed: {
-    ...mapGetters(["fundDeposits", "fundContractStatus", "fundStartTimestamp", "fundCanBeStartedAt", "fundDurationMonths", "fundCreatedAt"]),
+    ...mapGetters(["eFundNetworkSettings", "fundDeposits", "fundContractStatus", "fundStartTimestamp", "fundCanBeStartedAt", "fundDurationMonths", "fundCreatedAt", "hardCap", "softCap"]),
   },
   data() {
     return {
