@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-
+import { nextTick } from 'vue/types/umd';
 import Home from "./pages/Home.vue";
 import Fund from "./pages/Fund.vue";
 import NewFund from "./pages/NewFund.vue";

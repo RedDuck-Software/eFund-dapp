@@ -60,15 +60,16 @@ import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
 import { ethers, utils } from "ethers";
-import Balances from "@/components/Balances";
-import CoinsPriceTab from "@/components/CoinsPriceTab";
-import TradeHistory from "@/components/TradeHistory";
-import AboutFund from "@/components/AboutFund";
+import Balances from "../components/Balances.vue";
+import CoinsPriceTab from "../components/CoinsPriceTab.vue";
+import TradeHistory from "../components/TradeHistory.vue";
+import AboutFund from "../components/AboutFund.vue";
 import { asyncLoading } from "vuejs-loading-plugin";
+import Trade from "../components/Trade.vue";
 
 export default {
   name: "Fund",
-  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund },
+  components: { Balances, CoinsPriceTab, TradeHistory, AboutFund,Trade },
   data() {
     return {
       fundContract: null,
@@ -152,7 +153,7 @@ export default {
 
       let totalBalance = fundInfo.balance;
 
-      console.log("fund info: ", { ...fundInfo, totalBalance : totalBalance} );
+        console.log("fund info: ", { ...fundInfo, totalBalance : totalBalance} );
       (
         await Promise.all(
           boughtTokens.map((token) =>
@@ -165,7 +166,6 @@ export default {
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
-      this.updateSignerAddress(signerAddress);
       this.updateFundAddress(this.fundContractAddress);
       this.updateFundIsManager(fundInfo.isManager);
       this.updateFundManager(fundInfo.managerAddress);

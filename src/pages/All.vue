@@ -127,16 +127,7 @@
       <div class="col-md-12 col-lg-8">
         <div v-if="filteredFunds.length != 0">
           <div class="row flex-wrap">
-            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
-              <FundCard :fund-info="fund" />
-            </div>
-            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
-              <FundCard :fund-info="fund" />
-            </div>
-            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
-              <FundCard :fund-info="fund" />
-            </div>
-            <div v-for="(fund, findex) in filteredFunds" :key="findex" class="col-md-6 mt-2">
+            <div v-for="(fund, index) in filteredFunds" :key="index" class="col-md-6 mt-2">
               <FundCard :fund-info="fund" />
             </div>
           </div>
@@ -221,7 +212,7 @@ export default {
       this.allFunds = await this.fundService.getAllFunds();
     },
     async getAllFilteredFunds() {
-      this.filteredFunds = Array.from(this.allFunds).filter(f => {
+      this.filteredFunds = Array.from(this.allFunds).filter((f) => {
         console.log(this.filters);
 
         return (

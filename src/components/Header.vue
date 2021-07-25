@@ -22,20 +22,13 @@
             <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
               <HeaderItem
                 :menu="menu.fund"
-                :text="'fund 1'"
+                :text="`fund ${index}`"
                 :to="{
                   name: 'Fund',
                   params: {
                     address: fund.address,
                   },
                 }"
-              />
-            </li>
-            <li v-for="fundIsManager in fundsIsManager" :key="fundIsManager.id" class="nav-item rounded ">
-              <HeaderItem
-                :menu="menu.fund"
-                :to="{ name: 'Fund', params: { address: fundIsManager.id } }"
-                :text="fundIsManager.text"
               />
             </li>
           </ul>
@@ -85,7 +78,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager"]),
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager" ]),
   },
   async mounted() {
     if (this.eFundNetworkSettings == null) return;

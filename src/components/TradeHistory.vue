@@ -45,7 +45,7 @@ import { monthNames } from "../constants";
 export default {
   name: "TradeHistory",
   computed: {
-    ...mapGetters(["fundSwapHistory", "eFundNetworkSettings", "fundContractAddress"]),
+    ...mapGetters(["fundSwapHistory", "eFundNetworkSettings", "fundContractAddress", "baseBalance"]),
   },
   data() {
     return {
@@ -58,15 +58,16 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
-    this.fundSwapHistory.forEach((swap) => {
+    let currentBalance = this.baseBalance;
+
+    for (const swap of this.fundSwapHistory) {
       const tokenFrom =
         swap.from.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
-          ? this.fundService.getERC20TokenDetails(swap.from, swap.amountFrom)
+          ? await this.fundService.getERC20TokenDetails(swap.from, swap.amountFrom)
           : {
               address: this.eFundNetworkSettings.wrappedCryptoAddress,
               name: this.eFundNetworkSettings.cryptoSign,
-              amount: utils.formatEther(swap.amountFrom),
-              priceAtBlock:  100,
+              amount: parseFloat(utils.formatEther(swap.amountFrom)),
             };
 
       const tokenTo =
@@ -75,24 +76,51 @@ export default {
           : {
               address: this.eFundNetworkSettings.wrappedCryptoAddress,
               name: this.eFundNetworkSettings.cryptoSign,
-              amount: utils.formatEther(swap.amountTo),
+              amount: parseFloat(utils.formatEther(swap.amountTo)),
             };
 
-      
+      currentBalance -=
+        tokenFrom.address == this.eFundNetworkSettings.wrappedCryptoAddress
+          ? tokenFrom.amount
+          : parseFloat(
+              utils.formatEther(
+                this.fundService.getPricesPath(
+                  this.eFundNetworkSettings.router,
+                  utils.parseEther(tokenFrom.amount, tokenFrom.decimals),
+                  [tokenFrom.address, this.eFundNetworkSettings.wrappedCryptoAddress],
+                  { blockTag: swap.block }
+                )[1]
+              )
+            );
+
+      currentBalance +=
+        tokenTo.address == this.eFundNetworkSettings.wrappedCryptoAddress
+          ? tokenTo.amount
+          : parseFloat(
+              utils.formatEther(
+                this.fundService.getPricesPath(
+                  this.eFundNetworkSettings.router,
+                  utils.parseUnits(tokenTo.amount, tokenTo.decimals),
+                  [tokenTo.address, this.eFundNetworkSettings.wrappedCryptoAddress],
+                  { blockTag: swap.block }
+                )[1]
+              )
+            );
 
       this.swaps.push({
         tokenTo: tokenTo,
         tokenFrom: tokenFrom,
-
-        roi: 100,
+        roi: (currentBalance / this.baseBalance) * 100,
         timestamp: swap.timestamp,
         time:
-          new Date(swap.timeStamp * 1000).getDate() + " " + monthNames[new Date(swap.timeStamp * 1000).getMonth()] +
+          new Date(swap.timeStamp * 1000).getDate() +
+          " " +
+          monthNames[new Date(swap.timeStamp * 1000).getMonth()] +
           (new Date(swap.timeStamp * 1000).getFullYear() == new Date().getFullYear()
             ? ""
             : " " + new Date(swap.timestamp * 1000).getFullYear()),
       });
-    });
+    }
 
     // todo : remove mocked data with real one
     this.swaps = Array(5).fill({
