@@ -9,10 +9,16 @@
         <div class="col-sm-5 d-flex flex-column align-self-stretch mb-1">
           <h2 class="card-title m-0 font-weight-bold">{{ fundInfo.title }}</h2>
           <div class="author font-weight-bold">by {{ fundInfo.author }}</div>
-          <div class="balance mt-auto">Balance: <span class="text-black">1.276$</span></div>
+          <div class="balance mt-auto">
+            Balance: <span class="text-black">{{ fundInfo.balance.toFixed(2) }}</span>
+          </div>
         </div>
-        <div class="col-sm-3">
-          <div class="schedule pl-2">Can be started in: {{ formatedDur }}</div>
+        <div v-if="fundInfo.status == 'Opened'" class="col-sm-3">
+          <div v-if="formatedDur > 0" class="schedule pl-2">Can be started in: {{ formatedDur }}</div>
+          <div v-else class="schedule pl-2">Can be started</div>
+        </div>
+        <div v-else-if="fundInfo.status == 'Active'" class="col-sm-3">
+          <div class="schedule pl-2">Duration {{ fundInfo.fundDurationInMonths }} months</div>
         </div>
       </div>
       <div class="progress" style="height: 17px">
@@ -47,13 +53,13 @@
             :to="{
               name: 'Fund',
               params: {
-                address: fundContractAddress,
+                address: fundInfo.address,
               },
             }"
             >About</router-link
           >
         </div>
-        <div class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
+        <div v-if="fundInfo.status == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
       </div>
     </div>
   </div>
@@ -67,10 +73,15 @@ import { mapGetters } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { asyncLoading } from "vuejs-loading-plugin";
+import { oneDayDurationInSeconds } from "../services/helpers";
 
 export default {
   name: "FundCard",
-  props: ["fundInfo"],
+  props: {
+    fundInfo: {
+      default: null,
+    },
+  },
 
   data() {
     return {
@@ -81,7 +92,7 @@ export default {
   computed: {
     ...mapGetters(["eFundNetworkSettings", "fundContractAddress"]),
     formatedDur() {
-      return formatDuration(this.fundInfo.fundCanBeStartedAt - new Date() / 1000).value;
+      return Math.ceil((this.fundInfo.fundCanBeStartedAt - new Date()) / 1000 / oneDayDurationInSeconds);
     },
     proggressPercentage() {
       return parseFloat(
@@ -95,6 +106,8 @@ export default {
     },
   },
   mounted() {
+    console.log(this.fundInfo.fundDurationMonths);
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
   },
   methods: {
@@ -112,12 +125,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.no-link-styles, .no-link-styles * { 
+.no-link-styles,
+.no-link-styles * {
   color: inherit; /* blue colors for links too */
   text-decoration: inherit; /* no underline */
 }
 
-.no-link-styles:hover, .no-link-styles *:hover{ 
+.no-link-styles:hover,
+.no-link-styles *:hover {
   color: inherit; /* blue colors for links too */
   text-decoration: inherit; /* no underline */
 }

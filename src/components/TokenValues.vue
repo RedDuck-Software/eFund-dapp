@@ -29,7 +29,6 @@ import { getPercentageDiff } from "../services/helpers";
 export default {
   name: "TokenValues",
   components: { vSelect },
-  props: ["showRoi"],
   computed: {
     ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
     currentRoi() {

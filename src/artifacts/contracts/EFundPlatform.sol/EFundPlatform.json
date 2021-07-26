@@ -243,6 +243,44 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getPlatformData",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_softCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_hardCap",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minimumTimeUntillFundStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maximumTimeUntillFundStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minimumProfitFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maximumProfitFee",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",

@@ -31,7 +31,13 @@
             </div>
             <div class="d-flex justify-content-between">
               <div class="label">ROI ({{ eFundNetworkSettings.cryptoSign }})</div>
-              <div class="label text-primary">102%</div>
+
+              <h2 v-if="swap.balanceAfterSwap > baseBalance" class="label text-primary">
+                &#x2191;
+                {{ swap.roi.toFixed(2) }}
+              </h2>
+              <h2 v-else-if="swap.balanceAfterSwap == baseBalance" class="label">&#x21E1;100</h2>
+              <h2 v-else class="label text-danger">&#x2193; {{ swap.roi.toFixed(2) }}</h2>
             </div>
           </div>
         </div>
@@ -45,7 +51,7 @@ import { utils } from "ethers";
 import { mapGetters } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import { groupArrayBy } from "../services/helpers";
+import { groupArrayBy, getPercentageDiff } from "../services/helpers";
 import { monthNames } from "../constants";
 
 export default {
@@ -59,6 +65,8 @@ export default {
       swaps: [],
       swapsGroupedByTime: [],
       fundService: null,
+      arrowUp: "&#x2191;",
+      arrowDown: "&#x2193;",
     };
   },
   async mounted() {
@@ -67,81 +75,85 @@ export default {
     let currentBalance = this.baseBalance;
 
     console.log("Swaps history: ", this.fundSwapHistory);
-    
 
-    await Promise.all(
-      this.fundSwapHistory.map(async (swap) => {
-        const tokenFrom =
-          swap.from.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
-            ? await this.fundService.getERC20TokenDetails(swap.from, swap.amountFrom)
-            : {
-                address: this.eFundNetworkSettings.wrappedCryptoAddress,
-                name: this.eFundNetworkSettings.cryptoSign,
-                amount: parseFloat(utils.formatEther(swap.amountFrom)),
-                decimals: 18,
-              };
-        console.log("token from", tokenFrom);
+    for (const swap of this.fundSwapHistory) {
+      const balanceBeforeSwap = currentBalance;
 
-        const tokenTo =
-          swap.to.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
-            ? await this.fundService.getERC20TokenDetails(swap.to, swap.amountTo)
-            : {
-                address: this.eFundNetworkSettings.wrappedCryptoAddress,
-                name: this.eFundNetworkSettings.cryptoSign,
-                amount: parseFloat(utils.formatEther(swap.amountTo)),
-                decimals: 18,
-              };
+      const tokenFrom =
+        swap.from.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
+          ? await this.fundService.getERC20TokenDetails(swap.from, swap.amountFrom)
+          : {
+              address: this.eFundNetworkSettings.wrappedCryptoAddress,
+              name: this.eFundNetworkSettings.cryptoSign,
+              amount: parseFloat(utils.formatEther(swap.amountFrom)),
+              decimals: 18,
+            };
+      console.log("token from", tokenFrom);
 
-        console.log("token to", tokenTo);
+      const tokenTo =
+        swap.to.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
+          ? await this.fundService.getERC20TokenDetails(swap.to, swap.amountTo)
+          : {
+              address: this.eFundNetworkSettings.wrappedCryptoAddress,
+              name: this.eFundNetworkSettings.cryptoSign,
+              amount: parseFloat(utils.formatEther(swap.amountTo)),
+              decimals: 18,
+            };
 
-        currentBalance -=
-          tokenFrom.address == this.eFundNetworkSettings.wrappedCryptoAddress
-            ? tokenFrom.amount
-            : parseFloat(
-                utils.formatEther(
-                  (
-                    await this.fundService.getPricesPath(
-                      this.eFundNetworkSettings.router,
-                      utils.parseUnits(tokenFrom.amount.toString(), tokenFrom.decimals),
-                      [tokenFrom.address, this.eFundNetworkSettings.wrappedCryptoAddress],
-                      { blockTag: swap.block }
-                    )
-                  )[1]
-                )
-              );
+      console.log("token to", tokenTo);
 
-        console.log("Cur balance: ", currentBalance);
+      currentBalance -=
+        tokenFrom.address == this.eFundNetworkSettings.wrappedCryptoAddress
+          ? tokenFrom.amount
+          : parseFloat(
+              utils.formatEther(
+                (
+                  await this.fundService.getPricesPath(
+                    this.eFundNetworkSettings.router,
+                    utils.parseUnits(tokenFrom.amount.toString(), tokenFrom.decimals),
+                    [tokenFrom.address, this.eFundNetworkSettings.wrappedCryptoAddress],
+                    { blockTag: swap.block }
+                  )
+                )[1]
+              )
+            );
 
-        currentBalance +=
-          tokenTo.address == this.eFundNetworkSettings.wrappedCryptoAddress
-            ? tokenTo.amount
-            : parseFloat(
-                utils.formatEther(
-                  (
-                    await this.fundService.getPricesPath(
-                      this.eFundNetworkSettings.router,
-                      utils.parseUnits(tokenTo.amount.toString(), tokenTo.decimals),
-                      [tokenTo.address, this.eFundNetworkSettings.wrappedCryptoAddress],
-                      { blockTag: swap.block }
-                    )
-                  )[1]
-                )
-              );
+      console.log("Cur balance: ", currentBalance);
 
-        console.log("cur balance2:", currentBalance);
+      currentBalance +=
+        tokenTo.address == this.eFundNetworkSettings.wrappedCryptoAddress
+          ? tokenTo.amount
+          : parseFloat(
+              utils.formatEther(
+                (
+                  await this.fundService.getPricesPath(
+                    this.eFundNetworkSettings.router,
+                    utils.parseUnits(tokenTo.amount.toString(), tokenTo.decimals),
+                    [tokenTo.address, this.eFundNetworkSettings.wrappedCryptoAddress],
+                    { blockTag: swap.block }
+                  )
+                )[1]
+              )
+            );
 
-        const parsedTimestamp = parseFloat(swap.timeStamp.toString());
+      console.log("cur balance2:", currentBalance);
 
-        console.log("parsed timestamp: ", parsedTimestamp);
+      const parsedTimestamp = parseFloat(swap.timeStamp.toString());
 
-        this.swaps.push({
-          tokenTo: tokenTo,
-          tokenFrom: tokenFrom,
-          roi: (currentBalance / this.baseBalance) * 100,
-          timestamp: parsedTimestamp,
-        });
-      })
-    );
+      console.log("parsed timestamp: ", parsedTimestamp);
+
+      this.swaps.push({
+        tokenTo: tokenTo,
+        tokenFrom: tokenFrom,
+        roi: 100 + getPercentageDiff(this.baseBalance, currentBalance),
+        balanceAfterSwap: currentBalance,
+        balanceBeforeSwap: balanceBeforeSwap,
+        timestamp: parsedTimestamp,
+        // textCssModificator:
+        //   currentBalance > balanceBeforeSwap ?
+        //     ""
+      });
+    }
 
     this.swaps.sort((a, b) => {
       if (a.timestamp > b.timestamp) {

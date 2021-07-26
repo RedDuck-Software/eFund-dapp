@@ -117,7 +117,7 @@ export default {
       "fundContractAddress",
       "eFundNetworkSettings",
       "allowedTokensAddresses",
-      "fundBalance",
+      "cryptoBalance",
       "cryptoBalance",
     ]),
     boughtTokensAddresses() {
@@ -150,6 +150,8 @@ export default {
     };
   },
   async mounted() {
+ 
+
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
@@ -193,6 +195,9 @@ export default {
 
     console.log("tokens to swap: ", tokensToSwap);
     console.log("tokens to swap labels: ", this.toSwapLabels);
+
+    this.fromSwapCurrLabel = this.fromSwapLabels[0];
+    this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
   },
   methods: {
     addTokenToBoughts(token) {
@@ -231,7 +236,7 @@ export default {
         this.toSwapValue = 0;
         this.toSwapCurrLabel = null;
       }
-      this.fromSwapMaxValue = this.fundBalance;
+      this.fromSwapMaxValue = this.cryptoBalance;
 
       await this.reCalculateAmountsOut();
     },
@@ -369,7 +374,7 @@ export default {
 
       const txHash = await tx.wait();
 
-      this.updateFundBalance(
+      this.updateCryptoBalance(
         utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
       );
 
@@ -403,13 +408,13 @@ export default {
         // todo: update token balance
       }
 
-      this.updateFundBalance(
+      this.updateCryptoBalance(
         utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
       );
 
       return txHash;
     },
-    ...mapMutations(["addBoughtToken", "updateFundBalance"]),
+    ...mapMutations(["addBoughtToken", "updateCryptoBalance"]),
   },
 };
 </script>

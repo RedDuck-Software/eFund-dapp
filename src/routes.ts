@@ -79,6 +79,8 @@ router.beforeEach(async (to, from, next) => {
     next({ name: "ConnectWalletPage" });
   } else {
     store.commit("clearFundInfo");
+    console.log("NEXT!");
+    
     next();
   }
 });
@@ -87,8 +89,10 @@ export const reSubscribeWalletEvents = () => {
   // @ts-ignore: cannot assign vm to Event for some reasone
   walletProvider.currentProvider.provider.on("accountsChanged", ([newAddres]) => {
     console.log("new address is :", newAddres);
-    store.commit("clearFundInfo");
+
+    store.commit('logout');
     store.commit("updateSignerAddress", newAddres);
+
     window.location.reload();
   });
 

@@ -3,10 +3,24 @@
     <TokenValues :show-roi="false" class="mt-5" />
     <div class="balances">
       <ul>
+        <li class="d-flex justify-content-between">
+          <div class="token-icon d-flex mr-3">
+            <img :src="`${eFundNetworkSettings.cryptoLogo}`" />
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between">
+              <h2 class="text-uppercase text-info">{{ eFundNetworkSettings.cryptoSign }}</h2>
+              <h2>{{ parseFloat(cryptoBalance).toFixed(5) }}</h2>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+              <div class="label">{{ eFundNetworkSettings.cryptoSign }} value</div>
+              <div class="label text-primary">{{ parseFloat(cryptoBalance).toFixed(5) }}</div>
+            </div>
+          </div>
+        </li>
         <li v-for="(token, index) in boughtTokensAddresses" :key="index" class="d-flex justify-content-between">
           <div class="token-icon d-flex mr-3">
-            <img v-if="token.address == eFundNetworkSettings.wrappedCryptoAddress" :src="`${eFundNetworkSettings.cryptoLogo}`" />
-            <img v-else :src="`${token.logo}`" />
+            <img :src="`${token.logo}`" />
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between">
@@ -14,7 +28,7 @@
               <h2>{{ parseFloat(token.amount).toFixed(5) }}</h2>
             </div>
             <div class="d-flex justify-content-between mt-1">
-              <div class="label">BNB value</div>
+              <div class="label">{{ eFundNetworkSettings.cryptoSign }} value</div>
               <div class="label text-primary">{{ token.etherPrice.toFixed(10) }}</div>
             </div>
           </div>
@@ -33,7 +47,7 @@ export default {
   name: "Balances",
   components: { TokenValues },
   computed: {
-    ...mapGetters(["boughtTokensAddresses", "eFundNetworkSettings"]),
+    ...mapGetters(["boughtTokensAddresses", "eFundNetworkSettings", "cryptoBalance"]),
   },
 
   data() {

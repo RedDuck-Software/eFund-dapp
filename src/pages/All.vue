@@ -213,7 +213,6 @@ export default {
     },
     async getAllFilteredFunds() {
       this.filteredFunds = Array.from(this.allFunds).filter((f) => {
-        console.log(this.filters);
 
         return (
           f.fundDurationInMonths >= this.filters.minTime &&

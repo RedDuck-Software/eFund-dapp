@@ -99,6 +99,8 @@ export class FundService {
   }
 
   async getPlatformSettings() {
+    console.log(this.platformContract);
+    
     const res = await this.platformContract.getPlatformData();
 
     return {

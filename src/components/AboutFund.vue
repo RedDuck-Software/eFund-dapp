@@ -127,6 +127,7 @@
               </button>
             </div>
           </div>
+          <div v-if="" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
         </div>
       </div>
     </div>
@@ -138,9 +139,13 @@ import AllInvestors from "../components/AllInvestors";
 import TokenValues from "@/components/TokenValues";
 import TokenBarChart from "@/components/TokenBarChart";
 import { mapGetters } from "vuex";
-import { MountingPortal } from "portal-vue";
 import { oneDayDurationInSeconds, formatDuration } from "../services/helpers";
 import { monthNames } from "../constants";
+import {utils } from "ethers";
+import { asyncLoading } from "vuejs-loading-plugin";
+import { currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
+
 
 export default {
   name: "AboutFund",
@@ -160,6 +165,7 @@ export default {
       "hardCap",
       "softCap",
       "minDepositAmount",
+      "fundContractAddress",
     ]),
   },
   data() {
@@ -175,11 +181,14 @@ export default {
       dateEnd: new Date(),
       monthNames: monthNames,
       daysTillTheEnd: 0,
+      fundService: null,
     };
   },
 
   mounted: function () {
     console.log("fund status: ", this.fundContractStatus);
+    
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
     if (this.fundContractStatus == "Opened") {
       const temp = this.fundCanBeStartedAt - this.fundCreatedAt;
@@ -224,6 +233,17 @@ export default {
         now: Math.floor(new Date() / 1000),
       });
     }
+  },
+  methods: {
+    async invest() {
+      const amount = prompt("How much ether you want to invest?");
+
+      const tx = await this.fundService.makeDeposit(this.fundContractAddress, utils.parseEther(amount.toString()));
+
+      console.log(tx);
+
+      asyncLoading(tx.wait()).catch((ex) => console.error(ex));
+    },
   },
 };
 </script>
