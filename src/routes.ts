@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import { nextTick } from 'vue/types/umd';
+import { nextTick } from "vue/types/umd";
 import Home from "./pages/Home.vue";
 import Fund from "./pages/Fund.vue";
 import NewFund from "./pages/NewFund.vue";
@@ -16,17 +16,17 @@ Vue.use(VueRouter);
 
 // @ts-ignore:
 const routes: RouteConfig[] = [
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "", component: Home, name: "Home" },
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/new-fund", component: NewFund, name: "New Fund" },
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/all-funds", component: All, name: "All Funds" },
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/profile", component: Profile, name: "Profile" },
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/fund/:address", component: Fund, name: "Fund" },
-// @ts-ignore: cannot assign vm to Event for some reasone
+  // @ts-ignore: cannot assign vm to Event for some reasone
   { path: "/connectWallet", component: ConnectWalletPage, name: "ConnectWalletPage" },
 ];
 
@@ -58,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     reSubscribeWalletEvents();
   }
 
-  if (to.name == from.name && from.name == 'connectWallet') {
+  if (to.name == from.name && from.name == "connectWallet") {
     console.log("identical pathes (connect wallet)");
     return;
   }
@@ -69,15 +69,18 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (
-    ( store.state.eFundNetworkSettings == null ||
-      store.state.eFundNetworkSettings == undefined ||
-      !isMetaMaskInstalled() ||
-      networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined ||
-      (await walletProvider.currentProvider.getNetwork()).chainId != store.state.eFundNetworkSettings.chainId)
+    store.state.eFundNetworkSettings == null ||
+    store.state.eFundNetworkSettings == undefined ||
+    !isMetaMaskInstalled() ||
+    networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined ||
+    (await walletProvider.currentProvider.getNetwork()).chainId != store.state.eFundNetworkSettings.chainId
   ) {
     store.commit("logout");
     next({ name: "ConnectWalletPage" });
-  } else next();
+  } else {
+    store.commit("clearFundInfo");
+    next();
+  }
 });
 
 export const reSubscribeWalletEvents = () => {

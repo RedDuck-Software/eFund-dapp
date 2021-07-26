@@ -1,5 +1,5 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xCB2fEF9f1ceC77934bE805B6eB26134d67808D1D";
-export const EFUND_TOKEN_BSC = "0x598aB81623972405D82d6Dd91EB2120a7f00F333";
+export const FUND_PLATFROM_ADDRESS_BSC = "0xB865a538deC1f5aFEdc1D09eA63773b7AC680aC1";
+export const EFUND_TOKEN_BSC = "0x6A509cF884d3dE9E4BAab34F934c610aCC225246";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
@@ -51,6 +51,7 @@ export const eFundNetworkSettings =
     chainId: 97,
     networkName: "BSC Testnet",
     cryptoSign: "BNB",
+    cryptoLogo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
@@ -60,16 +61,19 @@ export const eFundNetworkSettings =
         name: "USDT",
         address: "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
         decimals: 6,
+        logo: "https://cryptologos.cc/logos/tether-usdt-logo.png",
       },
       {
         name: "BUSD",
         address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
         decimals: 18,
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
       },
       {
         name: "DAI",
         address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
         decimals: 18,
+        logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
       },
     ],
   },

@@ -35,7 +35,9 @@
                     aria-valuemax="100"
                   ></div>
                 </div>
-                <div class="label text-gray mt-1">Duration: 1 month (10d to the end)</div>
+                <div class="label text-gray mt-1">
+                  Duration: {{ fundDurationMonths }} month ({{ daysTillTheEnd }}d to the end)
+                </div>
               </div>
               <div v-else-if="fundContractStatus == 'Opened'" class="mt-4 token-progress">
                 <div class="progress" style="height: 9px">
@@ -109,7 +111,7 @@
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
                 </div>
                 <div class="text-center">
-                  <h5>{{ deposit.owner!= null ? deposit.owner.substring(0, 5) : `` }}..</h5>
+                  <h5>{{ deposit.owner != null ? deposit.owner.substring(0, 5) : `` }}..</h5>
                   <h5 class="sum text-gray font-weight-bold">
                     {{ deposit.amount }} {{ eFundNetworkSettings.cryptoSign }}
                   </h5>
@@ -144,6 +146,9 @@ export default {
   name: "AboutFund",
   components: { AllInvestors, TokenValues, TokenBarChart },
   computed: {
+    oneDayDurationInSeconds() {
+      return oneDayDurationInSeconds;
+    },
     ...mapGetters([
       "eFundNetworkSettings",
       "fundDeposits",
@@ -169,10 +174,13 @@ export default {
       dateStart: new Date(),
       dateEnd: new Date(),
       monthNames: monthNames,
+      daysTillTheEnd: 0,
     };
   },
 
-  async mounted() {
+  mounted: function () {
+    console.log("fund status: ", this.fundContractStatus);
+
     if (this.fundContractStatus == "Opened") {
       const temp = this.fundCanBeStartedAt - this.fundCreatedAt;
 
@@ -184,16 +192,28 @@ export default {
 
       console.log("% ", this.fundOpenedPercentage);
 
+      console.log("fund can be started at: ", this.fundCanBeStartedAt);
+
       this.fundCanBeStartedInDays = Math.ceil((this.fundCanBeStartedAt - new Date() / 1000) / oneDayDurationInSeconds);
     }
 
     if (this.fundContractStatus == "Active") {
-      this.fundActivePercentage =
-        (this.fundStartTimestamp * 100) / (this.fundStartTimestamp + oneDayDurationInSeconds * this.fundDurationMonths);
-    }
+      console.log("Fund duration in months: ", this.fundDurationMonths);
 
-    this.dateStart = new Date(this.fundStartTimestamp * 1000);
-    this.dateEnd = new Date(this.fundStartTimestamp + this.fundDurationMonths * oneDayDurationInSeconds);
+      this.dateStart = new Date(this.fundStartTimestamp * 1000);
+
+      this.dateEnd = new Date(
+        new Date(this.dateStart).setMonth(new Date(this.dateStart).getMonth() + this.fundDurationMonths)
+      );
+
+      console.log("date end: ", this.dateEnd);
+
+      this.daysTillTheEnd = Math.floor(Math.floor((this.dateEnd - new Date()) / 1000) / oneDayDurationInSeconds);
+
+      this.fundActivePercentage = Math.floor(
+        ((Math.floor(new Date() / 1000) - this.fundCreatedAt) / (this.dateEnd / 1000 - this.fundStartTimestamp)) * 100
+      );
+    }
   },
 };
 </script>

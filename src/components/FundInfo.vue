@@ -47,14 +47,14 @@
     <li class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0">
       Profit fee: <b class="truncate"> {{ profitFee + `%` }}</b>
     </li>
-    
+
     <li
       v-if="fundStartTimestamp != null && fundContractStatus !== 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
     >
       <span>Fund start:</span> <b class="truncate"> {{ new Date(fundStartTimestamp.toNumber() * 1000) }}</b>
     </li>
-    <li 
+    <li
       v-if="fundContractStatus === 'Opened'"
       class="list-group-item bg-gray-dark rounded py-4 px-3 mt-3 d-flex min-w-0"
     >
@@ -105,7 +105,7 @@ import { currentProvider } from "../services/ether";
 import { fundStatuses } from "../constants";
 import { asyncLoading } from "vuejs-loading-plugin";
 import { utimesSync } from "fs";
-import {formatDuration } from '../services/helpers';
+import { formatDuration } from "../services/helpers";
 
 export default {
   name: "FundInfo",
@@ -165,7 +165,7 @@ export default {
       const tx = await this.fundContract.setFundStatusActive({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[1].value);
+          this.updateFundStatus(fundStatuses[1].value);
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);
@@ -176,7 +176,7 @@ export default {
       const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[2].value);
+          this.updateFundStatus(fundStatuses[2].value);
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);
@@ -187,7 +187,7 @@ export default {
       const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 150000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[3].value);
+          this.updateFundStatus(fundStatuses[3].value);
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);
@@ -196,15 +196,10 @@ export default {
     },
 
     async updateBalance() {
-      const balance = utils.formatEther( await currentProvider().getBalance(this.fundContract.address));
+      const balance = utils.formatEther(await currentProvider().getBalance(this.fundContract.address));
       this.updateFundBalance(balance);
       console.log("fund balance is: ", balance);
     },
-    updateStoreFundStatus(newStatus) {
-      this.updateFundStatus(newStatus);
-    },
-    
-
     ...mapMutations([
       "updateFundAddress",
       "updateFundManager",

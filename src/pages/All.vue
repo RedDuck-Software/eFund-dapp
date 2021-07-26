@@ -44,7 +44,7 @@
           <div class="pt-3 mb-4">
             <div class="d-flex justify-content-between align-items-center">
               <div class="label">Min trading time to the end</div>
-              <div class="badge bg-black text-white">{{ filters.minTime }} days</div>
+              <div class="badge bg-black text-white">{{ filters.minTime }} months</div>
             </div>
             <vue-slider
               v-model="filters.minTime"

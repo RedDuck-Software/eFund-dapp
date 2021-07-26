@@ -5,7 +5,8 @@
       <ul>
         <li v-for="(token, index) in boughtTokensAddresses" :key="index" class="d-flex justify-content-between">
           <div class="token-icon d-flex mr-3">
-            <img src="../assets/images/Dai_icon.png" />
+            <img v-if="token.address == eFundNetworkSettings.wrappedCryptoAddress" :src="`${eFundNetworkSettings.cryptoLogo}`" />
+            <img v-else :src="`${token.logo}`" />
           </div>
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between">
@@ -14,7 +15,7 @@
             </div>
             <div class="d-flex justify-content-between mt-1">
               <div class="label">BNB value</div>
-              <div class="label text-primary">{{ token.amount }}</div>
+              <div class="label text-primary">{{ token.etherPrice.toFixed(10) }}</div>
             </div>
           </div>
         </li>
@@ -32,7 +33,7 @@ export default {
   name: "Balances",
   components: { TokenValues },
   computed: {
-    ...mapGetters(["boughtTokensAddresses"]),
+    ...mapGetters(["boughtTokensAddresses", "eFundNetworkSettings"]),
   },
 
   data() {

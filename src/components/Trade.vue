@@ -47,7 +47,7 @@
           </div>
           <div class="gas-fee">
             <div class="label">Gas fee</div>
-            <h3 class="middle font-weight-lighter">~{{0.004}} {{eFundNetworkSettings.cryptoSign}}</h3>
+            <h3 class="middle font-weight-lighter">~{{ 0.004 }} {{ eFundNetworkSettings.cryptoSign }}</h3>
           </div>
         </div>
       </div>
@@ -113,7 +113,13 @@ export default {
   name: "FundTrade",
   components: { vSelect },
   computed: {
-    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses", "fundBalance", "cryptoBalance"]),
+    ...mapGetters([
+      "fundContractAddress",
+      "eFundNetworkSettings",
+      "allowedTokensAddresses",
+      "fundBalance",
+      "cryptoBalance",
+    ]),
     boughtTokensAddresses() {
       return this.$store.state.boughtTokensAddresses;
     },
@@ -144,11 +150,11 @@ export default {
     };
   },
   async mounted() {
-    // this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    // this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
-    // this.swapRouterAddress = await this.fundContract.router();
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+    this.swapRouterAddress = await this.fundContract.router();
 
-    // console.log("Swap router address is: ", this.swapRouterAddress);
+    console.log("Swap router address is: ", this.swapRouterAddress);
 
     const wCrypto = this.eFundNetworkSettings.cryptoSign;
     const wCryptoAddress = this.eFundNetworkSettings.wrappedCryptoAddress;
@@ -156,10 +162,9 @@ export default {
     const wCryptoObj = {
       name: wCrypto,
       address: wCryptoAddress,
-      amount:  100,   ///utils.formatEther(this.cryptoBalance),
-      decimals: 18, 
+      amount: this.cryptoBalance,
+      decimals: 18,
     };
-    
 
     this.fromSwapList[wCrypto] = wCryptoObj;
     this.fromSwapLabels.push(wCrypto);
@@ -238,8 +243,11 @@ export default {
       await this.reCalculateAmountsOut();
     },
     async reCalculateAmountsOut() {
-      console.log("trade: ", {fromVal: this.fromSwapValue, fromSwapCurr: this.fromSwapCurr, toSwapCur : this.toSwapCurr });
-
+      console.log("trade: ", {
+        fromVal: this.fromSwapValue,
+        fromSwapCurr: this.fromSwapCurr,
+        toSwapCur: this.toSwapCurr,
+      });
 
       if (!(this.fromSwapValue != 0 && this.fromSwapCurr && this.toSwapCurr)) {
         console.log("cannot recalculate amounts out");
@@ -250,7 +258,10 @@ export default {
 
       console.log("before amounts: ", this.fromSwapCurr.address, this.toSwapCurr.address);
 
-      const amounts = await this.fundService.getPricesPath(this.swapRouterAddress, parsedAmount, [this.fromSwapCurr.address, this.toSwapCurr.address]);
+      const amounts = await this.fundService.getPricesPath(this.swapRouterAddress, parsedAmount, [
+        this.fromSwapCurr.address,
+        this.toSwapCurr.address,
+      ]);
 
       console.log(amounts);
 
@@ -331,7 +342,8 @@ export default {
         const newBoughtToken = {
           name: await tokenTo.symbol(),
           address: this.toSwapCurr.address,
-          amount: await tokenTo.balanceOf(this.fundContractAddress),
+          decimals: this.toSwapCurr.decimals,
+          amount: utils.formatUnits(await tokenTo.balanceOf(this.fundContractAddress), this.toSwapCurr.decimals),
         };
 
         this.addTokenToBoughts(newBoughtToken);
@@ -377,11 +389,12 @@ export default {
 
       const txHash = await tx.wait();
 
-      if (!this.boughtTokensAddresses.some((v) => v.address == this.toSwapCurr.address)) {
+      if (!this.boughtTokensAddresses.some((v) => v.address.toLowerCase() == this.toSwapCurr.address.toLowerCase())) {
         const newBoughtToken = {
-          name: await tokenTo.symbol(),
+          name: await tokenTo.name,
           address: this.toSwapCurr.address,
-          amount: await tokenTo.balanceOf(this.fundContractAddress),
+          decimals: this.toSwapCurr.decimals,
+          amount: utils.formatUnits(await tokenTo.balanceOf(this.fundContractAddress), this.toSwapCurr.decimals),
         };
 
         this.addTokenToBoughts(newBoughtToken);

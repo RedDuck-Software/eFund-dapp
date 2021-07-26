@@ -2,18 +2,19 @@
   <div class="tokens-balances d-flex justify-content-start justify-content-lg-between align-items-start flex-wrap">
     <div class="select-wrap flex-grow-1">
       <div>
-        <v-select v-model="selectedToken" :clearable="false"  :options="tokensList" class="token-select" />
+        <v-select v-model="selectedToken" :clearable="false" :options="tokensList" class="token-select" />
         <div class="label">Fund value</div>
       </div>
     </div>
     <div class="text-center mt-md-0 mt-3">
-      <h2 class="">
-        {{totalBalance}} {{ eFundNetworkSettings.cryptoSign }}
-      </h2>
+      <h2 class="">{{ totalBalance.toFixed(6) }} {{ eFundNetworkSettings.cryptoSign }}</h2>
       <div class="label">Total Balance</div>
     </div>
-    <div v-if="fundContractStatus!='Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
-      <h2 class="text-primary">&#x2191;+120.21</h2>
+    <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
+      <h2 v-if="totalBalance > baseBalance" class="text-primary">&#x2191;{{ currentRoi.toFixed(2) }}</h2>
+      <h2 v-else-if="totalBalance == baseBalance">&#x21E1;100</h2>
+      <h2 v-else class="text-danger">&#x2193;{{ currentRoi.toFixed(2) }}</h2>
+
       <div class="label">ROI</div>
     </div>
   </div>
@@ -22,21 +23,23 @@
 <script>
 import vSelect from "vue-select";
 import { mapGetters } from "vuex";
+import { getPercentageDiff } from "../services/helpers";
+
+
 export default {
   name: "TokenValues",
   components: { vSelect },
   props: ["showRoi"],
   computed: {
-    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "startBalance"]),
-    currentRoi() { 
+    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
+    currentRoi() {
       let roi;
-      if(this.fundContractStatus == `Active`) { 
-        roi =  (this.totalBalance / this.startBalance) * 100 ;
+      if (this.fundContractStatus == `Active`) {
+        roi = 100 + getPercentageDiff( this.baseBalance, this.totalBalance);
+      } else {
+        roi = 100 + getPercentageDiff(this.startBalance, this.endBalance );
       }
-      else { 
-        roi = (this.endBalance / this.startBalance) * 100 ;
-      }
-      return roi.toFixed(2);
+      return roi;
     },
     tokensList() {
       return [this.eFundNetworkSettings.cryptoSign, "USDT"];

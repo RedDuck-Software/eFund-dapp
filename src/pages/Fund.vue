@@ -1,72 +1,75 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-4">
-        <h1 class="font-weight-bold">{{ fundAddress != null ? fundAddress.substring(0, 10) : "" }}...</h1>
-        <div v-if="fundContractStatus != 'Opened'" v-show="isActive('coins') || isActive('trade')">
-          <Balances />
+  <div>
+    <div v-if="isLoading">Loading</div>
+    <div v-else class="container-fluid">
+      <div class="row">
+        <div class="col-lg-4">
+          <h1 class="font-weight-bold">{{ fundAddress != null ? fundAddress.substring(0, 10) : "" }}...</h1>
+          <div v-if="fundContractStatus != 'Opened'" v-show="isActive('coins') || isActive('trade')">
+            <Balances />
+          </div>
+          <div v-if="fundContractStatus != 'Opened'" v-show="isActive('about')">
+            <TradeHistory />
+          </div>
         </div>
-        <div v-if="fundContractStatus != 'Opened'" v-show="isActive('about')">
-          <TradeHistory />
-        </div>
-      </div>
-      <div class="col-lg-8 mt-4">
-        <div class="d-flex justify-content-between mb-4">
-          <ul class="nav nav-tabs rounded">
-            <li v-if="fundContractIsManager && fundContractStatus == 'Active'" class="nav-item">
-              <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
-                >Trade</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" :class="{ 'active show': isActive('about') }" href="#" @click="setActive('about')"
-                >About</a
-              >
-            </li>
-            <li v-if="fundContractStatus != 'Opened'" class="nav-item">
-              <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
-                >Coins Price</a
-              >
-            </li>
-          </ul>
-          <button
-            v-if="fundContractStatus == 'Opened'"
-            :disabled="(fundCanBeStartedAt > (new Date() / 1000))"
-            class="btn btn-success box-shadow completed d-none d-md-block"
-            @click="setFundStatusActive"
-          >
-            <h3 class="middle text-white">Set active</h3>
-          </button>
-          <button
-            v-if="fundContractStatus == 'Active'"
-            :disabled="!(fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000)"
-            class="btn btn-danger box-shadow completed d-none d-md-block"
-            @click="setFundStatusCompleted"
-          >
-            <h3 class="middle text-white">Set completed</h3>
-          </button>
-          <button
-            v-if="fundContractStatus == 'Completed'"
-            class="btn btn-danger box-shadow completed d-none d-md-block"
-            @click="setFundStatusClosed"
-          >
-            <h3 class="middle text-white">Set closed</h3>
-          </button>
-        </div>
-        <div v-show="isActive('coins')">
-          <CoinsPriceTab />
-        </div>
-        <div v-show="isActive('trade')">
-          <Trade />
-          <button
-            class="btn btn-danger box-shadow completed d-block d-md-none mt-3 w-100"
-            @click="showAllInvestors = true"
-          >
-            <h3 class="middle text-white">Show all investors</h3>
-          </button>
-        </div>
-        <div v-show="isActive('about')">
-          <AboutFund />
+        <div class="col-lg-8 mt-4">
+          <div class="d-flex justify-content-between mb-4">
+            <ul class="nav nav-tabs rounded">
+              <li v-if="fundContractIsManager && fundContractStatus == 'Active'" class="nav-item">
+                <a class="nav-link" :class="{ 'active show': isActive('trade') }" href="#" @click="setActive('trade')"
+                  >Trade</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ 'active show': isActive('about') }" href="#" @click="setActive('about')"
+                  >About</a
+                >
+              </li>
+              <li v-if="fundContractStatus != 'Opened'" class="nav-item">
+                <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
+                  >Coins Price</a
+                >
+              </li>
+            </ul>
+            <button
+              v-if="fundContractStatus == 'Opened'"
+              :disabled="fundCanBeStartedAt > new Date() / 1000"
+              class="btn btn-success box-shadow completed d-none d-md-block"
+              @click="setFundStatusActive"
+            >
+              <h3 class="middle text-white">Set active</h3>
+            </button>
+            <button
+              v-if="fundContractStatus == 'Active'"
+              :disabled="!(fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000)"
+              class="btn btn-danger box-shadow completed d-none d-md-block"
+              @click="setFundStatusCompleted"
+            >
+              <h3 class="middle text-white">Set completed</h3>
+            </button>
+            <button
+              v-if="fundContractStatus == 'Completed'"
+              class="btn btn-danger box-shadow completed d-none d-md-block"
+              @click="setFundStatusClosed"
+            >
+              <h3 class="middle text-white">Set closed</h3>
+            </button>
+          </div>
+          <div v-show="isActive('coins')">
+            <CoinsPriceTab />
+          </div>
+          <div v-show="isActive('trade')">
+            <Trade />
+            <button
+              class="btn btn-danger box-shadow completed d-block d-md-none mt-3 w-100"
+              @click="showAllInvestors = true"
+            >
+              <h3 class="middle text-white">Show all investors</h3>
+            </button>
+          </div>
+          <div v-show="isActive('about')">
+            <AboutFund />
+          </div>
         </div>
       </div>
     </div>
@@ -79,7 +82,7 @@ import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
-import { ethers, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import Balances from "../components/Balances.vue";
 import CoinsPriceTab from "../components/CoinsPriceTab.vue";
 import TradeHistory from "../components/TradeHistory.vue";
@@ -99,6 +102,7 @@ export default {
       fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "about",
+      isLoading: true,
     };
   },
   computed: {
@@ -125,11 +129,11 @@ export default {
     ]),
   },
   async mounted() {
-    console.log("naviganted to fund");
+    console.log("navigated to fund");
 
-    asyncLoading(this.loadContractInfo()).catch((ex) => {
-      console.error(ex);
-    });
+    await this.loadContractInfo();
+
+    this.isLoading = false;
   },
   methods: {
     async loadContractInfo() {
@@ -176,21 +180,26 @@ export default {
         boughtTokens.push(await this.getTokenInfo(t));
       }
 
-
-      console.log("Bought token addresses: ",boughtTokens);
+      console.log("Bought token addresses: ", boughtTokens);
 
       let totalBalance = fundInfo.balance;
 
-      // console.log("fund info: ", { ...fundInfo, totalBalance: totalBalance });
-      // (
-      //   await Promise.all(
-      //     boughtTokens.map((token) =>
-      //       this.fundService.getPricesPath(token.address, this.eFundNetworkSettings.wrappedCryptoAddress)
-      //     )
-      //   )
-      // )[0].forEach((prices) => {
-      //   totalBalance += parseFloat(utils.formatEther(prices[1]));
-      // });
+      if (fundInfo.status == "Active") {
+        await Promise.all(
+          boughtTokens.map(async (token, i) => {
+            console.log("token: ", token);
+            const prices = await this.fundService.getPricesPath(
+              this.eFundNetworkSettings.router, // todo : fetch router from contract
+              utils.parseUnits(token.amount.toString(), token.decimals),
+              [token.address, this.eFundNetworkSettings.wrappedCryptoAddress]
+            );
+            const etherPrice = parseFloat(utils.formatEther(prices[1]));
+            boughtTokens[i].etherPrice = etherPrice;
+            totalBalance += etherPrice;
+          })
+        );
+        console.log(boughtTokens);
+      }
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
@@ -213,7 +222,6 @@ export default {
       this.updateFundCreatedAt(fundInfo.fundCreatedAt);
       this.updateTotalBalance(totalBalance);
       this.updateCryptoBalance(fundInfo.balance);
-
 
       console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
       this.isLoaded = true;
@@ -243,7 +251,7 @@ export default {
       const tx = await this.fundContract.setFundStatusActive({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[1].value);
+          this.updateFundStatus(fundStatuses[1].value);
           this.updateFundStartTimestamp(new Date() / 1000);
         })
         .catch((ex) => {
@@ -255,7 +263,7 @@ export default {
       const tx = await this.fundContract.setFundStatusCompleted({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[2].value);
+          this.updateFundStatus(fundStatuses[2].value);
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);
@@ -266,7 +274,7 @@ export default {
       const tx = await this.fundContract.setFundStatusClosed({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateStoreFundStatus(fundStatuses[3].value);
+          this.updateFundStatus(fundStatuses[3].value);
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);
@@ -296,7 +304,6 @@ export default {
       "updateFundDurationMonths",
       "updateFundCreatedAt",
       "updateTotalBalance",
-      "updateStoreFundStatus",
       "updateCryptoBalance",
     ]),
   },

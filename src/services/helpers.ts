@@ -5,8 +5,9 @@ export const getEthPriceInUSTD = timeStampFrom => getPriceInUSDT(timeStampFrom, 
 // shows how originalValue different from newValue in %
 export const getPercentageDiff = (originalValue, newValue) => {
   const diff = newValue - originalValue;
-  return (diff / originalValue) * 100;
+  return ((diff / originalValue) * 100);
 };
+
 
 const getPriceInUSDT = (timeStampFrom, currency) => {
   const url = `https://api.binance.com/api/v3/klines?symbol=${currency}USDT&startTime=${timeStampFrom *

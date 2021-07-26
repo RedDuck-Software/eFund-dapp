@@ -9,6 +9,7 @@ import {
   SWAP_FACTORY_ABI,
   SWAP_PAIR_ABI,
   ZERO_ADDRESS,
+  eFundNetworkSettings,
 } from "../constants";
 
 function arrayInsertBefore(arr, index, value) {
@@ -79,14 +80,19 @@ export class FundService {
 
   async getERC20TokenDetails(tokenAddress, amount, fundAddress) {
     const token = this.getERC20ContractInstance(tokenAddress);
-    
+
     const dec = await token.decimals();
+    const f = Object.keys(eFundNetworkSettings).filter(
+      k => eFundNetworkSettings[k].eFundPlatformAddress == this.fundPlatfromAddress
+    );
+    console.log(f);
 
     return {
       address: tokenAddress,
       name: await token.symbol(),
-      amount: ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec),
-      decimals : dec,
+      amount: parseFloat(ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec)),
+      decimals: dec,
+      logo: eFundNetworkSettings[97].tokensAddresses.filter(t => t.address.toLowerCase() == tokenAddress.toLowerCase())[0].logo,
     };
   }
 
@@ -100,13 +106,12 @@ export class FundService {
       maximumTimeUntillFundStart: parseFloat(res._maximumTimeUntillFundStart),
       minimumProfitFee: parseFloat(res._minimumProfitFee),
       maximumProfitFee: parseFloat(res._maximumProfitFee),
-    }
+    };
   }
 
   async getPricesPath(routerAddress, amount: BigNumber, path: string[], overrides) {
-    
     if (amount.isZero()) {
-      return new Array(path.length).fill(BigNumber.from([0]));
+      return new Array(path.length).fill(BigNumber.from("0"));
     } else {
       const contract = await this.getSwapRouterContractInstance(routerAddress);
       const res = await contract.getAmountsOut(amount, path);
@@ -124,7 +129,6 @@ export class FundService {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
 
-
     console.log("current provider ", this.getCurrentProvider());
 
     // @ts-ignore: cannot assign vm to Event for some reasone
@@ -134,7 +138,15 @@ export class FundService {
       // @ts-ignore: cannot assign vm to Event for some reasone
       .getAddress();
 
-    const [fundInfo, isDepositsWithdrawed, allowedTokensAddresses, boughtTokensAddresses, deposits, swapHistory, fundCreatedAt] = await Promise.all([
+    const [
+      fundInfo,
+      isDepositsWithdrawed,
+      allowedTokensAddresses,
+      boughtTokensAddresses,
+      deposits,
+      swapHistory,
+      fundCreatedAt,
+    ] = await Promise.all([
       this.getFundDetails(address),
       fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
@@ -143,25 +155,29 @@ export class FundService {
       fundContract.getAllSwaps(),
       fundContract.fundCreatedAt(),
     ]);
+    console.log("fund created at", fundCreatedAt.toString());
 
     return {
       ...fundInfo,
-      fundCreatedAt: parseFloat(fundCreatedAt),
+      fundCreatedAt: parseFloat(fundCreatedAt.toString()),
       isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
-      deposits: deposits.map(d => { return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner } }),
+      deposits: deposits.map(d => {
+        return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
+      }),
       swaps: swapHistory,
-      baseBalance: fundInfo.status == 'Opened' ? null :
-        parseFloat(utils.formatEther(await fundContract.baseBalance())),
-      endBalance: fundInfo.status == 'Opened' || fundInfo.status == 'Active' ? null :
-        parseFloat(utils.formatEther(await fundContract.endBalance())),
+      baseBalance: fundInfo.status == "Opened" ? null : parseFloat(utils.formatEther(await fundContract.baseBalance())),
+      endBalance:
+        fundInfo.status == "Opened" || fundInfo.status == "Active"
+          ? null
+          : parseFloat(utils.formatEther(await fundContract.endBalance())),
     };
   }
 
   async getAllManagerFunds(address) {
-    const data = (await this.platformContract.getManagerFunds(address));
+    const data = await this.platformContract.getManagerFunds(address);
 
     return await Promise.all(
       data
@@ -205,7 +221,6 @@ export class FundService {
     const fundContract = this.getFundContractInstance(fundAddress);
 
     const info = await fundContract.getFundInfo();
-    console.log("getFundInfo: " , info );
 
     return {
       fundDurationInMonths: parseFloat(info._fundDurationInMonths),
