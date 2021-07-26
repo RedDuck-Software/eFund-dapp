@@ -82,7 +82,7 @@
               <h2 class="text-black">{{ monthNames[dateStart.getMonth()] }} {{ dateStart.getDate() }}</h2>
               <div class="time text-black">
                 {{ dateStart.getYear() == new Date().getYear() ? "" : dateStart.getYear() }}
-                {{ dateStart.getHours() }}:{{ dateStart.getMinutes() }} {{ dateStart.getTimezoneOffset() }} GMT
+                {{ dateStart.getHours() }}:{{ dateStart.getMinutes() }} {{ dateStart.getTimezoneOffset() / 60 }} GMT
               </div>
               <div class="label">Fund start</div>
             </div>
@@ -92,7 +92,7 @@
                 {{ dateEnd.getYear() == new Date().getYear() ? "" : dateEnd.getYear() }} {{ dateEnd.getHours() }}:{{
                   dateEnd.getMinutes()
                 }}
-                {{ dateEnd.getTimezoneOffset() }} GMT
+                {{ dateEnd.getTimezoneOffset() / 60 }} GMT
               </div>
               <div class="label">Fund end</div>
             </div>

@@ -152,7 +152,6 @@ export default {
       console.log(this.priceIn);
 
       this.fundAddress = this.$route.params.address;
-      console.log("fund address", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
@@ -180,14 +179,12 @@ export default {
         boughtTokens.push(await this.getTokenInfo(t));
       }
 
-      console.log("Bought token addresses: ", boughtTokens);
 
       let totalBalance = fundInfo.balance;
 
       if (fundInfo.status == "Active") {
         await Promise.all(
           boughtTokens.map(async (token, i) => {
-            console.log("token: ", token);
             const prices = await this.fundService.getPricesPath(
               this.eFundNetworkSettings.router, // todo : fetch router from contract
               utils.parseUnits(token.amount.toString(), token.decimals),
@@ -223,22 +220,10 @@ export default {
       this.updateTotalBalance(totalBalance);
       this.updateCryptoBalance(fundInfo.balance);
 
-      console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
       this.isLoaded = true;
     },
     async getTokenInfo(tokenAddress) {
       return await this.fundService.getERC20TokenDetails(tokenAddress, undefined, this.fundAddress);
-    },
-    async isFinished() {
-      // d.setMonth(d.getMonth() + 8)
-      const date = new Date(await this.fundContract.fundStartTimestamp());
-      console.log(date.setMonth(date.getMonth() + 3));
-      // console.log(date.getMonth());
-
-      console.log(new Date(Date.now()).getMonth());
-      // fund finsished timestamp > now  timestamp
-      // const find
-      // if()
     },
     isActive(menuItem) {
       return this.activeItem === menuItem;

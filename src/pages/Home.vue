@@ -51,11 +51,6 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     this.topFunds = await this.fundService.getTopFunds(5);
-
-    // console.log(getBnbPriceInUSTD(1626953340));
-    // console.log(getEthPriceInUSTD(1626953340));
-
-    // console.log(getPercentageDiff(1488, 1234), "%");
   },
   methods: {
     logoutAndRedirectToConnectWalletPage() {
