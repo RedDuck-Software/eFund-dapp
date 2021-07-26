@@ -127,7 +127,7 @@
               </button>
             </div>
           </div>
-          <div v-if="" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
+          <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
         </div>
       </div>
     </div>
