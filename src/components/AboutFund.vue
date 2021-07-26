@@ -210,9 +210,19 @@ export default {
 
       this.daysTillTheEnd = Math.floor(Math.floor((this.dateEnd - new Date()) / 1000) / oneDayDurationInSeconds);
 
-      this.fundActivePercentage = Math.floor(
-        ((Math.floor(new Date() / 1000) - this.fundCreatedAt) / (this.dateEnd / 1000 - this.fundStartTimestamp)) * 100
+      this.fundActivePercentage = parseFloat(
+        (
+          ((Math.floor(new Date() / 1000) - this.fundStartTimestamp) /
+            (this.dateEnd / 1000 - this.fundStartTimestamp)) *
+          100
+        ).toFixed(2)
       );
+
+      console.log("percentage calculation : ", {
+        start: this.fundStartTimestamp,
+        end: this.dateEnd / 1000,
+        now: Math.floor(new Date() / 1000),
+      });
     }
   },
 };

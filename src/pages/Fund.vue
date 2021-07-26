@@ -179,7 +179,6 @@ export default {
         boughtTokens.push(await this.getTokenInfo(t));
       }
 
-
       let totalBalance = fundInfo.balance;
 
       if (fundInfo.status == "Active") {
@@ -197,6 +196,12 @@ export default {
         );
         console.log(boughtTokens);
       }
+
+      fundInfo.swaps.sort((a, b) => {
+        if (a.timeStamp.gt(b.timeStamp)) return 1;
+        if (a.timeStamp.lt(b.timeStamp)) return -1;
+        return 0;
+      });
 
       this.updateBoughtTokensAddresses(boughtTokens);
       this.updateAllowedTokensAddresses(allowedTokens);
@@ -220,6 +225,7 @@ export default {
       this.updateTotalBalance(totalBalance);
       this.updateCryptoBalance(fundInfo.balance);
 
+      console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
       this.isLoaded = true;
     },
     async getTokenInfo(tokenAddress) {

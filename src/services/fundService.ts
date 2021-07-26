@@ -82,17 +82,19 @@ export class FundService {
     const token = this.getERC20ContractInstance(tokenAddress);
 
     const dec = await token.decimals();
+
     const f = Object.keys(eFundNetworkSettings).filter(
       k => eFundNetworkSettings[k].eFundPlatformAddress == this.fundPlatfromAddress
     );
-    console.log(f);
 
     return {
       address: tokenAddress,
       name: await token.symbol(),
       amount: parseFloat(ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec)),
       decimals: dec,
-      logo: eFundNetworkSettings[97].tokensAddresses.filter(t => t.address.toLowerCase() == tokenAddress.toLowerCase())[0].logo,
+      logo: eFundNetworkSettings[97].tokensAddresses.filter(
+        t => t.address.toLowerCase() == tokenAddress.toLowerCase()
+      )[0].logo,
     };
   }
 
@@ -129,8 +131,6 @@ export class FundService {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
 
-    console.log("current provider ", this.getCurrentProvider());
-
     // @ts-ignore: cannot assign vm to Event for some reasone
     const signerAddress = await this.getCurrentProvider()
       // @ts-ignore: cannot assign vm to Event for some reasone
@@ -155,7 +155,6 @@ export class FundService {
       fundContract.getAllSwaps(),
       fundContract.fundCreatedAt(),
     ]);
-    console.log("fund created at", fundCreatedAt.toString());
 
     return {
       ...fundInfo,
@@ -167,7 +166,15 @@ export class FundService {
       deposits: deposits.map(d => {
         return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
       }),
-      swaps: swapHistory,
+      swaps: swapHistory.map(v => {
+        return {
+          amountFrom: v.amountFrom,
+          amountTo: v.amountTo,
+          timeStamp: v.timeStamp,
+          to: v.to,
+          from: v.from,
+        };
+      }),
       baseBalance: fundInfo.status == "Opened" ? null : parseFloat(utils.formatEther(await fundContract.baseBalance())),
       endBalance:
         fundInfo.status == "Opened" || fundInfo.status == "Active"
@@ -191,8 +198,6 @@ export class FundService {
 
   async getAllFunds() {
     const data = (await this.platformContract.getAllFunds()).filter(f => f.toLowerCase() != ZERO_ADDRESS.toLowerCase());
-
-    console.log(data);
 
     return await Promise.all(
       data
@@ -255,13 +260,9 @@ export class FundService {
   }
 
   async findOptimalPathForSwap(tokenFrom, tokenTo, availableTokens, factoryAddress) {
-    console.log("factory address: ", factoryAddress);
-
     const factory = this.getSwapFactoryContractInstance(factoryAddress);
 
     const path = [tokenFrom, tokenTo];
-
-    console.log(JSON.stringify(path));
 
     if (await this.isPathExists(path, factory)) {
       return path;

@@ -23,7 +23,6 @@ const store = new Vuex.Store({
     fundCreatedAt: null,
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
-    fundBalance: null,
     hardCap: null,
     baseBalance: null,
     endBalance: null,
@@ -33,11 +32,10 @@ const store = new Vuex.Store({
     fundCanBeStartedAt: null,
     profitFee: null,
     platformSettings: null,
-    fundDurationMonths: null, 
-    balance : null,
+    fundDurationMonths: null,
+    balance: null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
-
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -85,9 +83,6 @@ const store = new Vuex.Store({
     updateIsDepositsWithdrawed(state, isDepositsWithdrawed) {
       state.isDepositsWithdrawed = isDepositsWithdrawed;
     },
-    updateFundBalance(state, newBalance) {
-      state.fundBalance = newBalance;
-    },
     updateSoftCap(state, softCap) {
       state.softCap = softCap;
     },
@@ -124,16 +119,16 @@ const store = new Vuex.Store({
     updateFundDeposits(state, deposits) {
       state.deposits = deposits;
     },
-    updateFundDurationMonths( state, newDur) { 
+    updateFundDurationMonths(state, newDur) {
       state.fundDurationMonths = newDur;
     },
-    updateFundCreatedAt( state, fundCreatedAt) { 
+    updateFundCreatedAt(state, fundCreatedAt) {
       state.fundCreatedAt = fundCreatedAt;
     },
-    updateTotalBalance(state, balance) { 
-      state.totalBalance = balance
+    updateTotalBalance(state, balance) {
+      state.totalBalance = balance;
     },
-    updateCryptoBalance(state, balance) { 
+    updateCryptoBalance(state, balance) {
       state.balance = balance;
     },
     clearFundInfo(state) {
@@ -145,7 +140,6 @@ const store = new Vuex.Store({
       state.allowedTokensAddresses = [];
       state.fundStartTimestamp = null;
       state.isDepositsWithdrawed = false;
-      state.fundBalance = null;
       state.hardCap = null;
       state.softCap = null;
       state.swaps = [];
@@ -175,7 +169,6 @@ const store = new Vuex.Store({
     isDepositsWithdrawed: state => state.isDepositsWithdrawed,
     softCap: state => state.softCap,
     hardCap: state => state.hardCap,
-    fundBalance: state => state.fundBalance,
     funds: state => state.funds,
     minDepositAmount: state => state.minDepositAmount,
     fundCanBeStartedAt: state => state.fundCanBeStartedAt,
@@ -184,14 +177,14 @@ const store = new Vuex.Store({
     myFundsAsManager: state => state.myFundsAsManager,
     myFundsAsInvestor: state => state.myFundsAsInvestor,
     platformSettings: state => state.platformSettings,
-    fundSwapHistory: state=>state.swaps,
-    fundDeposits: state=>state.deposits,
-    baseBalance: state=>state.baseBalance,
-    endBalance: state=>state.endBalance,
-    fundDurationMonths: state=>state.fundDurationMonths,
-    fundCreatedAt: state=>state.fundCreatedAt,
+    fundSwapHistory: state => state.swaps,
+    fundDeposits: state => state.deposits,
+    baseBalance: state => state.baseBalance,
+    endBalance: state => state.endBalance,
+    fundDurationMonths: state => state.fundDurationMonths,
+    fundCreatedAt: state => state.fundCreatedAt,
     totalBalance: state => state.totalBalance,
-    cryptoBalance: state => state.balance, 
+    cryptoBalance: state => state.balance,
   },
   plugins: [createPersistedState()],
 });

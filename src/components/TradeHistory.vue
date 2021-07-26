@@ -5,7 +5,7 @@
     <div v-if="swaps.length == 0">History is empty</div>
     <div v-else v-for="(swapsInGroup, time) in swapsGroupedByTime" :key="time">
       <h3 class="middle day text-gray text-center mt-3 mb-2">{{ time }}</h3>
-      <div v-for="(swap, j) in swapsInGroup" :key="j" class="single-trade mb-2">
+      <div v-for="(swap, j) in swapsInGroup.slice().reverse()" :key="j" class="single-trade mb-2">
         <div class="time label light">{{ new Date(swap.timestamp * 1000) }}</div>
         <div class="small-card bg-lightest d-flex px-2 py-3 text-gray box-shadow">
           <div class="token-icon d-flex mr-3 justify-content-center align-items-center">
@@ -67,6 +67,7 @@ export default {
     let currentBalance = this.baseBalance;
 
     console.log("Swaps history: ", this.fundSwapHistory);
+    
 
     await Promise.all(
       this.fundSwapHistory.map(async (swap) => {

@@ -5,26 +5,33 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { BarChart } from "./TokenChart.ts";
 export default {
   name: "TokenBarChart",
   components: { BarChart },
-  data() {
-    return {
-      chartLoaded: true,
-      datacollection: {
-        labels: ["BNB", "ETH", "Dai", "USDT"],
+  computed: {
+    ...mapGetters(["boughtTokensAddresses", "balance", "cryptoBalance", "eFundNetworkSettings"]),
+    datacollection() {
+      return {
+        labels: [this.eFundNetworkSettings.cryptoSign, ...this.boughtTokensAddresses.map((v) => v.name)],
         datasets: [
           {
-            label: "Value",
+            label: `Prices in ${this.eFundNetworkSettings.cryptoSign}`,
             backgroundColor: "rgb(3, 166, 120)",
             pointBackgroundColor: "white",
             borderWidth: 1,
             pointBorderColor: "#249EBF",
-            data: [40, 20, 30, 50],
+            data: [this.cryptoBalance, ...this.boughtTokensAddresses.map((v) => v.etherPrice)],
           },
         ],
-      },
+      };
+    },
+  },
+  data() {
+    return {
+      chartLoaded: true,
+
       options: {
         scales: {
           yAxes: [
@@ -55,7 +62,7 @@ export default {
           enabled: true,
           mode: "single",
           callbacks: {
-            label: function(tooltipItems, data) {
+            label: function (tooltipItems, data) {
               return "$" + tooltipItems.yLabel;
             },
           },

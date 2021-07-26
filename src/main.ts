@@ -39,6 +39,11 @@ Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
 
+Vue.filter("reverse", function(value) {
+  // slice to make a copy of array, then reverse the copy
+  return value.slice().reverse();
+});
+
 export const vm = new Vue({
   el: "#app",
   components: { App },
