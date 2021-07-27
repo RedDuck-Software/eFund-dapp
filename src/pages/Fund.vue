@@ -98,7 +98,6 @@ export default {
     return {
       fundContract: null,
       fundService: null,
-      isLoaded: false,
       fundAddress: null,
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "about",
@@ -134,6 +133,14 @@ export default {
     await this.loadContractInfo();
 
     this.isLoading = false;
+  },
+  watch: {
+    $route(to, from) {
+      if (to.name == from.name && to.name == "Fund" && to.params.address != from.params.address) {
+        this.isLoading = true;
+        this.loadContractInfo().then((v) => (this.isLoading = false));
+      }
+    },
   },
   methods: {
     async loadContractInfo() {
@@ -226,7 +233,6 @@ export default {
       this.updateCryptoBalance(fundInfo.balance);
 
       console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
-      this.isLoaded = true;
     },
     async getTokenInfo(tokenAddress) {
       return await this.fundService.getERC20TokenDetails(tokenAddress, undefined, this.fundAddress);
