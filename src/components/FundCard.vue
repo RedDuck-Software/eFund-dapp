@@ -95,18 +95,13 @@ export default {
       return Math.ceil((this.fundInfo.fundCanBeStartedAt - new Date()) / 1000 / oneDayDurationInSeconds);
     },
     proggressPercentage() {
-      return parseFloat(
-        utils.formatEther(
-          utils
-            .parseEther(this.fundInfo.balance.toString())
-            .mul(BigNumber.from("100"))
-            .div(this.fundInfo.hardCap.toString())
+      return (
+      this.fundInfo.balance * 100 / this.fundInfo.hardCap
         )
-      );
     },
   },
   mounted() {
-    console.log(this.fundInfo.fundDurationMonths);
+    console.log(this.fundInfo);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
   },

@@ -100,7 +100,7 @@ export class FundService {
 
   async getPlatformSettings() {
     console.log(this.platformContract);
-    
+
     const res = await this.platformContract.getPlatformData();
 
     return {
@@ -187,6 +187,39 @@ export class FundService {
 
   async getAllManagerFunds(address) {
     const data = await this.platformContract.getManagerFunds(address);
+
+    return data.slice().map(v => {
+      return {
+        address: v,
+      };
+    });
+  }
+
+  async getAllManagerFundsWithDetails(address) {
+    const data = await this.platformContract.getManagerFunds(address);
+
+    return await Promise.all(
+      data
+        .slice()
+        .reverse()
+        .map(async addr => {
+          return await this.getFundDetails(addr);
+        })
+    );
+  }
+
+  async getAllInvestorsFunds(address) {
+    const data = await this.platformContract.getInvestorFunds(address);
+
+    return data.slice().map(v => {
+      return {
+        address: v,
+      };
+    });
+  }
+
+  async getAllInvestorsFundsWithDetails(address) {
+    const data = await this.platformContract.getInvestorFunds(address);
 
     return await Promise.all(
       data

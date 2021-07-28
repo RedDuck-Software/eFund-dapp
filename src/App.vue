@@ -38,21 +38,24 @@ export default {
     console.log("signer: ", this.signerAddress);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    const platformContract = this.fundService.getFundPlatformContractInstance();
-
-    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
 
     if (this.platformSettings == null) {
       const platformSettings = await this.fundService.getPlatformSettings();
       this.updatePlatformSettings(platformSettings);
     }
 
-    this.updateUserIsManager(isUserManager);
+    const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+    this.updateMyFundsAsManager(curUserFundsAsManager);
+
+    const curUserFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.signerAddress);
+    this.updateMyFundsAsInvestor(curUserFundsAsInvestor);
+
+    console.log("users funds as investor: ",  curUserFundsAsInvestor);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager", "updatePlatformSettings"]),
+    ...mapMutations(["updateMyFundsAsManager", "updatePlatformSettings", "updateMyFundsAsInvestor"]),
   },
 };
 </script>

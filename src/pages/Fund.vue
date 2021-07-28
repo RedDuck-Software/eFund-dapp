@@ -123,13 +123,10 @@ export default {
       "fundCanBeStartedAt",
       "profitFee",
       "signerAddress",
-      "userIsManager",
       "fundDurationMonths",
     ]),
   },
   async mounted() {
-    console.log("navigated to fund");
-
     await this.loadContractInfo();
 
     this.isLoading = false;
@@ -144,8 +141,6 @@ export default {
   },
   methods: {
     async loadContractInfo() {
-      console.log("Fund can be started at");
-
       this.priceInValues = [
         { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
         {
@@ -159,6 +154,8 @@ export default {
       console.log(this.priceIn);
 
       this.fundAddress = this.$route.params.address;
+
+      console.log("fund address: ", this.fundAddress);
 
       this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);

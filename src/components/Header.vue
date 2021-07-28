@@ -5,13 +5,13 @@
       <b-collapse id="nav-collapse" is-nav>
         <div class="d-flex menu-wrap d-flex flex-column">
           <b-navbar-nav class="navbar-nav ms-auto flex-column bg-darken rounded w-100">
-            <li class="nav-item ">
+            <li class="nav-item">
               <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
             </li>
-            <li class="nav-item ">
+            <li class="nav-item">
               <HeaderItem :menu="menu.profile" :to="{ name: 'Profile' }" :text="'Profile'" />
             </li>
-            <li class="nav-item  ">
+            <li class="nav-item">
               <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />
             </li>
           </b-navbar-nav>
@@ -22,7 +22,19 @@
             <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
               <HeaderItem
                 :menu="menu.fund"
-                :text="`fund ${index}`"
+                :text="`[m] fund${index}`"
+                :to="{
+                  name: 'Fund',
+                  params: {
+                    address: fund.address,
+                  },
+                }"
+              />
+            </li>
+            <li v-for="(fund, j) in fundAsInvestor" :key="j" class="nav-item">
+              <HeaderItem
+                :menu="menu.fund"
+                :text="`[i] fund${j}`"
                 :to="{
                   name: 'Fund',
                   params: {
@@ -78,21 +90,16 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userIsManager", "myFundsAsManager" ]),
+    fundAsInvestor() {
+      return this.myFundsAsInvestor.filter((a) => !this.myFundsAsManager.some((b) => a.address == b.address));
+    },
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "myFundsAsManager", "myFundsAsInvestor"]),
   },
   async mounted() {
     if (this.eFundNetworkSettings == null) return;
 
-
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-
-    if (this.userIsManager) {
-      console.log("cur signer: ", this.signerAddress)
-      const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress  );
-      this.updateMyFundsAsManager(curUserFundsAsManager);
-
-      console.log("My funds as manager: ", this.myFundsAsManager);
-    }
+    console.log("Funds as manager: ", this.myFundsAsManager);
+    console.log("Funds as investor: ", this.myFundsAsInvestor);
   },
 
   methods: {
@@ -105,7 +112,6 @@ export default {
       "updateSignerAddress",
       "updateEFundSettings",
       "updateMyFundsAsManager",
-      "updateUserIsManager",
     ]),
   },
 };

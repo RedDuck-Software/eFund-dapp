@@ -190,7 +190,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings", "userIsManager", "signerAddress"]),
+    ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
     fundsChunks() {
       return _.chunk(Object.values(this.filteredFunds), 2);
     },
