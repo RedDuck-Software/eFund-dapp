@@ -5,38 +5,12 @@
   "abi": [
     {
       "inputs": [],
-      "name": "getCurrentBalanceInWei",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "getEndTime",
       "outputs": [
         {
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getWETH",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -72,13 +46,6 @@
     },
     {
       "inputs": [],
-      "name": "withdraw",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "withdrawBeforeFundStarted",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -86,7 +53,14 @@
     },
     {
       "inputs": [],
-      "name": "withdrawToManager",
+      "name": "withdrawDeposits",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawManagerProfit",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

@@ -40,16 +40,15 @@
         </div>
       </div>
       <vue-range-slider
-        class="mt-5"
         v-if="capValues != null"
-        :step="rangeStep"
         v-model="capValues"
+        class="mt-5"
+        :step="rangeStep"
         :max="hardCap"
         :min="softCap"
         :value="capValues"
       ></vue-range-slider>
     </div>
-    <FundList :shouldRedrawList="false" />
   </div>
 </template>
 
@@ -58,22 +57,22 @@ import { mapGetters } from "vuex";
 import { ethers, utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-import FundList from "./FundList";
 import "vue-range-component/dist/vue-range-slider.css";
 import VueRangeSlider from "vue-range-component";
 
-const PANCACKE_V2_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 
 import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
   name: "NewFundForm",
-  components: { FundList, VueTagsInput, VueRangeSlider },
+  components: { FundList, VueTagsInput, VueSimpleRangeSlider },
   data() {
     return {
+      dayDur: 60 * 60 * 24,
+      showCreateModal: false,
       etherValue: 0.1,
       month: 1,
-      monthList: [1, 3, 6],
+      monthList: [1, 2, 3, 6],
       factoryContract: null,
       token: "",
       softCap: null,
@@ -82,10 +81,23 @@ export default {
       capValues: null,
       rangeStep: 0.1,
       shouldRedrawList: false,
+      profitFee: 0,
+      minProfitFee: 0,
+      maxProfitFee: 0,
+
+      minTimeUntilFundStart: 0,
+      minMinimumTimeTillFundStart: 0,
+      maxMinimumTimeTillFundStart: 0,
+
+      fundInfo: {
+        name: "",
+        description: "",
+        imageUrl: "",
+      },
       validation: [
         {
           classes: "min-length",
-          rule: (address) => address.text.length < 8,
+          rule: address => address.text.length < 8,
         },
       ],
     };
@@ -94,9 +106,8 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
   async mounted() {
-    console.log("eFund platform", this.eFundNetworkSettings.eFundPlatformAddress);
-
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    console.log("eFund network settings: ", JSON.stringify(this.eFundNetworkSettings));
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
 
     console.log(this.factoryContract);
@@ -104,8 +115,24 @@ export default {
     const hardCapMax = await this.factoryContract.hardCap();
     const softCapMin = await this.factoryContract.softCap();
 
+    this.minProfitFee = await this.factoryContract.minimumProfitFee();
+    this.maxProfitFee = await this.factoryContract.maximumProfitFee();
+
+    this.minMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.minimumTimeUntillFundStart()) / this.dayDur
+    );
+    this.maxMinimumTimeTillFundStart = Math.floor(
+      parseFloat(await this.factoryContract.maximumTimeUntillFundStart()) / this.dayDur
+    );
+
+    console.log("minMinimumTimeTillFundStart", this.minMinimumTimeTillFundStart);
+    console.log("maxMinimumTimeTillFundStart", this.maxMinimumTimeTillFundStart);
+
     console.log("cap max", hardCapMax);
     console.log("cap min", softCapMin);
+
+    console.log("min profit fee", this.minProfitFee);
+    console.log("max profit fee", this.maxProfitFee);
 
     this.hardCap = parseFloat(utils.formatEther(hardCapMax));
     this.softCap = parseFloat(utils.formatEther(softCapMin));
@@ -133,6 +160,9 @@ export default {
           this.month,
           utils.parseEther(this.capValues[0].toString()),
           utils.parseEther(this.capValues[1].toString()),
+          this.profitFee,
+          utils.parseEther("0.0000001"), //this.minimalDepositAmount,
+          this.minTimeUntilFundStart * this.dayDur,
           this.allowedTokens,
           overrides
         );
@@ -141,7 +171,6 @@ export default {
         console.log("txHash: ", txHash);
 
         this.shouldRedrawList = true;
-
       } catch (ex) {
         alert("Create fund exception:", ex);
         console.error(ex);
@@ -151,7 +180,7 @@ export default {
     },
     newTokenAdded(newTokens) {
       this.allowedTokens = newTokens;
-      this.allowedTokens = this.allowedTokens.map((token) => {
+      this.allowedTokens = this.allowedTokens.map(token => {
         if (token.text) {
           return token.text;
         }

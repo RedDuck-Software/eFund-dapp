@@ -7,19 +7,35 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    walletProviderType: null,
     signerAddress: null,
+    userIsManager: null,
     fundContractAddress: null,
     fundContractStatus: null,
     fundContractManager: null,
     fundContractIsManager: null,
-    eFundNetworkSettings: eFundNetworkSettings[97],
+    eFundNetworkSettings: null,
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
+    swaps: [],
+    deposits: [],
+    totalBalance: null,
+    fundCreatedAt: null,
     fundStartTimestamp: null,
     isDepositsWithdrawed: false,
-    fundBalance: null,
     hardCap: null,
+    baseBalance: null,
+    endBalance: null,
     softCap: null,
+    funds: null,
+    minDepositAmount: null,
+    fundCanBeStartedAt: null,
+    profitFee: null,
+    platformSettings: null,
+    fundDurationMonths: null,
+    balance: null,
+    myFundsAsInvestor: [],
+    myFundsAsManager: [],
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -39,7 +55,6 @@ const store = new Vuex.Store({
     },
     updateEFundSettings(state, settings) {
       state.eFundNetworkSettings = settings;
-      // console.log(JSON.stringify(state.eFundNetworkSettings));
     },
     updateBoughtTokensAddresses(state, tokens) {
       state.boughtTokensAddresses = tokens;
@@ -50,14 +65,23 @@ const store = new Vuex.Store({
     updateAllowedTokensAddresses(state, tokens) {
       state.allowedTokensAddresses = tokens;
     },
+    updateMyFundsAsManager(state, funds) {
+      state.myFundsAsManager = funds;
+    },
+    addMyFundsAsManager(state, newFund) {
+      state.myFundsAsManager.push(newFund);
+    },
+    addMyFundsAsInvestor(state, newFund) {
+      state.myFundsAsInvestor.push(newFund);
+    },
+    updateMyFundsAsInvestor(state, funds) {
+      state.myFundsAsInvestor = funds;
+    },
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
     },
     updateIsDepositsWithdrawed(state, isDepositsWithdrawed) {
       state.isDepositsWithdrawed = isDepositsWithdrawed;
-    },
-    updateFundBalance(state, newBalance) {
-      state.fundBalance = newBalance;
     },
     updateSoftCap(state, softCap) {
       state.softCap = softCap;
@@ -65,10 +89,71 @@ const store = new Vuex.Store({
     updateHardCap(state, hardCap) {
       state.hardCap = hardCap;
     },
-    logout: state => {
-      state.signerAddress = null;
+    updateFunds(state, funds) {
+      state.funds = funds;
+    },
+    updateMinDepositAmount(state, amount) {
+      state.minDepositAmount = amount;
+    },
+    updateFundCanBeStartedAt(state, fundCanBeStartedAt) {
+      state.fundCanBeStartedAt = fundCanBeStartedAt;
+    },
+    updateUserIsManager(state, val) {
+      state.userIsManager = val;
+    },
+    updateProfitFee(state, fee) {
+      state.profitFee = fee;
+    },
+    updateBaseBalance(state, baseBalance) {
+      state.baseBalance = baseBalance;
+    },
+    updateEndBalance(state, endBalance) {
+      state.endBalance = endBalance;
+    },
+    updatePlatformSettings(state, settings) {
+      state.platformSettings = settings;
+    },
+    updateFundSwapHistory(state, swaps) {
+      state.swaps = swaps;
+    },
+    updateFundDeposits(state, deposits) {
+      state.deposits = deposits;
+    },
+    updateFundDurationMonths(state, newDur) {
+      state.fundDurationMonths = newDur;
+    },
+    updateFundCreatedAt(state, fundCreatedAt) {
+      state.fundCreatedAt = fundCreatedAt;
+    },
+    updateTotalBalance(state, balance) {
+      state.totalBalance = balance;
+    },
+    updateCryptoBalance(state, balance) {
+      state.balance = balance;
+    },
+    clearFundInfo(state) {
+      state.fundContractAddress = null;
+      state.fundContractStatus = null;
+      state.fundContractManager = null;
+      state.fundContractIsManager = null;
+      state.boughtTokensAddresses = [];
+      state.allowedTokensAddresses = [];
+      state.fundStartTimestamp = null;
+      state.isDepositsWithdrawed = false;
+      state.hardCap = null;
+      state.softCap = null;
+      state.swaps = [];
+      state.deposits = [];
+    },
+    logout(state) {
+      store.commit("clearFundInfo");
+
       state.walletProviderType = null;
-      state.signer = null;
+      state.signerAddress = null;
+      state.eFundNetworkSettings = null;
+      state.funds = null;
+      state.myFundsAsInvestor = [];
+      state.myFundsAsManager = [];
     },
   },
   getters: {
@@ -84,20 +169,22 @@ const store = new Vuex.Store({
     isDepositsWithdrawed: state => state.isDepositsWithdrawed,
     softCap: state => state.softCap,
     hardCap: state => state.hardCap,
-    fundBalance: state => state.fundBalance,
-  },
-  actions: {
-    // async updateBoughtTokensAddresses(context, tokens) {
-    //   context.commit('updateBoughtTokensAddresses', tokens);
-    //   console.log("commited ", JSON.stringify(context.state.boughtTokensAddresses));
-    // },
-    // async updateAllowedTokensAddresses(context, tokens) {
-    //   context.commit('updateAllowedTokensAddresses', tokens);
-    //   console.log("commited ", JSON.stringify(context.state.allowedTokensAddresses));
-    // },
-    // updateIsInfoLoaded(context, isLoaded) {
-    //   context.commit('updateIsInfoLoaded', isLoaded);
-    // },
+    funds: state => state.funds,
+    minDepositAmount: state => state.minDepositAmount,
+    fundCanBeStartedAt: state => state.fundCanBeStartedAt,
+    profitFee: state => state.profitFee,
+    userIsManager: state => state.userIsManager,
+    myFundsAsManager: state => state.myFundsAsManager,
+    myFundsAsInvestor: state => state.myFundsAsInvestor,
+    platformSettings: state => state.platformSettings,
+    fundSwapHistory: state => state.swaps,
+    fundDeposits: state => state.deposits,
+    baseBalance: state => state.baseBalance,
+    endBalance: state => state.endBalance,
+    fundDurationMonths: state => state.fundDurationMonths,
+    fundCreatedAt: state => state.fundCreatedAt,
+    totalBalance: state => state.totalBalance,
+    cryptoBalance: state => state.balance,
   },
   plugins: [createPersistedState()],
 });

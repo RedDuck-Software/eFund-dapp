@@ -1,11 +1,18 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xf25056e27d74D811b08Beaa9B5686c78eEd6FE2d";
-export const EFUND_TOKEN_BSC = "0xaFFBe0A63337e0B18b44eF835aA649f4baA07dA2";
+export const FUND_PLATFROM_ADDRESS_BSC = "0xCB2fEF9f1ceC77934bE805B6eB26134d67808D1D";
+export const EFUND_TOKEN_BSC = "0x598aB81623972405D82d6Dd91EB2120a7f00F333";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
-export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
+export const EFUND_TOKEN_ETH = "";
+
+export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF";
+export const EFUND_TOKEN_LOCALDEV = "0x4826533B4897376654Bb4d4AD88B7faFD0C98528";
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-export const WETH_ADDRESS = "";
+export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+
+
+export const PANCACKE_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
+export const UNISWAP_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -31,31 +38,65 @@ export const SWAP_FACTORY_ABI = JSON.stringify(SwapFactory.abi);
 
 export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 
-
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
+export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
 
 
 export const eFundNetworkSettings =
 {
   97: { // BSC Testnet
-    networkName: "BSCT",
+    chainId: 97,
+    networkName: "BSC Testnet",
     cryptoSign: "BNB",
+    cryptoLogo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
+    router: PANCACKE_ROUTER,
     tokensAddresses: [
       {
         name: "USDT",
         address: "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+        decimals: 18,
+        logo: "https://cryptologos.cc/logos/tether-usdt-logo.png",
       },
       {
         name: "BUSD",
         address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        decimals: 18,
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
       },
       {
         name: "DAI",
         address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        decimals: 18,
+        logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
+      },
+    ],
+  },
+  31337: { // BSC Testnet
+    chainId: 31337,
+    networkName: "ETH HardHat",
+    cryptoSign: "ETH",
+    wrappedCryptoAddress: WETH_ADDRESS,
+    eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
+    eFundTokenAddress: EFUND_TOKEN_LOCALDEV,
+    router: UNISWAP_ROUTER,
+    tokensAddresses: [
+      {
+        name: "USDT",
+        address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      },
+      {
+        name: "USDC",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      },
+      {
+        name: "BUSD",
+        address: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
       },
     ],
   },

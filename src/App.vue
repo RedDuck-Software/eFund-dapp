@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isLoaded" id="app" class="min-vh-100 bg-secondary">
-    <Header />
-    <div class="main container text-gray">
+  <div v-if="isLoaded" id=" " class="app min-vh-100 bg-secondary d-flex px-3">
+    <Header class="header" />
+    <div class="main container-fluid text-gray py-6">
       <router-view></router-view>
     </div>
   </div>
@@ -12,39 +12,73 @@ import Header from "./components/Header";
 import { mapGetters, mapMutations } from "vuex";
 import { eFundNetworkSettings as networkSettings } from "./constants";
 import "./App.scss";
+import router from "./routes";
+import { isMetaMaskInstalled, currentProvider } from "./services/ether";
+import { FundService } from "./services/fundService";
 
 export default {
   name: "App",
+  components: {
+    Header,
+  },
   data() {
     return {
       isLoaded: false,
     };
   },
-  components: {
-    Header,
-  },
   computed: {
-    ...mapGetters["eFundNetworkSettings"],
+    ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
-
   async mounted() {
-    if (this.eFundNetworkSettings == undefined) {
-      console.log(JSON.stringify(networkSettings[97]));
-      this.updateEFundSettings(networkSettings[97]);
+    if (this.eFundNetworkSettings == null) {
+      this.isLoaded = true;
+      return;
     }
-    console.log("network settings: ", this.eFundNetworkSettings);
+
+    console.log("signer: ", this.signerAddress);
+
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    const platformContract = this.fundService.getFundPlatformContractInstance();
+
+    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+
+    if (this.platformSettings == null) {
+      const platformSettings = await this.fundService.getPlatformSettings();
+      this.updatePlatformSettings(platformSettings);
+    }
+
+    this.updateUserIsManager(isUserManager);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateEFundSettings"]),
+    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager", "updatePlatformSettings"]),
   },
 };
 </script>
 
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap");
+
+html,
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+.app {
+  font-family: "Montserrat", sans-serif;
+}
+
+.header {
+  width: 0%;
+}
+
+@media screen and (min-width: 768px) {
+  .header {
+    width: 8%;
+  }
+}
+
 .main {
-  padding-top: 120px;
-  padding-bottom: 80px;
 }
 </style>

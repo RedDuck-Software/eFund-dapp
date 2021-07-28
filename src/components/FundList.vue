@@ -1,18 +1,29 @@
 <template>
   <div>
     <button class="btn btn-primary" @click="fetchAllFunds()">Get all funds</button>
+    <button class="btn btn-primary" @click="fetchTopFunds()">Get top funds</button>
     <div class="divide-y divide-gray-200">
-      <div v-for="(fund, index) in funds" :key="index" class="bg-dark rounded">
-        <router-link class="py-4 px-3 mt-3 d-block text-gray" :to="{ name: 'Fund', params: { address: fund } }">{{
-          fund
-        }}</router-link>
+      <div v-for="(fund, index) in funds" :key="index" class="bg-dark rounded" style="padding: 15px; margin: 10px 0">
+        <router-link
+          class="py-4 px-3 mt-3 d-block text-gray"
+          :to="{ name: 'Fund', params: { address: fund.address } }"
+          >{{ fund.address }}</router-link
+        >
+
+         <ul>
+          <li> HardCap: {{ fund.hardCap }} </li>
+          <li> SoftCap: {{fund.softCap}} </li>
+          <li> Manager collateral: {{fund.collateral }}</li>
+          <li> Fund Status collateral: {{ fund.status}} </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { BigNumber } from "@ethersproject/bignumber";
+import { mapGetters, mapMutations } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 
@@ -40,23 +51,34 @@ export default {
     ...mapGetters(["eFundNetworkSettings"]),
   },
   async mounted() {
-    const fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
-    const provider = fundService.getCurrentProvider();
-    this.readOnlyFactoryContract = fundService.getFundPlatformContractInstance();
+    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.readOnlyPlatformContract = this.fundService.getFundPlatformContractInstance();
 
-    await this.fetchAllFunds();
+    console.log(this.readOnlyPlatformContract);
+
+    await this.fundService.getAllFunds();
   },
   methods: {
-    async fetchAllFunds() {
-      try {
-        const data = await this.readOnlyFactoryContract.getAllFunds();
-        console.log(data);
-        this.funds = data.slice().reverse();
-        this.fetchCount += 1;
-      } catch (err) {
-        console.log("Error: ", err);
-      }
+    async fetchTopFunds() {
+      const topFundsCountToFetch = 5;
+
+      const relevantFunds = await this.readOnlyPlatformContract.getTopRelevantFunds(
+        BigNumber.from(topFundsCountToFetch)
+      );
+
+      console.log(relevantFunds);
+
+      this.funds = await Promise.all(
+        relevantFunds
+          .slice()
+          .reverse()
+          .map(async (addr) => {
+            return await this.fundService.getFundDetails(addr);
+          })
+      );
     },
+    
+    ...mapMutations(["updateFunds"]),
   },
 };
 </script>
