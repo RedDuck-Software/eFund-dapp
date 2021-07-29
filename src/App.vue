@@ -15,6 +15,7 @@ import "./App.scss";
 import router from "./routes";
 import { isMetaMaskInstalled, currentProvider } from "./services/ether";
 import { FundService } from "./services/fundService";
+import { getGenericSignNonce } from "./services/helpers";
 
 export default {
   name: "App",
@@ -30,6 +31,9 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
   async mounted() {
+
+    console.log(await getGenericSignNonce());
+
     if (this.eFundNetworkSettings == null) {
       this.isLoaded = true;
       return;

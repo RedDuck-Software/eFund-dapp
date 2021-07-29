@@ -9,7 +9,11 @@
               <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
             </li>
             <li class="nav-item">
-              <HeaderItem :menu="menu.profile" :to="{ name: 'Profile' }" :text="'Profile'" />
+              <HeaderItem
+                :menu="menu.profile"
+                :to="{ name: 'Profile', params: { address: signerAddress } }"
+                :text="'Profile'"
+              />
             </li>
             <li class="nav-item">
               <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />

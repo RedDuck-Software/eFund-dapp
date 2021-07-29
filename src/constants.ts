@@ -24,6 +24,8 @@ import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUnis
 import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
 
+export const SERVER_API_URL = "https://localhost:44379";
+
 export const ABI = JSON.stringify(FundAbi.abi);
 
 export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);

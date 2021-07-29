@@ -35,6 +35,11 @@ const store = new Vuex.Store({
     balance: null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
+
+    apiNoncesData: {
+      genericNonce: null,
+      personalNonce: null,
+    },
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -127,6 +132,9 @@ const store = new Vuex.Store({
     updateCryptoBalance(state, balance) {
       state.balance = balance;
     },
+    updateApiNoncesData(state,data) { 
+      state.apiNoncesData = data;
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -180,6 +188,8 @@ const store = new Vuex.Store({
     fundCreatedAt: state => state.fundCreatedAt,
     totalBalance: state => state.totalBalance,
     cryptoBalance: state => state.balance,
+
+    apiNoncesData : state => state.apiNoncesData,
   },
   plugins: [createPersistedState()],
 });

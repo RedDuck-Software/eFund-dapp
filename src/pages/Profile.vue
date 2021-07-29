@@ -1,8 +1,8 @@
 <template>
   <div class="container-fluid">
-    <h1 class="mb-3 font-weight-bold">Profile</h1>
+    <h1 class="mb-3 font-weight-bold">Profile of {{ userAddress }}</h1>
 
-    <div class="row">
+    <div v-if="signerAddress == userAddress" class="row">
       <div class="col-sm-6 col-lg-4">
         <form class="form-create bg-lightest box-shadow rounded d-flex flex-column">
           <fieldset v-if="step === 1" class="mb-0 form-group d-flex flex-column">
@@ -16,28 +16,42 @@
                 placeholder="Type here"
               />
             </div>
+            <div class="mt-3 mb-2"></div>
+
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
-                Next Step
-              </button>
+              <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
             </div>
           </fieldset>
           <fieldset v-if="step === 2" class="mb-0 form-group d-flex flex-column">
             <div class="">
-              <h2>Your Your avatar</h2>
-              <div class="label mt-2 pt-1">if you want</div>
-              <div class=" text-center">
-                <button class="btn green-button mt-4">Download from</button>
+              <h2>Your Your avatar (optional)</h2>
+              <div class="text-center">
+                <label class="btn green-button mt-4" style="display: block">
+                  <input type="file" id="file" ref="file" v-on:change="handleFileUpload()" />
+                  Upload
+                </label>
               </div>
+              <div class="mt-3 mb-2"></div>
             </div>
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
-                Next Step
-              </button>
+              <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
             </div>
           </fieldset>
-          <fieldset v-if="step === 3" class="form-group">
-            <ConnectWallet />
+          <fieldset v-if="step === 3" class="mb-0 form-group d-flex flex-column">
+            <div class="">
+              <h2>About yourself</h2>
+              <textarea
+                v-model="form.description"
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+              ></textarea>
+              <div class="mt-3 mb-2"></div>
+
+              <div class="mt-auto text-center">
+                <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
+              </div>
+            </div>
           </fieldset>
           <fieldset v-if="step === 4" class="form-group">
             <div class="row">
@@ -71,11 +85,15 @@
           <div class="card-body">
             <div class="row no-gutters">
               <div class="col-md-4">
-                <img class="card-img-top " src="/img/avatar.png" alt="test fund" />
+                <img v-if="form.imgLocalPath == null" class="card-img-top" src="/img/avatar.png" alt="test fund" />
+                <img v-else class="card-img-top" :src="form.imgLocalPath" alt="test fund" />
               </div>
 
               <div class="col-md-8">
-                <h2 class="card-title m-0 pb-2">Ben Thomson</h2>
+                <h2 v-if="form.name == null || !form.name || form.name == ''" class="card-title m-0 pb-2">
+                  Ben Thomson
+                </h2>
+                <h2 v-else class="card-title m-0 pb-2">{{ form.name }}</h2>
                 <h3>Manager/investor</h3>
               </div>
             </div>
@@ -96,38 +114,85 @@
 
 <script>
 import { getSigner, isMetaMaskInstalled } from "@/services/ether";
-import { mapMutations } from "vuex";
-import ConnectWallet from "@/components/ConnectWallet";
+import { mapGetters, mapMutations } from "vuex";
+import { getUserByAddress, registerUser } from "../services/helpers";
 
 export default {
   name: "Profile",
-  components: { ConnectWallet },
   data() {
     return {
       step: 1,
       totalSteps: 4,
       form: {
         name: null,
+        description: null,
+        image: null,
+        imgLocalPath: null,
       },
+      currentUserInfo: null,
+      userAddress: null,
     };
   },
+  computed: {
+    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
+  },
+  async mounted() {
+    this.userAddress = this.$route.params.address;
+
+    console.log(this.eFundNetworkSettings.chainId);
+
+    this.currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
+
+    this.currentUserInfo = this.currentUserInfo == "" ? null : this.currentUserInfo;
+    
+    console.log("current user info: ", this.currentUserInfo);
+
+    if (this.currentUserInfo != null) {
+      this.form.name = this.currentUserInfo.username;
+      this.form.description = this.currentUserInfo.username;
+    }
+  },
   methods: {
-    addName() {},
-    nextStep() {
+    async nextStep() {
+      if (this.step == 3) {
+        await this.updateProfileInfo();
+      }
+
       this.step++;
     },
-    checkMetaMask() {
-      return !isMetaMaskInstalled();
-    },
-    async handleConnectWallet() {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      if (accounts[0]) {
-        const { address } = await getSigner();
-        this.updateSignerAddress(address);
-        this.step++;
+    async updateProfileInfo() {
+      if (this.currentUserInfo == null || this.currentUserInfo == undefined) {
+        var newNonce = await registerUser(
+          {
+            address: this.signerAddress,
+            username: this.form.name,
+            description: this.form.description,
+          },
+          this.form.image,
+          this.eFundNetworkSettings.chainId
+        );
+
+        console.log("New nonce is: ", newNonce);
+      } else {
+        console.log("todo: update user data");
       }
+    },
+    handleFileUpload() {
+      console.log("handled file upload!");
+
+      this.form.file = this.$refs.file.files[0];
+
+      var reader = new FileReader();
+
+      reader.onloadend = (e) => {
+        this.form.imgLocalPath = e.target.result;
+
+        console.log(this.form.imgLocalPath);
+      };
+
+      this.form.imgLocalPath = reader.readAsDataURL(this.form.file);
+
+      console.log(this.form.imgLocalPath);
     },
 
     ...mapMutations(["updateSignerAddress"]),
@@ -136,6 +201,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+input[type="file"] {
+  display: none;
+}
+
 .check-filled {
   border-radius: 50%;
   width: 87px;
