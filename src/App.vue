@@ -31,8 +31,6 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
   async mounted() {
-    console.log(await getGenericSignNonce());
-
     if (this.eFundNetworkSettings == null) {
       this.isLoaded = true;
       return;

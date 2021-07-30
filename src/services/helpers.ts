@@ -15,15 +15,23 @@ export const getPercentageDiff = (originalValue, newValue) => {
 export const updateUserProfileInfo = async (image, username, description) => {};
 
 export const getUserByAddress = async (address, chainId) => {
-  const res = await sendGetRequestToServer(`/api/user/${address}`, {
-    headers: {
-      ChainId: chainId,
-    },
-  });
+  try {
+    const res = await sendGetRequestToServer(`/api/user/${address}`, {
+      headers: {
+        ChainId: chainId,
+      },
+    });
 
-  res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl}`;
+    if (res != "" && res != null && res) {
+      res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl == null ? "default.jpeg" : res.imageUrl}`;
+    }
 
-  return res;
+    return res;
+  } catch (error) {
+    console.log(error);
+    
+    return null;
+  }
 };
 export const updateUser = async (data, image, chainId) => {
   const formData = new FormData();
@@ -35,6 +43,24 @@ export const updateUser = async (data, image, chainId) => {
   return await sendPostRequestToServer(
     `/api/user/updateUserInfo?address=${data.address}` +
       (data.username == null ? "" : `&username=${data.username}`) +
+      (data.description == null ? "" : `&description=${data.description}`),
+    formData,
+    {
+      headers: {
+        ChainId: chainId,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const createFundInfo = async (data, image, chainId) => {
+  const formData = new FormData();
+  formData.append("image", image);
+
+  return await sendPostRequestToServer(
+    `/api/hedgeFundInfo/createFundInfo?contractAddress=${data.contractAddress}` +
+      (data.name == null ? "" : `&name=${data.name}`) +
       (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
