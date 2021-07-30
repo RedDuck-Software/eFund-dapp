@@ -62,7 +62,7 @@ export default {
 
     console.log("user funds as manager: ", curUserFundsAsInvestorWithInfo);
 
-    this.updateMyFundsAsManager(curUserFundsAsManager);
+    this.updateMyFundsAsManager(curUserFundsAsInvestorWithInfo);
 
     const curUserFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.signerAddress);
     this.updateMyFundsAsInvestor(curUserFundsAsInvestor);

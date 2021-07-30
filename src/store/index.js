@@ -143,6 +143,9 @@ const store = new Vuex.Store({
     updateFundGeneralInfo(state, fundInfo) {
       state.fundInfo = fundInfo;
     },
+    addFundDeposit(state, newDeposit) { 
+      state.deposits.push(newDeposit);
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;

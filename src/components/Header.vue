@@ -25,11 +25,8 @@
             </li>
             <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
               <HeaderItem
-                :menu="{
-                  icon: fund.imgUrl,
-                  activeIcon: fund.imgUrl,
-                }"
-                :text="`[m] ${fund.title || fund.title == null ? 'Unknown' : fund.title}`"
+                :imgSrc="fund.imageUrl"
+                :text="`[m] ${!fund.name || fund.name == null ? 'Unknown' : fund.name}`"
                 :to="{
                   name: 'Fund',
                   params: {
@@ -40,10 +37,7 @@
             </li>
             <li v-for="(fund, j) in fundAsInvestor" :key="j" class="nav-item">
               <HeaderItem
-                :menu="{
-                  icon: '',
-                  activeIcon: '',
-                }"
+                :imgSrc="fund.imageUrl"
                 :text="`[i] fund${j}`"
                 :to="{
                   name: 'Fund',
@@ -108,8 +102,7 @@ export default {
   async mounted() {
     if (this.eFundNetworkSettings == null) return;
 
-    console.log("Funds as manager: ", this.myFundsAsManager);
-    console.log("Funds as investor: ", this.myFundsAsInvestor);
+    console.log("funds :", this.myFundsAsManager);
   },
 
   methods: {

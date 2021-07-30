@@ -1,7 +1,11 @@
 <template>
   <router-link v-slot="{ href, isActive, navigate }" :to="to" :key="router.fullPath" exact custom>
     <a :href="href" class="nav-link rounded py-3" :class="isActive ? 'active ' : ''" @click="navigate">
-      <img :src="`${publicPath}img/${isActive ? menu.activeIcon : menu.icon}`" class="" alt="home" />
+      <img v-if="!imgSrc" :src="`${publicPath}img/${isActive ? menu.activeIcon : menu.icon}`" class="" alt="home" />
+
+      <div v-else class="circular-croper centered" >
+        <img :src="imgSrc" class="round-img" alt="home" />
+      </div>
       <div>{{ text }}</div>
     </a>
   </router-link>
@@ -12,7 +16,7 @@ import router from "../routes";
 
 export default {
   name: "HeaderItem",
-  props: ["menu", "to", "text"],
+  props: ["menu", "to", "text", "imgSrc"],
 
   data() {
     return {
@@ -48,5 +52,11 @@ export default {
     color: black;
     background: #fff;
   }
+}
+
+.circular-croper { 
+  max-width: 50px;
+  max-height: 50px;
+  
 }
 </style>

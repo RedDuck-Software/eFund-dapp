@@ -135,6 +135,14 @@ export class FundService {
     return await fundContract.makeDeposit({ value: amount });
   }
 
+  async getCurrentSigner() {
+    return await this.getCurrentProvider()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getSigner()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getAddress();
+  }
+
   async getFundDetailedInfo(address) {
     // const platformContract = this.platformContract;
     const fundContract = this.getFundContractInstance(address);
@@ -291,6 +299,7 @@ export class FundService {
       title: infoFromServer?.name,
       author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,
       imgUrl: infoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : infoFromServer?.imageUrl,
+      authorProfileImageUrl: userInfoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : userInfoFromServer?.imageUrl,
     };
   }
 

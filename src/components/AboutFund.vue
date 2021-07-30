@@ -14,9 +14,10 @@
               }
             "
           >
-            <div class="token-icon profile d-flex mr-2">
-              <img :src="fundInfo.imgUrl" alt="swap" class="image-fluid" />
+            <div class="circular-croper">
+              <img :src="fundInfo.authorProfileImageUrl" alt="swap" class="round-img" />
             </div>
+
             <div class="flex-grow-1">
               <h2 class="text-black">{{ fundInfo.author }}</h2>
               <div class="label">Manager</div>
@@ -81,6 +82,18 @@
               </div>
               <TokenBarChart v-if="fundContractStatus == 'Active'" />
             </div>
+            <button
+              v-if="
+                fundContractStatus == 'Completed' &&
+                fundContractStatus == 'Closed' &&
+                fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000 &&
+                !isDepositsWithdrawed
+              "
+              class="btn btn-primary box-shadow completed d-none d-md-block"
+              @click="setFundStatusCompleted"
+            >
+              <h3 class="middle text-white">Withdraw all funds</h3>
+            </button>
           </div>
         </div>
         <div class="col-md-4">
@@ -152,7 +165,7 @@
 import AllInvestors from "../components/AllInvestors";
 import TokenValues from "@/components/TokenValues";
 import TokenBarChart from "@/components/TokenBarChart";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { oneDayDurationInSeconds, formatDuration } from "../services/helpers";
 import { monthNames } from "../constants";
 import { utils } from "ethers";
@@ -262,8 +275,13 @@ export default {
 
       console.log(tx);
 
-      asyncLoading(tx.wait()).catch((ex) => console.error(ex));
+      asyncLoading(tx.wait())
+        .then(async (v) => {
+          this.addFundDeposit({ amount: amount, owner: await this.fundService.getCurrentSigner() });
+        })
+        .catch((ex) => console.error(ex));
     },
+    ...mapMutations(["addFundDeposit"]),
   },
 };
 </script>

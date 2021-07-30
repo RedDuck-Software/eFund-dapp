@@ -42,6 +42,8 @@ export const getFundInfoByAddress = async (address, chainId) => {
       },
     });
 
+      console.log(res.imageUrl);
+      
     if (res != "" && res != null && res) {
       res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl == null ? "default.jpeg" : res.imageUrl}`;
     }
