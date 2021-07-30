@@ -2,9 +2,9 @@
   <div class="container-fluid">
     <h1 class="mb-3 font-weight-bold">Profile of {{ userAddress }}</h1>
 
-    <div v-if="signerAddress == userAddress" class="row">
-      <div class="col-sm-6 col-lg-4">
-        <form class="form-create bg-lightest box-shadow rounded d-flex flex-column">
+    <div class="row">
+      <div v-if="shouldShowProfileEditingForm"  class="col-sm-6 col-lg-4">
+        <div class="form-create bg-lightest box-shadow rounded d-flex flex-column">
           <fieldset v-if="step === 1" class="mb-0 form-group d-flex flex-column">
             <div class="">
               <h2 class="mb-3">Your name</h2>
@@ -78,7 +78,7 @@
               </li>
             </ul>
           </div>
-        </form>
+        </div>
       </div>
       <div class="col-sm-6 col-lg-4 d-none d-sm-block">
         <div class="card profile-card box-shadow">
@@ -90,15 +90,13 @@
               </div>
 
               <div class="col-md-8">
-                <h2 v-if="form.name == null || !form.name || form.name == ''" class="card-title m-0 pb-2">
-                  Ben Thomson
-                </h2>
+                <h2 v-if="form.name == null || !form.name || form.name == ''" class="card-title m-0 pb-2"></h2>
                 <h2 v-else class="card-title m-0 pb-2">{{ form.name }}</h2>
                 <h3>Manager/investor</h3>
               </div>
             </div>
             <div class="d-flex flex-wrap mt-2 mb-3">
-              <div class="desc-item label mr-3">Fonds: <span class="text-black">3</span></div>
+              <div class="desc-item label mr-3">Funds: <span class="text-black">3</span></div>
               <div class="desc-item label mr-3">
                 Average ROI:
                 <span class="text-black">150%</span>
@@ -115,7 +113,7 @@
 <script>
 import { getSigner, isMetaMaskInstalled } from "@/services/ether";
 import { mapGetters, mapMutations } from "vuex";
-import { getUserByAddress, registerUser } from "../services/helpers";
+import { getUserByAddress, registerUser, updateUser } from "../services/helpers";
 
 export default {
   name: "Profile",
@@ -124,32 +122,47 @@ export default {
       step: 1,
       totalSteps: 4,
       form: {
-        name: null,
+        name: "Unknown",
         description: null,
         image: null,
         imgLocalPath: null,
       },
       currentUserInfo: null,
       userAddress: null,
+      getUserApiQueryFailed: false,
     };
   },
   computed: {
-    ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
+    shouldShowProfileEditingForm() {
+      return this.signerAddress == this.userAddress && this.currentUserInfo == null && !this.getUserApiQueryFailed;
+    },
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "userProfileData"]),
   },
   async mounted() {
     this.userAddress = this.$route.params.address;
 
     console.log(this.eFundNetworkSettings.chainId);
 
-    this.currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
+    let currentUserInfo;
 
-    this.currentUserInfo = this.currentUserInfo == "" ? null : this.currentUserInfo;
-    
+    if (this.userAddress == this.signerAddress) {
+      currentUserInfo = this.userProfileData;
+    } else {
+      try {
+        currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
+      } catch (error) {
+        this.getUserApiQueryFailed = true;
+      }
+    }
+
+    this.currentUserInfo = currentUserInfo == "" ? null : currentUserInfo;
+
     console.log("current user info: ", this.currentUserInfo);
 
     if (this.currentUserInfo != null) {
       this.form.name = this.currentUserInfo.username;
       this.form.description = this.currentUserInfo.username;
+      this.form.imgLocalPath = this.currentUserInfo.imageUrl;
     }
   },
   methods: {
@@ -161,8 +174,9 @@ export default {
       this.step++;
     },
     async updateProfileInfo() {
+      var newNonce;
       if (this.currentUserInfo == null || this.currentUserInfo == undefined) {
-        var newNonce = await registerUser(
+        newNonce = await registerUser(
           {
             address: this.signerAddress,
             username: this.form.name,
@@ -171,16 +185,23 @@ export default {
           this.form.image,
           this.eFundNetworkSettings.chainId
         );
-
-        console.log("New nonce is: ", newNonce);
       } else {
-        console.log("todo: update user data");
+        newNonce = await updateUser(
+          {
+            address: this.signerAddress,
+            username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
+            description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
+          },
+          this.form.image,
+          this.eFundNetworkSettings.chainId
+        );
       }
+      console.log("New nonce is: ", newNonce);
     },
     handleFileUpload() {
       console.log("handled file upload!");
 
-      this.form.file = this.$refs.file.files[0];
+      this.form.image = this.$refs.file.files[0];
 
       var reader = new FileReader();
 
@@ -190,7 +211,7 @@ export default {
         console.log(this.form.imgLocalPath);
       };
 
-      this.form.imgLocalPath = reader.readAsDataURL(this.form.file);
+      this.form.imgLocalPath = reader.readAsDataURL(this.form.image);
 
       console.log(this.form.imgLocalPath);
     },

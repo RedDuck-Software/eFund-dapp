@@ -15,7 +15,7 @@ import "./App.scss";
 import router from "./routes";
 import { isMetaMaskInstalled, currentProvider } from "./services/ether";
 import { FundService } from "./services/fundService";
-import { getGenericSignNonce } from "./services/helpers";
+import { getGenericSignNonce, getUserByAddress } from "./services/helpers";
 
 export default {
   name: "App",
@@ -31,7 +31,6 @@ export default {
     ...mapGetters(["eFundNetworkSettings", "signerAddress", "platformSettings"]),
   },
   async mounted() {
-
     console.log(await getGenericSignNonce());
 
     if (this.eFundNetworkSettings == null) {
@@ -39,7 +38,9 @@ export default {
       return;
     }
 
-    console.log("signer: ", this.signerAddress);
+    const currentUserInfo = await getUserByAddress(this.signerAddress, this.eFundNetworkSettings.chainId);
+
+    this.updateUserProfileData(currentUserInfo == "" || currentUserInfo == undefined ? null : currentUserInfo);
 
     this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
 
@@ -54,12 +55,17 @@ export default {
     const curUserFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.signerAddress);
     this.updateMyFundsAsInvestor(curUserFundsAsInvestor);
 
-    console.log("users funds as investor: ",  curUserFundsAsInvestor);
+    console.log("users funds as investor: ", curUserFundsAsInvestor);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateMyFundsAsManager", "updatePlatformSettings", "updateMyFundsAsInvestor"]),
+    ...mapMutations([
+      "updateMyFundsAsManager",
+      "updatePlatformSettings",
+      "updateMyFundsAsInvestor",
+      "updateUserProfileData",
+    ]),
   },
 };
 </script>

@@ -15,30 +15,40 @@ export const getPercentageDiff = (originalValue, newValue) => {
 export const updateUserProfileInfo = async (image, username, description) => {};
 
 export const getUserByAddress = async (address, chainId) => {
-  return await sendGetRequestToServer(`/api/user/${address}`, {
+  const res = await sendGetRequestToServer(`/api/user/${address}`, {
     headers: {
       ChainId: chainId,
     },
   });
+
+  res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl}`;
+
+  return res;
+};
+export const updateUser = async (data, image, chainId) => {
+  const formData = new FormData();
+  formData.append("image", image);
+
+  console.log("form data: ", formData);
+  console.log("image", image);
+
+  return await sendPostRequestToServer(
+    `/api/user/updateUserInfo?address=${data.address}` +
+      (data.username == null ? "" : `&username=${data.username}`) +
+      (data.description == null ? "" : `&description=${data.description}`),
+    formData,
+    {
+      headers: {
+        ChainId: chainId,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 };
 
 export const registerUser = async (data, image, chainId) => {
   const formData = new FormData();
-
-  formData.append("file", image);
-
-  console.log(`/api/user/register?Address=${data.address}&Username=${data.username}&Description=${data.description}`);
-
-  const response = await fetch(`${SERVER_API_URL}/api/user/register?address=${data.address}`, {
-    method: "POST",
-    headers: {
-      'ChainId': chainId,
-      'Accept': 'text/plain',
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-  return await response.json();
+  formData.append("image", image);
 
   return await sendPostRequestToServer(
     `/api/user/register?address=${data.address}&username=${data.username}&description=${data.description}`,

@@ -1,3 +1,4 @@
+import { stat } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
@@ -35,7 +36,7 @@ const store = new Vuex.Store({
     balance: null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
-
+    userProfileData: null,
     apiNoncesData: {
       genericNonce: null,
       personalNonce: null,
@@ -132,8 +133,11 @@ const store = new Vuex.Store({
     updateCryptoBalance(state, balance) {
       state.balance = balance;
     },
-    updateApiNoncesData(state,data) { 
+    updateApiNoncesData(state, data) {
       state.apiNoncesData = data;
+    },
+    updateUserProfileData(state, userProfileData) {
+      state.userProfileData = userProfileData;
     },
     clearFundInfo(state) {
       state.fundContractAddress = null;
@@ -189,7 +193,8 @@ const store = new Vuex.Store({
     totalBalance: state => state.totalBalance,
     cryptoBalance: state => state.balance,
 
-    apiNoncesData : state => state.apiNoncesData,
+    piNoncesData: state => state.apiNoncesData,
+    userProfileData: state => state.userProfileData,
   },
   plugins: [createPersistedState()],
 });
