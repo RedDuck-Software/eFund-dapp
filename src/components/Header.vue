@@ -25,8 +25,11 @@
             </li>
             <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
               <HeaderItem
-                :menu="menu.fund"
-                :text="`[m] fund${index}`"
+                :menu="{
+                  icon: fund.imgUrl,
+                  activeIcon: fund.imgUrl,
+                }"
+                :text="`[m] ${fund.title || fund.title == null ? 'Unknown' : fund.title}`"
                 :to="{
                   name: 'Fund',
                   params: {
@@ -37,7 +40,10 @@
             </li>
             <li v-for="(fund, j) in fundAsInvestor" :key="j" class="nav-item">
               <HeaderItem
-                :menu="menu.fund"
+                :menu="{
+                  icon: '',
+                  activeIcon: '',
+                }"
                 :text="`[i] fund${j}`"
                 :to="{
                   name: 'Fund',

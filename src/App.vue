@@ -15,7 +15,7 @@ import "./App.scss";
 import router from "./routes";
 import { isMetaMaskInstalled, currentProvider } from "./services/ether";
 import { FundService } from "./services/fundService";
-import { getGenericSignNonce, getUserByAddress } from "./services/helpers";
+import { getGenericSignNonce, getUserByAddress, getFundInfoByAddress } from "./services/helpers";
 
 export default {
   name: "App",
@@ -48,6 +48,20 @@ export default {
     }
 
     const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+
+    console.log("user funds as manager: ", curUserFundsAsManager);
+
+    const curUserFundsAsInvestorWithInfo = [];
+
+    for (let val of curUserFundsAsManager) {
+      curUserFundsAsInvestorWithInfo.push({
+        ...val,
+        ...(await getFundInfoByAddress(val.address, this.eFundNetworkSettings.chainId)),
+      });
+    }
+
+    console.log("user funds as manager: ", curUserFundsAsInvestorWithInfo);
+
     this.updateMyFundsAsManager(curUserFundsAsManager);
 
     const curUserFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.signerAddress);

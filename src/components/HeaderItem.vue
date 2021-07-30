@@ -13,13 +13,14 @@ import router from "../routes";
 export default {
   name: "HeaderItem",
   props: ["menu", "to", "text"],
+
   data() {
     return {
       publicPath: process.env.BASE_URL,
     };
   },
   computed: {
-    router() { 
+    router() {
       return router;
     },
     icon() {

@@ -153,7 +153,7 @@
             </div>
             <div class="sliders pt-3 mb-4">
               <div class="d-flex justify-content-between align-items-center">
-                <div class="label">Max time till start</div>
+                <div class="label">Min time till start</div>
                 <div class="badge bg-black text-white">{{ form.tillStart }} days</div>
               </div>
               <vue-slider
@@ -381,7 +381,7 @@ export default {
       reader.readAsDataURL(this.fundBaseInfo.image);
     },
     async nextStep() {
-      this.$forceUpdate(); 
+      this.$forceUpdate();
 
       if (this.step + 1 == this.totalSteps) {
         asyncLoading(this.createNewFund())
