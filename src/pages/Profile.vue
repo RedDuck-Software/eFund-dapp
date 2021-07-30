@@ -87,8 +87,15 @@
             <div class="card-body">
               <div class="row no-gutters">
                 <div class="col-md-4">
-                  <img v-if="form.imgLocalPath == null" class="card-img-top" src="/img/avatar.png" alt="test fund" />
-                  <img v-else class="card-img-top" :src="form.imgLocalPath" alt="test fund" />
+                  <div class="circular-croper">
+                    <img
+                      v-if="form.imgLocalPath == null"
+                      class="card-img-top round-img"
+                      src="/img/avatar.png"
+                      alt="test fund"
+                    />
+                    <img v-else class="card-img-top round-img" :src="form.imgLocalPath" alt="test fund" />
+                  </div>
                 </div>
 
                 <div class="col-md-8">
@@ -180,7 +187,7 @@ export default {
     async loadProfileData() {
       this.userAddress = utils.getAddress(this.$route.params.address);
 
-      this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+      this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
       console.log(this.eFundNetworkSettings.chainId);
 
@@ -284,9 +291,7 @@ export default {
         console.log(this.form.imgLocalPath);
       };
 
-      this.form.imgLocalPath = reader.readAsDataURL(this.form.image);
-
-      console.log(this.form.imgLocalPath);
+      reader.readAsDataURL(this.form.image);
     },
 
     ...mapMutations(["updateSignerAddress", "updateUserProfileData"]),

@@ -6,12 +6,19 @@
           <TokenValues :show-roi="true" class="mb-4" />
         </div>
         <div class="col-md-4">
-          <div class="d-flex text-gray">
+          <div
+            class="d-flex text-gray"
+            v-on:click="
+              () => {
+                router.push({ name: 'Profile', params: { address: fundInfo.managerAddress } });
+              }
+            "
+          >
             <div class="token-icon profile d-flex mr-2">
-              <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid" />
+              <img :src="fundInfo.imgUrl" alt="swap" class="image-fluid" />
             </div>
             <div class="flex-grow-1">
-              <h2 class="text-black">Ben Thomson</h2>
+              <h2 class="text-black">{{ fundInfo.author }}</h2>
               <div class="label">Manager</div>
             </div>
           </div>
@@ -106,6 +113,11 @@
                 v-for="(deposit, index) in fundDeposits.length > 6 ? fundDeposits.slice(0, 6) : fundDeposits"
                 :key="index"
                 class="investor-item col-sm-6 d-flex justify-content-start"
+                v-on:click="
+                  () => {
+                    router.push({ name: 'Profile', params: { address: deposit.owner } });
+                  }
+                "
               >
                 <div class="token-icon profile small d-flex mr-1">
                   <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
@@ -127,7 +139,9 @@
               </button>
             </div>
           </div>
-          <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
+          <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">
+            Invest
+          </div>
         </div>
       </div>
     </div>
@@ -141,16 +155,19 @@ import TokenBarChart from "@/components/TokenBarChart";
 import { mapGetters } from "vuex";
 import { oneDayDurationInSeconds, formatDuration } from "../services/helpers";
 import { monthNames } from "../constants";
-import {utils } from "ethers";
+import { utils } from "ethers";
 import { asyncLoading } from "vuejs-loading-plugin";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
-
+import router from "../routes";
 
 export default {
   name: "AboutFund",
   components: { AllInvestors, TokenValues, TokenBarChart },
   computed: {
+    router() {
+      return router;
+    },
     oneDayDurationInSeconds() {
       return oneDayDurationInSeconds;
     },
@@ -166,6 +183,7 @@ export default {
       "softCap",
       "minDepositAmount",
       "fundContractAddress",
+      "fundInfo",
     ]),
   },
   data() {
@@ -187,8 +205,10 @@ export default {
 
   mounted: function () {
     console.log("fund status: ", this.fundContractStatus);
-    
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+
+    console.log("fund info : ", this.fundInfo);
+
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     if (this.fundContractStatus == "Opened") {
       const temp = this.fundCanBeStartedAt - this.fundCreatedAt;

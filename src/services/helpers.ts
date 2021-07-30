@@ -29,10 +29,30 @@ export const getUserByAddress = async (address, chainId) => {
     return res;
   } catch (error) {
     console.log(error);
-    
+
     return null;
   }
 };
+
+export const getFundInfoByAddress = async (address, chainId) => {
+  try {
+    const res = await sendGetRequestToServer(`/api/hedgeFundInfo/${address}`, {
+      headers: {
+        ChainId: chainId,
+      },
+    });
+
+    if (res != "" && res != null && res) {
+      res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl == null ? "default.jpeg" : res.imageUrl}`;
+    }
+
+    return res;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
 export const updateUser = async (data, image, chainId) => {
   const formData = new FormData();
   formData.append("image", image);

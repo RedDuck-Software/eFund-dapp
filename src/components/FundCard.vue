@@ -2,13 +2,18 @@
   <div class="card box-shadow">
     <div class="card-body">
       <div class="row no-gutters align-items-start">
-        <div class="card-img-top col-sm-4">
-          <img class="w-100" :src="`${publicPath}img/fund.svg`" alt="test fund" />
+        <div class="card-img-top col-sm-3 mb-2">
+          <div class="circular-croper">
+            <img class="round-img" :src="fundInfo.imgUrl" alt="test fund" />
+          </div>
         </div>
 
         <div class="col-sm-5 d-flex flex-column align-self-stretch mb-1">
-          <h2 class="card-title m-0 font-weight-bold">{{ fundInfo.title }}</h2>
-          <div class="author font-weight-bold">by {{ fundInfo.author }}</div>
+          <h2 v-if="fundInfo.title != null" class="card-title m-0 font-weight-bold">{{ fundInfo.title }}</h2>
+          <h2 v-else class="card-title m-0 font-weight-bold">Unknown</h2>
+
+          <div class="author text-truncate font-weight-bold">by {{ fundInfo.author }}</div>
+
           <div class="balance mt-auto">
             Balance: <span class="text-black">{{ fundInfo.balance.toFixed(2) }}</span>
           </div>
@@ -95,15 +100,13 @@ export default {
       return Math.ceil((this.fundInfo.fundCanBeStartedAt - new Date()) / 1000 / oneDayDurationInSeconds);
     },
     proggressPercentage() {
-      return (
-      this.fundInfo.balance * 100 / this.fundInfo.hardCap
-        )
+      return (this.fundInfo.balance * 100) / this.fundInfo.hardCap;
     },
   },
   mounted() {
     console.log(this.fundInfo);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
   },
   methods: {
     async invest() {
@@ -146,7 +149,8 @@ export default {
   line-height: 16px;
 }
 
-.desc-item {
+.card-img-top {
+  margin-right: 12px;
 }
 
 .card-body {
@@ -155,5 +159,20 @@ export default {
   img {
     padding-right: 12px;
   }
+}
+
+.circular-croper {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.round-img {
+  display: inline;
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
 }
 </style>

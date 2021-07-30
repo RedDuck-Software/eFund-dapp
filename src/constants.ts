@@ -26,6 +26,8 @@ import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswap
 
 export const SERVER_API_URL = "https://localhost:44379";
 
+export const DEFAULT_IMG_URL = SERVER_API_URL  + '/image/default.jpeg';
+
 export const ABI = JSON.stringify(FundAbi.abi);
 
 export const FUND_PLATFORM_ABI = JSON.stringify(FundPlatformAbi.abi);

@@ -157,7 +157,7 @@ export default {
 
       console.log("fund address: ", this.fundAddress);
 
-      this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+      this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
       const platform = this.fundService.getFundPlatformContractInstance(this.fundAddress);
 
@@ -228,6 +228,7 @@ export default {
       this.updateFundCreatedAt(fundInfo.fundCreatedAt);
       this.updateTotalBalance(totalBalance);
       this.updateCryptoBalance(fundInfo.balance);
+      this.updateFundGeneralInfo(fundInfo);
 
       console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
     },
@@ -299,6 +300,7 @@ export default {
       "updateFundCreatedAt",
       "updateTotalBalance",
       "updateCryptoBalance",
+      "updateFundGeneralInfo",
     ]),
   },
 };

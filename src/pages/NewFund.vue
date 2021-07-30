@@ -2,21 +2,23 @@
   <div class="container-fluid">
     <h1 class="mb-3 font-weight-bold">Create Fund</h1>
     <div class="row">
-      <div class="col-sm-12 col-md-6  col-lg-4">
+      <div class="col-sm-12 col-md-6 col-lg-4">
         <form class="form-create bg-lightest box-shadow rounded d-flex flex-column">
           <fieldset v-if="step === 1" class="mb-0 form-group d-flex flex-column">
             <div class="">
               <h2 class="mb-3 font-weight-bold">Your name</h2>
               <input
                 id="profile_name"
-                v-model="form.name"
+                v-model="fundBaseInfo.name"
                 class="form-control custom-input"
                 name="profile_name"
                 placeholder="Type here"
               />
             </div>
+            <div class="mt-3 mb-2"></div>
+
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
+              <button type="button" class="btn black-button" @click="nextStep" :disabled="nextStepBtnDisabled">
                 Next Step
               </button>
             </div>
@@ -25,17 +27,33 @@
             <div class="">
               <h2 class="font-weight-bold">Icon of your fund</h2>
               <div class="label mt-2 pt-1">This icon is needed for quick access to your fund</div>
-              <div class=" text-center">
-                <button class="btn green-button mt-4">Download from</button>
+              <div class="text-center">
+                <label class="btn green-button mt-4" style="display: block">
+                  <input type="file" id="file" ref="file" v-on:change="handleFileUpload()" />
+                  Upload
+                </label>
               </div>
             </div>
+            <div class="mt-3 mb-2"></div>
+
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
-                Next Step
-              </button>
+              <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
             </div>
           </fieldset>
-          <fieldset v-if="step === 3" class="form-group">
+
+          <fieldset v-if="step === 3" class="mb-0 form-group d-flex flex-column">
+            <div class="">
+              <h2>Description</h2>
+              <textarea v-model="fundBaseInfo.description" class="form-control" rows="3"></textarea>
+
+              <div class="mt-3 mb-2"></div>
+
+              <div class="mt-auto text-center">
+                <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset v-if="step === 4" class="form-group">
             <div class="">
               <h2 class="mb-3 font-weight-bold">Fund Settings</h2>
               <div class="label">Start with recommended settings</div>
@@ -107,13 +125,13 @@
               ></vue-slider>
             </div>
 
+            <div class="mt-3 mb-2"></div>
+
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
-                Next Step
-              </button>
+              <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
             </div>
           </fieldset>
-          <fieldset v-if="step === 4" class="form-group">
+          <fieldset v-if="step === 5" class="form-group">
             <div class="">
               <h2 class="mb-3 font-weight-bold">Your Rules</h2>
               <div class="label">Max trading time</div>
@@ -170,12 +188,10 @@
               </vue-slider>
             </div>
             <div class="mt-auto text-center">
-              <button type="button" class="btn black-button " @click="nextStep">
-                Next Step
-              </button>
+              <button type="button" class="btn black-button" @click="nextStep">Next Step</button>
             </div>
           </fieldset>
-          <fieldset v-if="step === 5" class="form-group">
+          <fieldset v-if="step === 6" class="form-group">
             <div class="row">
               <div class="col-sm-12">
                 <div class="text-center">
@@ -198,8 +214,11 @@
               <li class="mr-1">
                 <div class="line" :class="step >= 3 ? 'bg-primary' : ''"></div>
               </li>
-              <li>
+              <li class="mr-1">
                 <div class="line" :class="step >= 4 ? 'bg-primary' : ''"></div>
+              </li>
+              <li>
+                <div class="line" :class="step >= 5 ? 'bg-primary' : ''"></div>
               </li>
             </ul>
           </div>
@@ -210,15 +229,28 @@
           <div class="card-body">
             <div class="row no-gutters align-items-start">
               <div class="card-img-top col-sm-4">
-                <img class="w-100" :src="`${publicPath}img/fund.svg`" alt="test fund" />
+                <img
+                  v-if="fundBaseInfo.imageLocalPath == null"
+                  class="w-100"
+                  :src="`${publicPath}img/fund.svg`"
+                  alt="test fund"
+                />
+                <img v-else class="w-100" :src="fundBaseInfo.imageLocalPath" alt="test fund" />
               </div>
 
               <div class="col-sm-7 d-flex flex-column align-self-stretch mb-1">
-                <h2 class="card-title m-0 font-weight-bold">Test Fund</h2>
+                <h2
+                  v-if="fundBaseInfo.name == null || fundBaseInfo.name == '' || !fundBaseInfo.name"
+                  class="card-title m-0 font-weight-bold"
+                >
+                  Test Fund
+                </h2>
+                <h2 v-else class="card-title m-0 font-weight-bold">{{ fundBaseInfo.name }}</h2>
+
                 <h3 class="author font-weight-bold mt-2">by Ben Thomson</h3>
               </div>
             </div>
-            <div class="progress" style="height: 17px;">
+            <div class="progress" style="height: 17px">
               <div
                 class="progress-bar"
                 role="progressbar"
@@ -259,7 +291,7 @@ import { getSigner, isMetaMaskInstalled } from "@/services/ether";
 import { mapGetters, mapMutations } from "vuex";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
-import { oneDayDurationInSeconds } from "../services/helpers";
+import { oneDayDurationInSeconds, createFundInfo } from "../services/helpers";
 import ToggleBtn from "../components/ToggleBtn.vue";
 import { ethers, utils } from "ethers";
 import { asyncLoading } from "vuejs-loading-plugin";
@@ -270,20 +302,32 @@ export default {
   name: "Profile",
   components: { VueSlider, ToggleBtn },
   computed: {
+    nextStepBtnDisabled() {
+      if (this.step == 1) if (this.fundBaseInfo.name == null) return true;
+
+      if (this.step == 3) if (this.fundBaseInfo.description == null) return true;
+
+      return false;
+    },
     ...mapGetters(["platformSettings", "eFundNetworkSettings", "signerAddress"]),
   },
   data() {
     return {
       step: 1,
-      totalSteps: 5,
+      totalSteps: 6,
       publicPath: process.env.BASE_URL,
       form: {},
+      fundBaseInfo: {
+        name: null,
+        image: null,
+        imageLocalPath: null,
+        description: null,
+      },
       fundPresetIndex: 0,
       platformContract: null,
       fundService: null,
       fundPreset: [
         {
-          name: null,
           collateral: 2,
           minSize: 0.1,
           maxSize: 5,
@@ -292,7 +336,6 @@ export default {
           duration: 1,
         },
         {
-          name: null,
           collateral: 4,
           minSize: 10,
           maxSize: 30,
@@ -301,7 +344,6 @@ export default {
           duration: 3,
         },
         {
-          name: null,
           collateral: 7,
           minSize: 15,
           maxSize: 75,
@@ -315,7 +357,7 @@ export default {
   async mounted() {
     this.updateFundPreset(this.fundPresetIndex);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.platformContract = this.fundService.getFundPlatformContractInstance();
 
     console.log(this.getTillStartData());
@@ -323,16 +365,44 @@ export default {
     console.log(this.platformSettings.minimumTimeUntillFundStart);
   },
   methods: {
-    addName() {},
-    nextStep: function() {
+    handleFileUpload() {
+      console.log("handled file upload!");
+
+      this.fundBaseInfo.image = this.$refs.file.files[0];
+
+      var reader = new FileReader();
+
+      reader.onloadend = (e) => {
+        this.fundBaseInfo.imageLocalPath = e.target.result;
+
+        console.log(this.fundBaseInfo.imageLocalPath);
+      };
+
+      reader.readAsDataURL(this.fundBaseInfo.image);
+    },
+    async nextStep() {
+      this.$forceUpdate(); 
+
       if (this.step + 1 == this.totalSteps) {
         asyncLoading(this.createNewFund())
-          .then(async v => {
+          .then(async (v) => {
             this.step++;
             const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
             this.updateMyFundsAsManager(curUserFundsAsManager);
+
+            createFundInfo(
+              {
+                contractAddress: curUserFundsAsManager[curUserFundsAsManager.length - 1].address,
+                name: this.fundBaseInfo.name,
+                description: this.fundBaseInfo.description,
+              },
+              this.fundBaseInfo.image,
+              this.eFundNetworkSettings.chainId
+            ).then((v) => {
+              console.log("Fund created successfully!");
+            });
           })
-          .catch(ex => console.error(ex));
+          .catch((ex) => console.error(ex));
         return;
       }
 
@@ -385,6 +455,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+input[type="file"] {
+  display: none;
+}
+
 .check-filled {
   border-radius: 50%;
   width: 87px;

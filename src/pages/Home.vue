@@ -49,7 +49,7 @@ export default {
     ...mapGetters(["signerAddress", "eFundNetworkSettings"]),
   },
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.topFunds = await this.fundService.getTopFunds(5);
   },
   methods: {

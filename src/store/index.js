@@ -41,6 +41,7 @@ const store = new Vuex.Store({
       genericNonce: null,
       personalNonce: null,
     },
+    fundInfo: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -139,6 +140,9 @@ const store = new Vuex.Store({
     updateUserProfileData(state, userProfileData) {
       state.userProfileData = userProfileData;
     },
+    updateFundGeneralInfo(state, fundInfo) {
+      state.fundInfo = fundInfo;
+    },
     clearFundInfo(state) {
       state.fundContractAddress = null;
       state.fundContractStatus = null;
@@ -195,6 +199,7 @@ const store = new Vuex.Store({
 
     piNoncesData: state => state.apiNoncesData,
     userProfileData: state => state.userProfileData,
+    fundInfo: state => state.fundInfo,
   },
   plugins: [createPersistedState()],
 });

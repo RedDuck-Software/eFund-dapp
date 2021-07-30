@@ -40,7 +40,7 @@ export default {
 
     this.updateUserProfileData(currentUserInfo == "" || currentUserInfo == undefined ? null : currentUserInfo);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     if (this.platformSettings == null) {
       const platformSettings = await this.fundService.getPlatformSettings();
