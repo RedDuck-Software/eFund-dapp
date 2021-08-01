@@ -12,7 +12,7 @@ export const getPercentageDiff = (originalValue, newValue) => {
   return (diff / originalValue) * 100;
 };
 
-export const updateUserProfileInfo = async (image, username, description) => {};
+export const updateUserProfileInfo = async (image, username, description) => { };
 
 export const getUserByAddress = async (address, chainId) => {
   try {
@@ -42,8 +42,8 @@ export const getFundInfoByAddress = async (address, chainId) => {
       },
     });
 
-      console.log(res.imageUrl);
-      
+    console.log(res.imageUrl);
+
     if (res != "" && res != null && res) {
       res.imageUrl = SERVER_API_URL + `/image/${res.imageUrl == null ? "default.jpeg" : res.imageUrl}`;
     }
@@ -63,9 +63,9 @@ export const updateUser = async (data, image, chainId) => {
   console.log("image", image);
 
   return await sendPostRequestToServer(
-    `/api/user/updateUserInfo?address=${data.address}` +
-      (data.username == null ? "" : `&username=${data.username}`) +
-      (data.description == null ? "" : `&description=${data.description}`),
+    `/api/user/updateUserInfo?address=${data.address}&signedNonce=${data.signedNonce}` +
+    (data.username == null ? "" : `&username=${data.username}`) +
+    (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
       headers: {
@@ -82,8 +82,8 @@ export const createFundInfo = async (data, image, chainId) => {
 
   return await sendPostRequestToServer(
     `/api/hedgeFundInfo/createFundInfo?contractAddress=${data.contractAddress}` +
-      (data.name == null ? "" : `&name=${data.name}`) +
-      (data.description == null ? "" : `&description=${data.description}`),
+    (data.name == null ? "" : `&name=${data.name}`) +
+    (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
       headers: {
@@ -99,7 +99,9 @@ export const registerUser = async (data, image, chainId) => {
   formData.append("image", image);
 
   return await sendPostRequestToServer(
-    `/api/user/register?address=${data.address}&username=${data.username}&description=${data.description}`,
+    ((`/api/user/register?address=${data.address}&signedNonce=${data.signedNonce}`) +
+      (data.username == null ? "" : `&username=${data.username}`) +
+      (data.description == null ? "" : `&description=${data.description}`)),
 
     formData,
     {
@@ -143,8 +145,8 @@ function httpGet(theUrl) {
   return xmlHttp.responseText;
 }
 
-export const groupArrayBy = function(xs, key) {
-  return xs.reduce(function(rv, x) {
+export const groupArrayBy = function (xs, key) {
+  return xs.reduce(function (rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
   }, {});
@@ -173,12 +175,12 @@ export const formatDuration = durInSeconds => {
     second: 1,
   };
 
-  Object.keys(s).forEach(function(key) {
+  Object.keys(s).forEach(function (key) {
     r[key] = Math.floor(durInSeconds / s[key]);
     durInSeconds -= r[key] * s[key];
   });
 
-  const emptyStringIfZeroVal = function(val, mod) {
+  const emptyStringIfZeroVal = function (val, mod) {
     return val == 0 ? "" : val.toString() + mod;
   };
 

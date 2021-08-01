@@ -91,7 +91,7 @@
                     <img
                       v-if="form.imgLocalPath == null"
                       class="card-img-top round-img"
-                      src="/img/avatar.png"
+                      :src="DEFAULT_IMG_URL"
                       alt="test fund"
                     />
                     <img v-else class="card-img-top round-img" :src="form.imgLocalPath" alt="test fund" />
@@ -128,11 +128,12 @@
 <script>
 import { getSigner, isMetaMaskInstalled } from "@/services/ether";
 import { mapGetters, mapMutations } from "vuex";
-import { getUserByAddress, registerUser, updateUser } from "../services/helpers";
+import { getUserByAddress, registerUser, updateUser, getGenericSignNonce } from "../services/helpers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { utils } from "ethers";
 import { asyncLoading } from "vuejs-loading-plugin";
+import { DEFAULT_IMG_URL } from "../constants";
 
 export default {
   name: "Profile",
@@ -157,8 +158,11 @@ export default {
     };
   },
   computed: {
+    DEFAULT_IMG_URL() {
+      return DEFAULT_IMG_URL;
+    },
     shouldShowProfileEditingForm() {
-      return this.signerAddress == this.userAddress && this.currentUserInfo == null && !this.getUserApiQueryFailed;
+      return this.signerAddress == this.userAddress && !this.getUserApiQueryFailed;
     },
     userInvestedTotal() {
       let total = 0;
@@ -226,7 +230,7 @@ export default {
           });
       }
 
-      this.currentUserInfo = currentUserInfo == "" ? null : currentUserInfo;
+      this.currentUserInfo = currentUserInfo == "" || !currentUserInfo ? null : currentUserInfo;
 
       console.log("current user info: ", this.currentUserInfo);
 
@@ -246,9 +250,14 @@ export default {
     },
     async updateProfileInfo() {
       var newNonce;
-      if (this.currentUserInfo == null || this.currentUserInfo == undefined) {
+      if (this.currentUserInfo == null || !this.currentUserInfo) {
+        const genericNonce = await getGenericSignNonce();
+
+        const signedNonce = await this.fundService.signMessage(genericNonce);
+
         newNonce = await registerUser(
           {
+            signedNonce: signedNonce,
             address: this.signerAddress,
             username: this.form.name,
             description: this.form.description,
@@ -256,9 +265,21 @@ export default {
           this.form.image,
           this.eFundNetworkSettings.chainId
         );
+
+        this.currentUserInfo = {
+          username: this.form.name,
+          description: this.description,
+          imageUrl: this.imgLocalPath,
+          singNonce: newNonce,
+        };
       } else {
+        console.log("cur user info: ", this.currentUserInfo);
+
+        const signedNonce = await this.fundService.signMessage(this.currentUserInfo.signNonce, "No password required.");
+
         newNonce = await updateUser(
           {
+            signedNonce: signedNonce,
             address: this.signerAddress,
             username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
             description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
