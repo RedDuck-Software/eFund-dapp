@@ -51,7 +51,6 @@
         </div>
       </div>
       <div class="d-flex flex-wrap">
-        <div class="badge bg-black text-white">Rules</div>
         <div class="badge bg-black text-white">
           <router-link
             class="no-link-styles"

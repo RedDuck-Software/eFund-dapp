@@ -224,3 +224,12 @@ h5 {
   margin-left: auto;
   margin-right: auto;
 }
+
+img:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  background-image: url("https://lh3.googleusercontent.com/proxy/ea8ZfZxRCEtPI5W3IsTs89tr7I8WGn_44nJd5tjqFHn0COTgIufVIsYc91yYT80hMcPp_lk_rNV9pQ3hpDWJyE6i0IiqvGotGjHm09vq8FJdrGqM3fqrwfd41E4UaI5nQg");
+}

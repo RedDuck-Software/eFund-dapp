@@ -157,6 +157,13 @@
           </div>
         </div>
       </div>
+      <div
+        v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
+        class="badge bg-primary text-white"
+        v-on:click="withdrawAllFunds()"
+      >
+        Withdraw all funds
+      </div>
     </div>
   </div>
 </template>
@@ -268,6 +275,19 @@ export default {
     }
   },
   methods: {
+    async withdrawAllFunds() {
+      const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
+
+      const tx = await fundContract.withdrawDeposits();
+
+      console.log(tx);
+
+      asyncLoading(tx.wait())
+        .then(async (v) => {
+          this.updateFundDeposits([]);
+        })
+        .catch((ex) => console.error(ex));
+    },
     async invest() {
       const amount = prompt("How much ether you want to invest?");
 
