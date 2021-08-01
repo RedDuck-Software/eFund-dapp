@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="text-center mt-md-0 mt-3">
-      <h2 class="">{{ totalBalance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 class="">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
       <div class="label">Total Balance</div>
     </div>
     <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">

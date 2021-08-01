@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     async getManagerFunds() {
-      const fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+      const fundService = new FundService(this.eFundNetworkSettings, currentProvider());
       const platformContract = fundService.getFundPlatformContractInstance();
 
       const signerAddress = await fundService.getCurrentProvider().getSigner().getAddress();

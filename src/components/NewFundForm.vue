@@ -107,7 +107,7 @@ export default {
   },
   async mounted() {
     console.log("eFund network settings: ", JSON.stringify(this.eFundNetworkSettings));
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.factoryContract = this.fundService.getFundPlatformContractInstance();
 
     console.log(this.factoryContract);

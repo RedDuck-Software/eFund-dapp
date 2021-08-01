@@ -143,7 +143,7 @@ export default {
 
     this.interval = setInterval(() => this.updateBalance(), 10000);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 

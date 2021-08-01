@@ -190,13 +190,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["eFundNetworkSettings", "userIsManager", "signerAddress"]),
+    ...mapGetters(["eFundNetworkSettings", "signerAddress"]),
     fundsChunks() {
       return _.chunk(Object.values(this.filteredFunds), 2);
     },
   },
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     await this.getAllFunds();
     await this.getAllFilteredFunds();
 

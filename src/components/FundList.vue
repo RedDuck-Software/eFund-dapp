@@ -51,7 +51,7 @@ export default {
     ...mapGetters(["eFundNetworkSettings"]),
   },
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.readOnlyPlatformContract = this.fundService.getFundPlatformContractInstance();
 
     console.log(this.readOnlyPlatformContract);

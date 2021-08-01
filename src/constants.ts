@@ -1,5 +1,5 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xCB2fEF9f1ceC77934bE805B6eB26134d67808D1D";
-export const EFUND_TOKEN_BSC = "0x598aB81623972405D82d6Dd91EB2120a7f00F333";
+export const FUND_PLATFROM_ADDRESS_BSC = "0x728A3d6aF4CeA4BfB673a71f5EBf9ad4135B7c4e";
+export const EFUND_TOKEN_BSC = "0x3002863bf5645C24d592fc574A3a3EFBf38fdbE8";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
@@ -23,6 +23,10 @@ import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Rou
 import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol/IUniswapV2Factory.json";
 import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
+
+export const SERVER_API_URL = "https://localhost:44379";
+
+export const DEFAULT_IMG_URL = SERVER_API_URL  + '/image/default.jpeg';
 
 export const ABI = JSON.stringify(FundAbi.abi);
 

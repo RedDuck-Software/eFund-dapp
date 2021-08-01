@@ -70,7 +70,7 @@ export default {
     };
   },
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     let currentBalance = this.baseBalance;
 

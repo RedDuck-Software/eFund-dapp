@@ -1,5 +1,8 @@
 import { ethers, utils, BigNumber } from "ethers";
 import { currentProvider, getSigner } from "./ether";
+import { getFundInfoByAddress, getUserByAddress } from "./helpers";
+import { DEFAULT_IMG_URL } from "../constants";
+
 import {
   fundStatuses,
   FUND_ABI,
@@ -22,8 +25,11 @@ export class FundService {
 
   platformContract;
 
-  constructor(fundPlatfromAddress: string, provider) {
-    this.fundPlatfromAddress = fundPlatfromAddress;
+  networkSettings;
+
+  constructor(networkSettings, provider) {
+    this.networkSettings = networkSettings;
+    this.fundPlatfromAddress = networkSettings.eFundPlatformAddress;
     this.currentProvider = provider;
     this.platformContract = new ethers.Contract(
       this.fundPlatfromAddress,
@@ -100,7 +106,7 @@ export class FundService {
 
   async getPlatformSettings() {
     console.log(this.platformContract);
-    
+
     const res = await this.platformContract.getPlatformData();
 
     return {
@@ -127,6 +133,14 @@ export class FundService {
     const fundContract = this.getFundContractInstance(fundAddress);
 
     return await fundContract.makeDeposit({ value: amount });
+  }
+
+  async getCurrentSigner() {
+    return await this.getCurrentProvider()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getSigner()
+      // @ts-ignore: cannot assign vm to Event for some reasone
+      .getAddress();
   }
 
   async getFundDetailedInfo(address) {
@@ -165,9 +179,7 @@ export class FundService {
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses,
-      deposits: deposits.map(d => {
-        return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
-      }),
+
       swaps: swapHistory.map(v => {
         return {
           amountFrom: v.amountFrom,
@@ -187,6 +199,39 @@ export class FundService {
 
   async getAllManagerFunds(address) {
     const data = await this.platformContract.getManagerFunds(address);
+
+    return data.slice().map(v => {
+      return {
+        address: v,
+      };
+    });
+  }
+
+  async getAllManagerFundsWithDetails(address) {
+    const data = await this.platformContract.getManagerFunds(address);
+
+    return await Promise.all(
+      data
+        .slice()
+        .reverse()
+        .map(async addr => {
+          return await this.getFundDetails(addr);
+        })
+    );
+  }
+
+  async getAllInvestorsFunds(address) {
+    const data = await this.platformContract.getInvestorFunds(address);
+
+    return data.slice().map(v => {
+      return {
+        address: v,
+      };
+    });
+  }
+
+  async getAllInvestorsFundsWithDetails(address) {
+    const data = await this.platformContract.getInvestorFunds(address);
 
     return await Promise.all(
       data
@@ -228,6 +273,10 @@ export class FundService {
     const fundContract = this.getFundContractInstance(fundAddress);
 
     const info = await fundContract.getFundInfo();
+    const infoFromServer = await getFundInfoByAddress(fundAddress, this.networkSettings.chainId);
+    const userInfoFromServer = await getUserByAddress(info._fundManager, this.networkSettings.chainId);
+
+    console.log("info from server: ", userInfoFromServer);
 
     return {
       fundDurationInMonths: parseFloat(info._fundDurationInMonths),
@@ -242,11 +291,15 @@ export class FundService {
       profitFee: parseFloat(info._profitFee),
       collateral: parseFloat(utils.formatEther(info._managerCollateral)),
       balance: parseFloat(utils.formatEther(info._currentBalance)),
-      investorsAmount: parseFloat(info._investorsAmount),
-      title: "Test fund",
-      author: "Ben Thomson",
-      imgUrl: "real_url_here",
-      // todo : fetch fund info from backend
+      investorsAmount: info._deposits.length,
+      deposits: info._deposits.map(d => {
+        return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
+      }),
+      description: infoFromServer?.description,
+      title: infoFromServer?.name,
+      author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,
+      imgUrl: infoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : infoFromServer?.imageUrl,
+      authorProfileImageUrl: userInfoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : userInfoFromServer?.imageUrl,
     };
   }
 

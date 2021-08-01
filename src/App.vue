@@ -15,6 +15,7 @@ import "./App.scss";
 import router from "./routes";
 import { isMetaMaskInstalled, currentProvider } from "./services/ether";
 import { FundService } from "./services/fundService";
+import { getGenericSignNonce, getUserByAddress, getFundInfoByAddress } from "./services/helpers";
 
 export default {
   name: "App",
@@ -35,24 +36,48 @@ export default {
       return;
     }
 
-    console.log("signer: ", this.signerAddress);
+    const currentUserInfo = await getUserByAddress(this.signerAddress, this.eFundNetworkSettings.chainId);
 
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
-    const platformContract = this.fundService.getFundPlatformContractInstance();
+    this.updateUserProfileData(currentUserInfo == "" || currentUserInfo == undefined ? null : currentUserInfo);
 
-    const isUserManager = (await platformContract.managerFundActivity(this.signerAddress)).isValue;
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     if (this.platformSettings == null) {
       const platformSettings = await this.fundService.getPlatformSettings();
       this.updatePlatformSettings(platformSettings);
     }
 
-    this.updateUserIsManager(isUserManager);
+    const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+
+    console.log("user funds as manager: ", curUserFundsAsManager);
+
+    const curUserFundsAsInvestorWithInfo = [];
+
+    for (let val of curUserFundsAsManager) {
+      curUserFundsAsInvestorWithInfo.push({
+        ...val,
+        ...(await getFundInfoByAddress(val.address, this.eFundNetworkSettings.chainId)),
+      });
+    }
+
+    console.log("user funds as manager: ", curUserFundsAsInvestorWithInfo);
+
+    this.updateMyFundsAsManager(curUserFundsAsInvestorWithInfo);
+
+    const curUserFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.signerAddress);
+    this.updateMyFundsAsInvestor(curUserFundsAsInvestor);
+
+    console.log("users funds as investor: ", curUserFundsAsInvestor);
 
     this.isLoaded = true;
   },
   methods: {
-    ...mapMutations(["updateUserIsManager", "updateMyFundsAsManager", "updatePlatformSettings"]),
+    ...mapMutations([
+      "updateMyFundsAsManager",
+      "updatePlatformSettings",
+      "updateMyFundsAsInvestor",
+      "updateUserProfileData",
+    ]),
   },
 };
 </script>

@@ -113,13 +113,7 @@ export default {
   name: "FundTrade",
   components: { vSelect },
   computed: {
-    ...mapGetters([
-      "fundContractAddress",
-      "eFundNetworkSettings",
-      "allowedTokensAddresses",
-      "cryptoBalance",
-      "cryptoBalance",
-    ]),
+    ...mapGetters(["fundContractAddress", "eFundNetworkSettings", "allowedTokensAddresses", "cryptoBalance"]),
     boughtTokensAddresses() {
       return this.$store.state.boughtTokensAddresses;
     },
@@ -150,9 +144,7 @@ export default {
     };
   },
   async mounted() {
- 
-
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider());
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
 
@@ -394,12 +386,14 @@ export default {
 
       const txHash = await tx.wait();
 
+      console.log("tx: ", { txHash });
+
       if (!this.boughtTokensAddresses.some((v) => v.address.toLowerCase() == this.toSwapCurr.address.toLowerCase())) {
         const newBoughtToken = {
           name: await tokenTo.name,
           address: this.toSwapCurr.address,
           decimals: this.toSwapCurr.decimals,
-          amount: utils.formatUnits(await tokenTo.balanceOf(this.fundContractAddress), this.toSwapCurr.decimals),
+          amount: utils.formatUnits(txHash.events[5]._amountTo, this.toSwapCurr.decimals),
         };
 
         this.addTokenToBoughts(newBoughtToken);
@@ -408,9 +402,7 @@ export default {
         // todo: update token balance
       }
 
-      this.updateCryptoBalance(
-        utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
-      );
+      this.updateCryptoBalance(this.cryptoBalance - parseFloat(utils.formatEther(txHash.events[5]._amountFrom)));
 
       return txHash;
     },

@@ -1,3 +1,4 @@
+import { stat } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
@@ -9,7 +10,6 @@ const store = new Vuex.Store({
   state: {
     walletProviderType: null,
     signerAddress: null,
-    userIsManager: null,
     fundContractAddress: null,
     fundContractStatus: null,
     fundContractManager: null,
@@ -36,6 +36,12 @@ const store = new Vuex.Store({
     balance: null,
     myFundsAsInvestor: [],
     myFundsAsManager: [],
+    userProfileData: null,
+    apiNoncesData: {
+      genericNonce: null,
+      personalNonce: null,
+    },
+    fundInfo: null,
   },
   mutations: {
     updateSignerAddress(state, address) {
@@ -98,9 +104,6 @@ const store = new Vuex.Store({
     updateFundCanBeStartedAt(state, fundCanBeStartedAt) {
       state.fundCanBeStartedAt = fundCanBeStartedAt;
     },
-    updateUserIsManager(state, val) {
-      state.userIsManager = val;
-    },
     updateProfitFee(state, fee) {
       state.profitFee = fee;
     },
@@ -130,6 +133,18 @@ const store = new Vuex.Store({
     },
     updateCryptoBalance(state, balance) {
       state.balance = balance;
+    },
+    updateApiNoncesData(state, data) {
+      state.apiNoncesData = data;
+    },
+    updateUserProfileData(state, userProfileData) {
+      state.userProfileData = userProfileData;
+    },
+    updateFundGeneralInfo(state, fundInfo) {
+      state.fundInfo = fundInfo;
+    },
+    addFundDeposit(state, newDeposit) { 
+      state.deposits.push(newDeposit);
     },
     clearFundInfo(state) {
       state.fundContractAddress = null;
@@ -173,7 +188,6 @@ const store = new Vuex.Store({
     minDepositAmount: state => state.minDepositAmount,
     fundCanBeStartedAt: state => state.fundCanBeStartedAt,
     profitFee: state => state.profitFee,
-    userIsManager: state => state.userIsManager,
     myFundsAsManager: state => state.myFundsAsManager,
     myFundsAsInvestor: state => state.myFundsAsInvestor,
     platformSettings: state => state.platformSettings,
@@ -185,6 +199,10 @@ const store = new Vuex.Store({
     fundCreatedAt: state => state.fundCreatedAt,
     totalBalance: state => state.totalBalance,
     cryptoBalance: state => state.balance,
+
+    piNoncesData: state => state.apiNoncesData,
+    userProfileData: state => state.userProfileData,
+    fundInfo: state => state.fundInfo,
   },
   plugins: [createPersistedState()],
 });
