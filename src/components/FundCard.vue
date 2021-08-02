@@ -19,7 +19,7 @@
           </div>
         </div>
         <div v-if="fundInfo.status == 'Opened'" class="col-sm-3">
-          <div v-if="formatedDur > 0" class="schedule pl-2">Can be started in: {{ formatedDur }}</div>
+          <div v-if="formatedDur > 0" class="schedule pl-2">Can be started in: {{ formatedDur }} days</div>
           <div v-else class="schedule pl-2">Can be started</div>
         </div>
         <div v-else-if="fundInfo.status == 'Active'" class="col-sm-3">
@@ -51,11 +51,12 @@
         </div>
       </div>
       <div class="d-flex flex-wrap">
-        
         <div v-if="fundInfo.status == 'Opened'" class="badge bg-primary text-white">Status: {{ fundInfo.status }}</div>
-        <div v-else-if="fundInfo.status == 'Active'" class="badge bg-info text-white"> Status: {{ fundInfo.status }}</div>
+        <div v-else-if="fundInfo.status == 'Active'" class="badge bg-info text-white">
+          Status: {{ fundInfo.status }}
+        </div>
         <div v-else class="badge bg-warning text-white">Status: {{ fundInfo.status }}</div>
-        
+
         <div class="badge bg-black text-white">
           <router-link
             class="no-link-styles"
@@ -101,7 +102,8 @@ export default {
   computed: {
     ...mapGetters(["eFundNetworkSettings", "fundContractAddress"]),
     formatedDur() {
-      return Math.ceil((this.fundInfo.fundCanBeStartedAt - new Date()) / 1000 / oneDayDurationInSeconds);
+      console.log("fund info: ", this.fundInfo.fundCanBeStartedAt);
+      return Math.ceil((this.fundInfo.fundCanBeStartedAt - new Date() / 1000) / oneDayDurationInSeconds);
     },
     proggressPercentage() {
       return (this.fundInfo.balance * 100) / this.fundInfo.hardCap;
