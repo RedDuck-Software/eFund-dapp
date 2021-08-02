@@ -55,7 +55,7 @@
                 </div>
               </div>
             </fieldset>
-            <fieldset v-if="step === 4" class="form-group">
+            <fieldset v-if="step === 4 && isSuccessAlertVisible" class="form-group">
               <div class="row">
                 <div class="col-sm-12">
                   <div class="text-center">
@@ -155,6 +155,7 @@ export default {
       userDeposits: [],
       fundService: null,
       isLoading: true,
+      isSuccessAlertVisible: true,
     };
   },
   computed: {
@@ -202,9 +203,10 @@ export default {
         this.userFundsAsManager = this.myFundsAsManager;
         this.userFundsAsInvestor = this.myFundsAsInvestor;
       } else {
-        this.userFundsAsManager = this.fundService.getAllManagerFunds(this.userAddress);
-        this.userFundsAsInvestor = this.fundService.getAllInvestorsFunds(this.userAddress);
+        this.userFundsAsManager = await this.fundService.getAllManagerFunds(this.userAddress);
+        this.userFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.userAddress);
 
+        console.log("user funds: ", { asManager: this.userFundsAsManager, asInvestor: this.userFundsAsInvestor });
         try {
           currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
         } catch (error) {
@@ -300,6 +302,9 @@ export default {
         signNonce: newNonce,
       });
 
+      setTimeout(() => {
+        this.isSuccessAlertVisible = true;
+      }, 2000);
       console.log("New nonce is: ", newNonce);
     },
     handleFileUpload() {

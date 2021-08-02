@@ -118,7 +118,7 @@
             </div>
           </div>
           <div class="investors-list mt-3 pt-2">
-            <h2 class="text-gray font-weight-bold">Investors</h2>
+            <h2 class="text-gray font-weight-bold">Deposits</h2>
             <div class="row flex-wrap no-gutters mb-3">
               <div v-if="fundDeposits.length == 0">Fund has no deposits yet</div>
               <div
