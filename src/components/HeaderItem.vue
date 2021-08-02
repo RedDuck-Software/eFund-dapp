@@ -3,7 +3,7 @@
     <a :href="href" class="nav-link rounded py-3" :class="isActive ? 'active ' : ''" @click="navigate">
       <img v-if="!imgSrc" :src="`${publicPath}img/${isActive ? menu.activeIcon : menu.icon}`" class="" alt="home" />
 
-      <div v-else class="circular-croper centered" >
+      <div v-else class="circular-croper centered">
         <img :src="imgSrc" class="round-img" alt="home" />
       </div>
       <div>{{ text }}</div>
@@ -22,6 +22,9 @@ export default {
     return {
       publicPath: process.env.BASE_URL,
     };
+  },
+  mounted() {
+    console.log("header info: ", { imgSrc: this.imgSrc, menu: this.menu });
   },
   computed: {
     router() {
@@ -54,9 +57,8 @@ export default {
   }
 }
 
-.circular-croper { 
+.circular-croper {
   max-width: 50px;
   max-height: 50px;
-  
 }
 </style>
