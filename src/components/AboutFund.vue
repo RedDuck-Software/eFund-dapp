@@ -118,7 +118,7 @@
             </div>
           </div>
           <div class="investors-list mt-3 pt-2">
-            <h2 class="text-gray font-weight-bold">Investors</h2>
+            <h2 class="text-gray font-weight-bold">Deposits</h2>
             <div class="row flex-wrap no-gutters mb-3">
               <div v-if="fundDeposits.length == 0">Fund has no deposits yet</div>
               <div
@@ -156,6 +156,13 @@
             Invest
           </div>
         </div>
+      </div>
+      <div
+        v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
+        class="badge bg-primary text-white"
+        v-on:click="withdrawAllFunds()"
+      >
+        Withdraw all funds
       </div>
     </div>
   </div>
@@ -268,6 +275,19 @@ export default {
     }
   },
   methods: {
+    async withdrawAllFunds() {
+      const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
+
+      const tx = await fundContract.withdrawDeposits();
+
+      console.log(tx);
+
+      asyncLoading(tx.wait())
+        .then(async (v) => {
+          this.updateFundDeposits([]);
+        })
+        .catch((ex) => console.error(ex));
+    },
     async invest() {
       const amount = prompt("How much ether you want to invest?");
 

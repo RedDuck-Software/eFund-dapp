@@ -78,7 +78,7 @@
               <vue-slider
                 v-model="form.collateral"
                 :interval="0.1"
-                :min="0.1"
+                :min="platformSettings.softCap"
                 :max="platformSettings.hardCap - 0.1"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
@@ -98,7 +98,7 @@
                 v-model="form.minSize"
                 :interval="0.1"
                 :min="platformSettings.softCap"
-                :max="platformSettings.hardCap"
+                :max="platformSettings.maxSize"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
@@ -302,6 +302,9 @@ export default {
   name: "Profile",
   components: { VueSlider, ToggleBtn },
   computed: {
+    minCollateral() {
+      return parseFloat((this.form.minSize / 5).toFixed(1));
+    },
     nextStepBtnDisabled() {
       if (this.step == 1) if (this.fundBaseInfo.name == null) return true;
 
@@ -447,7 +450,7 @@ export default {
     },
     updateFundPreset(index) {
       this.fundPresetIndex = index;
-      this.form = this.fundPreset[index];
+      this.form = JSON.parse(JSON.stringify(this.fundPreset[index]));
     },
     ...mapMutations(["updateMyFundsAsManager"]),
   },

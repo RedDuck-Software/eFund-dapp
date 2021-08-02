@@ -51,7 +51,11 @@
         </div>
       </div>
       <div class="d-flex flex-wrap">
-        <div class="badge bg-black text-white">Rules</div>
+        
+        <div v-if="fundInfo.status == 'Opened'" class="badge bg-primary text-white">Status: {{ fundInfo.status }}</div>
+        <div v-else-if="fundInfo.status == 'Active'" class="badge bg-info text-white"> Status: {{ fundInfo.status }}</div>
+        <div v-else class="badge bg-warning text-white">Status: {{ fundInfo.status }}</div>
+        
         <div class="badge bg-black text-white">
           <router-link
             class="no-link-styles"
@@ -160,6 +164,4 @@ export default {
     padding-right: 12px;
   }
 }
-
-
 </style>

@@ -128,7 +128,9 @@ export class FundService {
       return res;
     }
   }
-
+  async signMessage(msg, desc) {
+    return await this.getCurrentProvider().getSigner().signMessage(msg, desc);
+  }
   async makeDeposit(fundAddress, amount: BigNumber) {
     const fundContract = this.getFundContractInstance(fundAddress);
 

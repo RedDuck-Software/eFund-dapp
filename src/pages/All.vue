@@ -118,8 +118,9 @@
               id="managerName"
               v-model="managerName"
               name="manager_name"
-              placeholder="Enter name"
+              placeholder="Enter name (or address)"
               class="form-control custom-input"
+              v-on:change="getAllFilteredFunds"
             />
           </div>
         </div>
@@ -128,7 +129,7 @@
         <div v-if="filteredFunds.length != 0">
           <div class="row flex-wrap">
             <div v-for="(fund, index) in filteredFunds" :key="index" class="col-md-6 mt-2">
-              <FundCard :fund-info="fund"/>
+              <FundCard :fund-info="fund" />
             </div>
           </div>
         </div>
@@ -186,7 +187,7 @@ export default {
 
       readOnlyFactoryContract: null,
       fetchCount: 0,
-      managerName: "",
+      managerName: null,
     };
   },
   computed: {
@@ -213,7 +214,6 @@ export default {
     },
     async getAllFilteredFunds() {
       this.filteredFunds = Array.from(this.allFunds).filter((f) => {
-
         return (
           f.fundDurationInMonths >= this.filters.minTime &&
           f.investorsAmount >= this.filters.investors &&
@@ -222,6 +222,11 @@ export default {
           (this.filters.address == null
             ? true
             : f.managerAddress.toLowerCase() == this.filters.address.toLowerCase()) &&
+          (this.managerName == null
+            ? true
+            : this.managerName.match(/^0x[a-fA-F0-9]{40}$/)
+            ? this.managerName == f.managerAddress
+            : f.author == this.managerName) &&
           (this.filters.currentStatusFilter.size == 0
             ? true
             : Array.from(this.filters.currentStatusFilter).includes(f.status))

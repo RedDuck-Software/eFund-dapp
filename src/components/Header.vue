@@ -25,7 +25,7 @@
             </li>
             <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
               <HeaderItem
-                :imgSrc="fund.imageUrl"
+                :imgSrc="fund.imageUrl != undefined && fund.imageUrl != null ? fund.imageUrl : DEFAULT_IMG_URL"
                 :text="`[m] ${!fund.name || fund.name == null ? 'Unknown' : fund.name}`"
                 :to="{
                   name: 'Fund',
@@ -60,6 +60,7 @@ import HeaderItem from "@/components/HeaderItem";
 import { isMetaMaskInstalled, currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import router from "../routes";
+import { DEFAULT_IMG_URL } from "../constants";
 
 export default {
   name: "Header",
@@ -94,6 +95,9 @@ export default {
   },
 
   computed: {
+    DEFAULT_IMG_URL() {
+      return DEFAULT_IMG_URL;
+    },
     fundAsInvestor() {
       return this.myFundsAsInvestor.filter((a) => !this.myFundsAsManager.some((b) => a.address == b.address));
     },
