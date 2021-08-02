@@ -23,9 +23,6 @@ export default {
       publicPath: process.env.BASE_URL,
     };
   },
-  mounted() {
-    console.log("header info: ", { imgSrc: this.imgSrc, menu: this.menu });
-  },
   computed: {
     router() {
       return router;

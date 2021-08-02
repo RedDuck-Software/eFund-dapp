@@ -52,16 +52,22 @@
                   <div
                     class="progress-bar"
                     role="progressbar"
-                    :style="`width: ${fundOpenedPercentage}%;`"
+                    :style="`width: ${fundOpenedPercentage}%;${
+                      isFundBalanceIsLowerThanSoftCap ? 'background: red;' : ''
+                    }`"
                     aria-valuenow="25"
                     aria-valuemin="0"
                     aria-valuemax="100"
                   ></div>
                 </div>
 
-                <div v-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">
+                <div v-if="isFundBalanceIsLowerThanSoftCap" class="label text-gray mt-1">
+                  Fund cannot be started till it balance is lower than fund`s min size
+                </div>
+                <div v-else-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">
                   Fund can be started
                 </div>
+
                 <div v-else class="label text-gray mt-1">Fund starts in: {{ fundCanBeStartedInDays }} days</div>
               </div>
 
@@ -198,6 +204,9 @@ export default {
   name: "AboutFund",
   components: { AllInvestors, TokenValues, TokenBarChart },
   computed: {
+    isFundBalanceIsLowerThanSoftCap() {
+      return this.fundInfo.balance < this.fundInfo.softCap;
+    },
     router() {
       return router;
     },
@@ -260,9 +269,11 @@ export default {
 
       asyncLoading(tx.wait())
         .then((_) => {
-          console.log({deposits: this.fundDeposits});
-          
-          const newDepositsList = this.fundDeposits.filter((v) => v.owner.toLowerCase() != this.signerAddress.toLowerCase());
+          console.log({ deposits: this.fundDeposits });
+
+          const newDepositsList = this.fundDeposits.filter(
+            (v) => v.owner.toLowerCase() != this.signerAddress.toLowerCase()
+          );
 
           this.updateFundDeposits(newDepositsList);
         })

@@ -33,7 +33,7 @@
             </ul>
             <button
               v-if="fundContractStatus == 'Opened'"
-              :disabled="fundCanBeStartedAt > new Date() / 1000"
+              :disabled="fundCanBeStartedAt > new Date() / 1000 || fundInfo.balance < fundInfo.softCap"
               class="btn btn-success box-shadow completed d-none d-md-block"
               @click="setFundStatusActive"
             >
@@ -102,6 +102,7 @@ export default {
       eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
       activeItem: "about",
       isLoading: true,
+      fundInfo: null,
     };
   },
   computed: {
@@ -169,6 +170,7 @@ export default {
       }
 
       const fundInfo = await this.fundService.getFundDetailedInfo(this.fundAddress);
+      this.fundInfo = fundInfo;
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -232,6 +234,7 @@ export default {
 
       console.log("Fund can be started at: ", new Date(fundInfo.fundCanBeStartedAt * 1000));
     },
+
     async getTokenInfo(tokenAddress) {
       return await this.fundService.getERC20TokenDetails(tokenAddress, undefined, this.fundAddress);
     },
@@ -246,8 +249,12 @@ export default {
       const tx = await this.fundContract.setFundStatusActive({ gasLimit: 300000 });
       asyncLoading(tx.wait())
         .then(() => {
-          this.updateFundStatus(fundStatuses[1].value);
-          this.updateFundStartTimestamp(new Date() / 1000);
+          // this.updateFundStatus(fundStatuses[1].value);
+          // this.updateFundStartTimestamp(new Date() / 1000);
+
+          asyncLoading(this.loadContractInfo()).catch((ex) => {
+            console.error(ex);
+          });
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);

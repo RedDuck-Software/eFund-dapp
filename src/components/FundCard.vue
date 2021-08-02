@@ -69,7 +69,6 @@
             >About</router-link
           >
         </div>
-        <div v-if="fundInfo.status == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">Invest</div>
       </div>
     </div>
   </div>
