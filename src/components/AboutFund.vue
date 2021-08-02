@@ -152,11 +152,24 @@
               </button>
             </div>
           </div>
-          <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">
-            Invest
+
+          <div>
+            <div
+              class="btn btn-danger text-white withdraw-fund-before-started-btn"
+              v-on:click="withdrawFundsBeforeStart()"
+              v-if="fundContractStatus == 'Opened' && fundDeposits.some((v) => v.owner == this.signerAddress)"
+            >
+              Withdraw my funds
+            </div>
+            <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">
+              Invest
+            </div>
           </div>
         </div>
       </div>
+
+      <div></div>
+
       <div
         v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
         class="badge bg-primary text-white"
@@ -203,6 +216,7 @@ export default {
       "softCap",
       "minDepositAmount",
       "fundContractAddress",
+      "signerAddress",
       "fundInfo",
     ]),
   },
@@ -224,29 +238,57 @@ export default {
   },
 
   mounted: function () {
-    console.log("fund status: ", this.fundContractStatus);
-
     console.log("fund info : ", this.fundInfo);
 
     this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
 
     if (this.fundContractStatus == "Opened") {
+      this.updateInfoOnStatusOpened();
+    }
+
+    if (this.fundContractStatus == "Active") {
+      this.updateInfoOnStatusActive();
+    }
+  },
+  methods: {
+    async withdrawFundsBeforeStart() {
+      const fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+      var tx = await fundContract.withdrawBeforeFundStarted();
+
+      const that = this;
+
+      asyncLoading(tx.wait())
+        .then((_) => {
+          console.log({deposits: this.fundDeposits});
+          
+          const newDepositsList = this.fundDeposits.filter((v) => v.owner.toLowerCase() != this.signerAddress.toLowerCase());
+
+          this.updateFundDeposits(newDepositsList);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    async updateInfoOnStatusOpened() {
       const temp = this.fundCanBeStartedAt - this.fundCreatedAt;
 
       console.log({ started: this.fundCanBeStartedAt, created: this.fundCreatedAt });
 
       console.log("temp :", { temp: temp, at: Math.floor(new Date() / 1000) - this.fundCreatedAt });
 
-      this.fundOpenedPercentage = Math.floor(((Math.floor(new Date() / 1000) - this.fundCreatedAt) / temp) * 100);
+      this.fundOpenedPercentage =
+        new Date() / 1000 > this.fundCanBeStartedAt
+          ? 100
+          : Math.floor(((Math.floor(new Date() / 1000) - this.fundCreatedAt) / temp) * 100);
 
       console.log("% ", this.fundOpenedPercentage);
 
       console.log("fund can be started at: ", this.fundCanBeStartedAt);
 
       this.fundCanBeStartedInDays = Math.ceil((this.fundCanBeStartedAt - new Date() / 1000) / oneDayDurationInSeconds);
-    }
-
-    if (this.fundContractStatus == "Active") {
+    },
+    async updateInfoOnStatusActive() {
       console.log("Fund duration in months: ", this.fundDurationMonths);
 
       this.dateStart = new Date(this.fundStartTimestamp * 1000);
@@ -272,15 +314,15 @@ export default {
         end: this.dateEnd / 1000,
         now: Math.floor(new Date() / 1000),
       });
-    }
-  },
-  methods: {
+    },
     async withdrawAllFunds() {
       const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
 
       const tx = await fundContract.withdrawDeposits();
 
       console.log(tx);
+
+      const that = this;
 
       asyncLoading(tx.wait())
         .then(async (v) => {
@@ -301,12 +343,21 @@ export default {
         })
         .catch((ex) => console.error(ex));
     },
-    ...mapMutations(["addFundDeposit"]),
+    ...mapMutations(["addFundDeposit", "updateFundDeposits"]),
   },
 };
 </script>
 
 <style scoped lang="scss">
+.withdraw-fund-before-started-btn {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 16px;
+  padding: 6px 13px;
+  margin: 4px 0;
+  display: block;
+  cursor: pointer;
+}
 .token-icon.profile {
   background: rgba(240, 239, 248, 1);
 

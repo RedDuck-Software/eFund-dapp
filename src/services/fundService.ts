@@ -129,7 +129,9 @@ export class FundService {
     }
   }
   async signMessage(msg, desc) {
-    return await this.getCurrentProvider().getSigner().signMessage(msg, desc);
+    return await this.getCurrentProvider()
+      .getSigner()
+      .signMessage(msg, desc);
   }
   async makeDeposit(fundAddress, amount: BigNumber) {
     const fundContract = this.getFundContractInstance(fundAddress);
@@ -180,7 +182,7 @@ export class FundService {
       isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
-      boughtTokensAddresses: boughtTokensAddresses,
+      boughtTokensAddresses: boughtTokensAddresses.filter(v => v != ZERO_ADDRESS),
 
       swaps: swapHistory.map(v => {
         return {
@@ -294,9 +296,11 @@ export class FundService {
       collateral: parseFloat(utils.formatEther(info._managerCollateral)),
       balance: parseFloat(utils.formatEther(info._currentBalance)),
       investorsAmount: info._deposits.length,
-      deposits: info._deposits.map(d => {
-        return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
-      }),
+      deposits: info._deposits
+        .filter(v => v.depositOwner != ZERO_ADDRESS && !v.depositAmount.isZero())
+        .map(d => {
+          return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
+        }),
       description: infoFromServer?.description,
       title: infoFromServer?.name,
       author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,
