@@ -250,6 +250,8 @@ export default {
     },
     async updateProfileInfo() {
       var newNonce;
+
+      // register user if not registered yet
       if (this.currentUserInfo == null || !this.currentUserInfo) {
         const genericNonce = await getGenericSignNonce();
 
@@ -272,6 +274,7 @@ export default {
           imageUrl: this.imgLocalPath,
           singNonce: newNonce,
         };
+        // update info of already existing user
       } else {
         console.log("cur user info: ", this.currentUserInfo);
 
