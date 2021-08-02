@@ -1,5 +1,9 @@
 # moonkat-vue
 
+## Requirements
+- node.js version >= 14
+- python
+
 ## Project setup
 ```
 npm install
