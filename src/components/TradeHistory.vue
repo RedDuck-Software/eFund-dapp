@@ -88,7 +88,6 @@ export default {
               amount: parseFloat(utils.formatEther(swap.amountFrom)),
               decimals: 18,
             };
-      console.log("token from", tokenFrom);
 
       const tokenTo =
         swap.to.toLowerCase() != this.eFundNetworkSettings.wrappedCryptoAddress.toLowerCase()
@@ -99,8 +98,6 @@ export default {
               amount: parseFloat(utils.formatEther(swap.amountTo)),
               decimals: 18,
             };
-
-      console.log("token to", tokenTo);
 
       currentBalance -=
         tokenFrom.address == this.eFundNetworkSettings.wrappedCryptoAddress
@@ -118,8 +115,6 @@ export default {
               )
             );
 
-      console.log("Cur balance: ", currentBalance);
-
       currentBalance +=
         tokenTo.address == this.eFundNetworkSettings.wrappedCryptoAddress
           ? tokenTo.amount
@@ -136,11 +131,7 @@ export default {
               )
             );
 
-      console.log("cur balance2:", currentBalance);
-
       const parsedTimestamp = parseFloat(swap.timeStamp.toString());
-
-      console.log("parsed timestamp: ", parsedTimestamp);
 
       this.swaps.push({
         tokenTo: tokenTo,
@@ -149,21 +140,10 @@ export default {
         balanceAfterSwap: currentBalance,
         balanceBeforeSwap: balanceBeforeSwap,
         timestamp: parsedTimestamp,
-        // textCssModificator:
-        //   currentBalance > balanceBeforeSwap ?
-        //     ""
       });
     }
 
-    this.swaps.sort((a, b) => {
-      if (a.timestamp > b.timestamp) {
-        return 1;
-      }
-      if (a.timestamp < b.timestamp) {
-        return -1;
-      }
-      return 0;
-    });
+    this.swaps.sort(this.sortByDesc);
 
     for (const swap of this.swaps) {
       swap.time =
@@ -176,6 +156,33 @@ export default {
     }
 
     this.swapsGroupedByTime = groupArrayBy(this.swaps, "time");
+
+    console.log("swaps grouped by time", this.swapsGroupedByTime);
+
+    for (let swap in this.swapsGroupedByTime) {
+      console.log(this.swapsGroupedByTime[swap]);
+      this.swapsGroupedByTime[swap].reverse();
+    }
+  },
+  methods: {
+    sortByAsc(a, b) {
+      if (a.timestamp > b.timestamp) {
+        return 1;
+      }
+      if (a.timestamp < b.timestamp) {
+        return -1;
+      }
+      return 0;
+    },
+    sortByDesc(a, b) {
+      if (a.timestamp > b.timestamp) {
+        return -1;
+      }
+      if (a.timestamp < b.timestamp) {
+        return 1;
+      }
+      return 0;
+    },
   },
 };
 </script>

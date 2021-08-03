@@ -143,8 +143,35 @@ const store = new Vuex.Store({
     updateFundGeneralInfo(state, fundInfo) {
       state.fundInfo = fundInfo;
     },
-    addFundDeposit(state, newDeposit) { 
+    addFundDeposit(state, newDeposit) {
       state.deposits.push(newDeposit);
+    },
+    addBoughtTokenAmount(state, { address, newAmount, newEtherPrice }) {
+      let tokenIndex;
+
+      for (let i = 0; i < state.boughtTokensAddresses.length; i++) {
+        if (state.boughtTokensAddresses[i].address.toLowerCase() == address.toLowerCase()) tokenIndex = i;
+      }
+
+      console.log("Token index: ", tokenIndex);
+
+      if (!tokenIndex) return;
+
+      const val = state.boughtTokensAddresses[tokenIndex];
+
+      val.amount += newAmount;
+
+      if (val.etherPrice == undefined || val.etherPrice == 0) val.etherPrice = 0;
+
+      val.etherPrice += newEtherPrice;
+
+      console.log("addBoughtTokenAmount: ", { address, newAmount, newEtherPrice });
+
+      state.boughtTokensAddresses[tokenIndex].amount = val.amount;
+      state.boughtTokensAddresses[tokenIndex].etherPrice = val.etherPrice;
+
+      // Vue.set(state.boughtTokensAddresses[tokenIndex], "amount", val.amount);
+      // Vue.set(state.boughtTokensAddresses[tokenIndex], "etherPrice", val.etherPrice);
     },
     clearFundInfo(state) {
       state.fundContractAddress = null;

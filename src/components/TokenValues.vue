@@ -33,11 +33,13 @@ export default {
     ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
     currentRoi() {
       let roi;
+      
       if (this.fundContractStatus == `Active`) {
         roi = 100 + getPercentageDiff( this.baseBalance, this.totalBalance);
       } else {
         roi = 100 + getPercentageDiff(this.startBalance, this.endBalance );
       }
+      
       return roi;
     },
     tokensList() {

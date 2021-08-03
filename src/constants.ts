@@ -1,5 +1,5 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0x728A3d6aF4CeA4BfB673a71f5EBf9ad4135B7c4e";
-export const EFUND_TOKEN_BSC = "0x3002863bf5645C24d592fc574A3a3EFBf38fdbE8";
+export const FUND_PLATFROM_ADDRESS_BSC = "0x5A8165aA00Dfb6857Bd5E0ECCf9a726386304525";
+export const EFUND_TOKEN_BSC = "0xA22d8e3Ed6fF0034F3b7a22194535C755DdF81c6";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
@@ -24,7 +24,7 @@ import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUnis
 import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
 
-export const SERVER_API_URL = "https://localhost:44379";
+export const SERVER_API_URL = "https://efund-server.azurewebsites.net";
 
 export const DEFAULT_IMG_URL = SERVER_API_URL  + '/image/default.jpeg';
 

@@ -1,4 +1,4 @@
-import { SERVER_API_URL } from "../constants";
+import { SERVER_API_URL, eFundNetworkSettings } from "../constants";
 
 import axios from "axios";
 
@@ -6,13 +6,18 @@ export const getBnbPriceInUSTD = timeStampFrom => getPriceInUSDT(timeStampFrom, 
 
 export const getEthPriceInUSTD = timeStampFrom => getPriceInUSDT(timeStampFrom, "ETH");
 
+export const findLogoByAddress = (chainId, address) => {
+  return eFundNetworkSettings[chainId].tokensAddresses.filter(t => t.address.toLowerCase() == address.toLowerCase())[0]
+    .logo;
+};
+
 // shows how originalValue different from newValue in %
 export const getPercentageDiff = (originalValue, newValue) => {
   const diff = newValue - originalValue;
   return (diff / originalValue) * 100;
 };
 
-export const updateUserProfileInfo = async (image, username, description) => { };
+export const updateUserProfileInfo = async (image, username, description) => {};
 
 export const getUserByAddress = async (address, chainId) => {
   try {
@@ -64,8 +69,8 @@ export const updateUser = async (data, image, chainId) => {
 
   return await sendPostRequestToServer(
     `/api/user/updateUserInfo?address=${data.address}&signedNonce=${data.signedNonce}` +
-    (data.username == null ? "" : `&username=${data.username}`) +
-    (data.description == null ? "" : `&description=${data.description}`),
+      (data.username == null ? "" : `&username=${data.username}`) +
+      (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
       headers: {
@@ -82,8 +87,8 @@ export const createFundInfo = async (data, image, chainId) => {
 
   return await sendPostRequestToServer(
     `/api/hedgeFundInfo/createFundInfo?contractAddress=${data.contractAddress}` +
-    (data.name == null ? "" : `&name=${data.name}`) +
-    (data.description == null ? "" : `&description=${data.description}`),
+      (data.name == null ? "" : `&name=${data.name}`) +
+      (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
       headers: {
@@ -99,10 +104,9 @@ export const registerUser = async (data, image, chainId) => {
   formData.append("image", image);
 
   return await sendPostRequestToServer(
-    ((`/api/user/register?address=${data.address}&signedNonce=${data.signedNonce}`) +
+    `/api/user/register?address=${data.address}&signedNonce=${data.signedNonce}` +
       (data.username == null ? "" : `&username=${data.username}`) +
-      (data.description == null ? "" : `&description=${data.description}`)),
-
+      (data.description == null ? "" : `&description=${data.description}`),
     formData,
     {
       headers: {
@@ -145,8 +149,8 @@ function httpGet(theUrl) {
   return xmlHttp.responseText;
 }
 
-export const groupArrayBy = function (xs, key) {
-  return xs.reduce(function (rv, x) {
+export const groupArrayBy = function(xs, key) {
+  return xs.reduce(function(rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
   }, {});
@@ -175,12 +179,12 @@ export const formatDuration = durInSeconds => {
     second: 1,
   };
 
-  Object.keys(s).forEach(function (key) {
+  Object.keys(s).forEach(function(key) {
     r[key] = Math.floor(durInSeconds / s[key]);
     durInSeconds -= r[key] * s[key];
   });
 
-  const emptyStringIfZeroVal = function (val, mod) {
+  const emptyStringIfZeroVal = function(val, mod) {
     return val == 0 ? "" : val.toString() + mod;
   };
 
