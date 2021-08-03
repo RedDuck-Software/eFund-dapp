@@ -72,7 +72,7 @@
         </div>
         <div class="trade-inputs d-flex flex-column justify-content-center">
           <div class="">
-            <div class="label">You get</div>
+            <div class="label">You`ll get</div>
             <div class="d-flex">
               <div class="input-group mb-3 font-weight-bold">
                 <input
@@ -85,6 +85,7 @@
                   class="light-input"
                   name="profile_name"
                   placeholder="Type here"
+                  readonly
                 />
                 <div class="input-group-append">
                   <span id="basic-addon2" class="">{{ toSwapCurrLabel }}</span>
@@ -378,8 +379,8 @@ export default {
 
       this.addBoughtTokenAmount({
         address: this.fromSwapCurr.address,
-        newAmount: -swapAmountFromParsed,
-        newEtherPrice: -tokenFromEtherPrice,
+        newAmount: swapAmountFromParsed * -1,
+        newEtherPrice: tokenFromEtherPrice * -1,
       });
 
       return txHash;
@@ -408,8 +409,8 @@ export default {
 
       this.addBoughtTokenAmount({
         address: this.toSwapCurr.address,
-        newAmount: -swapAmountFromParsed,
-        newEtherPrice: -swapAmountToParsed,
+        newAmount: swapAmountFromParsed * -1,
+        newEtherPrice: swapAmountToParsed * -1,
       });
 
       this.updateCryptoBalance(this.cryptoBalance + swapAmountToParsed);
