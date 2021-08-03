@@ -339,21 +339,34 @@ export default {
 
       const txHash = await tx.wait();
 
+      const swapAmountFromParsed = parseFloat(
+        utils.formatUnits(txHash.events[5].args._amountFrom, this.fromSwapCurr.decimals)
+      );
+
+      const swapAmountToParsed = parseFloat(
+        utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals)
+      );
+
       if (!this.boughtTokensAddresses.some((v) => v.address == this.toSwapCurr.address)) {
         const newBoughtToken = {
-          name: await tokenTo.symbol(),
+          name: tokenTo.name,
           address: this.toSwapCurr.address,
           decimals: this.toSwapCurr.decimals,
-          amount: utils.formatUnits(await tokenTo.balanceOf(this.fundContractAddress), this.toSwapCurr.decimals),
+          amount: swapAmountToParsed,
+          etherPrice: await this.fundService.getTokenPriceInETH(
+            this.toSwapCurr.address,
+            utils.parseUnits(swapAmountToParsed.toString(), this.toSwapCurr.decimals)
+          ),
+          logo: this.fundService.getLogoByAddress(this.toSwapCurr.address),
         };
 
         this.addTokenToBoughts(newBoughtToken);
         this.addBoughtToken(newBoughtToken);
       } else {
-        // todo: update token1 balance
+        this.addBoughtTokenAmount({ address: this.toSwapCurr.address, newAmount: swapAmountToParsed });
       }
 
-      // todo: update token0 balance
+      this.addBoughtTokenAmount({ address: this.fromSwapCurr.address, newAmount: -swapAmountFromParsed });
 
       return txHash;
     },
@@ -390,12 +403,19 @@ export default {
 
       console.log("tx: ", { txHash });
 
+      const swapAmountFromParsed = parseFloat(utils.formatEther(txHash.events[5].args._amountFrom));
+      const swapAmountToParsed = parseFloat(
+        utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals)
+      );
+
       if (!this.boughtTokensAddresses.some((v) => v.address.toLowerCase() == this.toSwapCurr.address.toLowerCase())) {
         const newBoughtToken = {
           name: this.toSwapCurr.name,
           address: this.toSwapCurr.address,
           decimals: this.toSwapCurr.decimals,
-          amount: utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals),
+          amount: swapAmountToParsed,
+          etherPrice: swapAmountFromParsed,
+          logo: this.fundService.getLogoByAddress(this.toSwapCurr.address),
         };
 
         console.log("new bought tokens: ", { newBoughtToken });
@@ -403,19 +423,17 @@ export default {
         this.addTokenToBoughts(newBoughtToken);
         this.addBoughtToken(newBoughtToken);
       } else {
-        // todo: update token balance
-        this.updateBoughtToken(
-          this.toSwapCurr.address,
-          utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals)
-        );
+        console.log("update existing token");
+
+        this.addBoughtTokenAmount({ address: this.toSwapCurr.address, newAmount: swapAmountToParsed });
         this.$forceUpdate();
       }
 
-      this.updateCryptoBalance(this.cryptoBalance - parseFloat(utils.formatEther(txHash.events[5].args._amountFrom)));
+      this.updateCryptoBalance(this.cryptoBalance - swapAmountFromParsed);
 
       return txHash;
     },
-    ...mapMutations(["addBoughtToken", "updateCryptoBalance", "updateBoughtToken"]),
+    ...mapMutations(["addBoughtToken", "updateCryptoBalance", "addBoughtTokenAmount"]),
   },
 };
 </script>

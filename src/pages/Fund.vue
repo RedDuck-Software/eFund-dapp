@@ -190,12 +190,11 @@ export default {
       if (fundInfo.status == "Active") {
         await Promise.all(
           boughtTokens.map(async (token, i) => {
-            const prices = await this.fundService.getPricesPath(
-              this.eFundNetworkSettings.router, // todo : fetch router from contract
-              utils.parseUnits(token.amount.toString(), token.decimals),
-              [token.address, this.eFundNetworkSettings.wrappedCryptoAddress]
+            const etherPrice = await this.fundService.getTokenPriceInETH(
+              token.address,
+              utils.parseUnits(token.amount.toString(), token.decimals)
             );
-            const etherPrice = parseFloat(utils.formatEther(prices[1]));
+
             boughtTokens[i].etherPrice = etherPrice;
             totalBalance += etherPrice;
           })

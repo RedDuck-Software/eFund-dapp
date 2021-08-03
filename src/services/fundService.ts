@@ -1,6 +1,6 @@
 import { ethers, utils, BigNumber } from "ethers";
 import { currentProvider, getSigner } from "./ether";
-import { getFundInfoByAddress, getUserByAddress } from "./helpers";
+import { getFundInfoByAddress, getUserByAddress, findLogoByAddress } from "./helpers";
 import { DEFAULT_IMG_URL } from "../constants";
 
 import {
@@ -66,6 +66,10 @@ export class FundService {
     return new ethers.Contract(address, SWAP_PAIR_ABI, this.currentProvider.getSigner());
   }
 
+  getLogoByAddress(address) {
+    return findLogoByAddress(this.networkSettings.chainId, address);
+  }
+
   async getSwapFactoryAddress(swapRouterAddress) {
     const router = this.getSwapRouterContractInstance(swapRouterAddress);
 
@@ -84,6 +88,21 @@ export class FundService {
     return await fundContract.getAllDeposits();
   }
 
+  async getTokenPriceInETH(address, amount) {
+    return parseFloat(
+      utils.formatEther(
+        (
+          await this.getPricesPath(
+            this.networkSettings.router, // todo : fetch router from contract
+            amount,
+            [address, this.networkSettings.wrappedCryptoAddress],
+            undefined
+          )
+        )[1]
+      )
+    );
+  }
+
   async getERC20TokenDetails(tokenAddress, amount, fundAddress) {
     const token = this.getERC20ContractInstance(tokenAddress);
 
@@ -98,9 +117,7 @@ export class FundService {
       name: await token.symbol(),
       amount: parseFloat(ethers.utils.formatUnits(amount ? amount : await token.balanceOf(fundAddress), dec)),
       decimals: dec,
-      logo: eFundNetworkSettings[97].tokensAddresses.filter(
-        t => t.address.toLowerCase() == tokenAddress.toLowerCase()
-      )[0].logo,
+      logo: this.getLogoByAddress(tokenAddress),
     };
   }
 

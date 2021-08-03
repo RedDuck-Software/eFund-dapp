@@ -146,10 +146,11 @@ const store = new Vuex.Store({
     addFundDeposit(state, newDeposit) {
       state.deposits.push(newDeposit);
     },
-    updateBoughtToken(state, address, newAmount) {
+    addBoughtTokenAmount(state, { address, newAmount }) {
       let tokenIndex;
 
       console.log({ tokens: state.boughtTokensAddresses, addr: address });
+
       for (let i = 0; i < state.boughtTokensAddresses.length; i++) {
         if (state.boughtTokensAddresses[i].address == address) tokenIndex = i;
       }
@@ -158,7 +159,12 @@ const store = new Vuex.Store({
 
       if (!tokenIndex) return;
 
-      state.boughtTokensAddresses[tokenIndex].amount = newAmount;
+      console.log(newAmount);
+
+      const val = state.boughtTokensAddresses[tokenIndex];
+      val.amount = val.amount + newAmount;
+
+      Vue.set(state.boughtTokensAddresses, tokenIndex, val);
     },
     clearFundInfo(state) {
       state.fundContractAddress = null;

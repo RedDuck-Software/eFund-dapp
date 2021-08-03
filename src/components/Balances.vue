@@ -10,11 +10,11 @@
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between">
               <h2 class="text-uppercase text-info">{{ eFundNetworkSettings.cryptoSign }}</h2>
-              <h2>{{ parseFloat(cryptoBalance).toFixed(5) }}</h2>
+              <h2>{{ cryptoBalance.toFixed(5) }}</h2>
             </div>
             <div class="d-flex justify-content-between mt-1">
               <div class="label">{{ eFundNetworkSettings.cryptoSign }} value</div>
-              <div class="label text-primary">{{ parseFloat(cryptoBalance).toFixed(5) }}</div>
+              <div class="label text-primary">{{ cryptoBalance.toFixed(5) }}</div>
             </div>
           </div>
         </li>
@@ -25,7 +25,7 @@
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between">
               <h2 class="text-uppercase text-info">{{ token.name }}</h2>
-              <h2>{{ parseFloat(token.amount).toFixed(5) }}</h2>
+              <h2>{{ token.amount.toFixed(5) }}</h2>
             </div>
             <div class="d-flex justify-content-between mt-1">
               <div class="label">{{ eFundNetworkSettings.cryptoSign }} value</div>
@@ -49,7 +49,11 @@ export default {
   computed: {
     ...mapGetters(["boughtTokensAddresses", "eFundNetworkSettings", "cryptoBalance"]),
   },
-
+  watch: {
+    boughtTokensAddresses(val) {
+      console.log("value of bought toekn changed!", { val: val });
+    },
+  },
   data() {
     return {};
   },
