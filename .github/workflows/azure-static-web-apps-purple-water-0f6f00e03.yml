@@ -24,7 +24,6 @@ jobs:
         with:
           python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-      - run: python my_script.py
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.3.0
