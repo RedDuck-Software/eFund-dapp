@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     addTokenToBoughts(token) {
-      console.log("token push: ", token.name);
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
     },

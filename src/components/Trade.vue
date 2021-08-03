@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { mapGetters, mapMutations } from "vuex";
@@ -151,8 +151,6 @@ export default {
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
 
-    console.log("Swap router address is: ", this.swapRouterAddress);
-
     const wCrypto = this.eFundNetworkSettings.cryptoSign;
     const wCryptoAddress = this.eFundNetworkSettings.wrappedCryptoAddress;
 
@@ -166,16 +164,10 @@ export default {
     this.fromSwapList[wCrypto] = wCryptoObj;
     this.fromSwapLabels.push(wCrypto);
 
-    console.log("bought token addresses before foreach: ", this.boughtTokensAddresses, {
-      length: this.boughtTokensAddresses.length,
-    });
-
     for (let i = 0; i < this.boughtTokensAddresses.length; i++) {
       const token = this.boughtTokensAddresses[i];
       this.addTokenToBoughts(token);
     }
-
-    console.log("bought tokens addresses: ", this.fromSwapLabels);
 
     const tokensToSwap =
       this.allowedTokensAddresses.length != 0 ? this.allowedTokensAddresses : this.eFundNetworkSettings.tokensAddresses;
@@ -188,15 +180,11 @@ export default {
     this.toSwapList[wCrypto] = wCryptoObj;
     this.toSwapLabels.push(wCrypto);
 
-    console.log("tokens to swap: ", tokensToSwap);
-    console.log("tokens to swap labels: ", this.toSwapLabels);
-
     this.fromSwapCurrLabel = this.fromSwapLabels[0];
     this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
   },
   methods: {
     addTokenToBoughts(token) {
-      console.log("token push: ", token.name);
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
     },
@@ -339,34 +327,60 @@ export default {
 
       const txHash = await tx.wait();
 
+      console.log(txHash);
+
+      const eFundEventIndex = txHash.events.length - 1;
+
       const swapAmountFromParsed = parseFloat(
-        utils.formatUnits(txHash.events[5].args._amountFrom, this.fromSwapCurr.decimals)
+        utils.formatUnits(txHash.events[eFundEventIndex].args._amountFrom, this.fromSwapCurr.decimals)
       );
 
       const swapAmountToParsed = parseFloat(
-        utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals)
+        utils.formatUnits(txHash.events[eFundEventIndex].args._amountTo, this.toSwapCurr.decimals)
       );
 
-      if (!this.boughtTokensAddresses.some((v) => v.address == this.toSwapCurr.address)) {
+      const tokenToEtherPrice = await this.fundService.getTokenPriceInETH(
+        this.toSwapCurr.address,
+        utils.parseUnits(swapAmountToParsed.toString(), this.toSwapCurr.decimals)
+      );
+
+      const tokenFromEtherPrice = await this.fundService.getTokenPriceInETH(
+        this.fromSwapCurr.address,
+        utils.parseUnits(swapAmountFromParsed.toString(), this.fromSwapCurr.decimals)
+      );
+
+      if (!this.boughtTokensAddresses.some((v) => v.address.toLowerCase() == this.toSwapCurr.address.toLowerCase())) {
         const newBoughtToken = {
           name: tokenTo.name,
           address: this.toSwapCurr.address,
           decimals: this.toSwapCurr.decimals,
           amount: swapAmountToParsed,
-          etherPrice: await this.fundService.getTokenPriceInETH(
-            this.toSwapCurr.address,
-            utils.parseUnits(swapAmountToParsed.toString(), this.toSwapCurr.decimals)
-          ),
+          etherPrice: tokenToEtherPrice,
           logo: this.fundService.getLogoByAddress(this.toSwapCurr.address),
         };
 
         this.addTokenToBoughts(newBoughtToken);
         this.addBoughtToken(newBoughtToken);
       } else {
-        this.addBoughtTokenAmount({ address: this.toSwapCurr.address, newAmount: swapAmountToParsed });
+        this.addBoughtTokenAmount({
+          address: this.toSwapCurr.address,
+          newAmount: swapAmountToParsed,
+          newEtherPrice: tokenToEtherPrice,
+        });
       }
 
-      this.addBoughtTokenAmount({ address: this.fromSwapCurr.address, newAmount: -swapAmountFromParsed });
+      console.log({
+        fromSwapCurr: this.fromSwapCurr,
+        toSwapCurr: this.toSwapCurr,
+        etherPriceFrom: tokenFromEtherPrice,
+        etherPriceTO: tokenToEtherPrice,
+      });
+
+      this.addBoughtTokenAmount({
+        address: this.fromSwapCurr.address,
+        newAmount: -swapAmountFromParsed,
+        newEtherPrice: -tokenFromEtherPrice,
+      });
 
       return txHash;
     },
@@ -379,13 +393,26 @@ export default {
 
       if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
         alert(`You need thia amount of ${this.fromSwapCurr.label}`);
+
       const tx = await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
 
       const txHash = await tx.wait();
 
-      this.updateCryptoBalance(
-        utils.formatEther(await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress))
+      const eFundEventIndex = txHash.events.length - 1;
+
+      const swapAmountFromParsed = parseFloat(
+        utils.formatUnits(txHash.events[eFundEventIndex].args._amountFrom, this.fromSwapCurr.decimals)
       );
+
+      const swapAmountToParsed = parseFloat(utils.formatEther(txHash.events[eFundEventIndex].args._amountTo));
+
+      this.addBoughtTokenAmount({
+        address: this.toSwapCurr.address,
+        newAmount: -swapAmountFromParsed,
+        newEtherPrice: -swapAmountToParsed,
+      });
+
+      this.updateCryptoBalance(this.cryptoBalance + swapAmountToParsed);
 
       return txHash;
     },
@@ -403,9 +430,11 @@ export default {
 
       console.log("tx: ", { txHash });
 
-      const swapAmountFromParsed = parseFloat(utils.formatEther(txHash.events[5].args._amountFrom));
+      const eFundEventIndex = txHash.events.length - 1;
+
+      const swapAmountFromParsed = parseFloat(utils.formatEther(txHash.events[eFundEventIndex].args._amountFrom));
       const swapAmountToParsed = parseFloat(
-        utils.formatUnits(txHash.events[5].args._amountTo, this.toSwapCurr.decimals)
+        utils.formatUnits(txHash.events[eFundEventIndex].args._amountTo, this.toSwapCurr.decimals)
       );
 
       if (!this.boughtTokensAddresses.some((v) => v.address.toLowerCase() == this.toSwapCurr.address.toLowerCase())) {
@@ -425,7 +454,11 @@ export default {
       } else {
         console.log("update existing token");
 
-        this.addBoughtTokenAmount({ address: this.toSwapCurr.address, newAmount: swapAmountToParsed });
+        this.addBoughtTokenAmount({
+          address: this.toSwapCurr.address,
+          newAmount: swapAmountToParsed,
+          newEtherPrice: swapAmountFromParsed,
+        });
         this.$forceUpdate();
       }
 
