@@ -30,9 +30,9 @@
                 <input
                   v-model="fromSwapValue"
                   type="number"
-                  min="0"
+                  :min="0"
+                  :max="fromSwapCurr.amount"
                   :step="0.1"
-                  :max="fromSwapMaxValue"
                   name="from swap"
                   v-on:change="handleFromValueChange()"
                   id="from-swap"
@@ -220,7 +220,7 @@ export default {
         this.toSwapValue = 0;
         this.toSwapCurrLabel = null;
       }
-      this.fromSwapMaxValue = this.cryptoBalance;
+      // this.fromSwapMaxValue = this.cryptoBalance;
 
       await this.reCalculateAmountsOut();
     },
@@ -390,7 +390,7 @@ export default {
 
       const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
 
-      const amount = utils.parseEther(this.toSwapValue);
+      const amount = utils.parseEther(this.fromSwapValue);
 
       if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
         alert(`You need thia amount of ${this.fromSwapCurr.label}`);
@@ -408,7 +408,7 @@ export default {
       const swapAmountToParsed = parseFloat(utils.formatEther(txHash.events[eFundEventIndex].args._amountTo));
 
       this.addBoughtTokenAmount({
-        address: this.toSwapCurr.address,
+        address: this.fromSwapCurr.address,
         newAmount: swapAmountFromParsed * -1,
         newEtherPrice: swapAmountToParsed * -1,
       });
