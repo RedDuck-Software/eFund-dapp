@@ -25,7 +25,6 @@ import vSelect from "vue-select";
 import { mapGetters } from "vuex";
 import { getPercentageDiff } from "../services/helpers";
 
-
 export default {
   name: "TokenValues",
   components: { vSelect },
@@ -33,13 +32,16 @@ export default {
     ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
     currentRoi() {
       let roi;
-      
+
+      console.log("End balance: ", this.endBalance);
+      console.log("Start balance: ", this.baseBalance);
+
       if (this.fundContractStatus == `Active`) {
-        roi = 100 + getPercentageDiff( this.baseBalance, this.totalBalance);
+        roi = 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
       } else {
-        roi = 100 + getPercentageDiff(this.startBalance, this.endBalance );
+        roi = 100 + getPercentageDiff(this.baseBalance, this.endBalance);
       }
-      
+
       return roi;
     },
     tokensList() {

@@ -12,9 +12,6 @@
       <div class="col-sm-8">
         <FundInfo />
       </div>
-      <div class="col-sm-4">
-        <FundStatistic />
-      </div>
     </div>
     <MakeDepositForm v-if="fundContractStatus === 'Opened'" @make-deposit="makeDepositToFund" />
     <FundTrade v-if="fundContractIsManager && fundContractStatus === 'Active'" :fund-contract="fundContract" />
@@ -27,14 +24,13 @@ import FundInfo from "./FundInfo";
 import MakeDepositForm from "./MakeDepositForm";
 import { ethers } from "ethers";
 import FundTrade from "./FundTrade";
-import FundStatistic from "./FundStatistic";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 import { asyncLoading } from "vuejs-loading-plugin";
 
 export default {
   name: "Fund",
-  components: { MakeDepositForm, FundInfo, FundTrade, FundStatistic },
+  components: { MakeDepositForm, FundInfo, FundTrade },
   data() {
     return {
       fundService: null,
@@ -51,8 +47,7 @@ export default {
       "isDepositsWithdrawed",
     ]),
   },
-  async mounted() {
-  },
+  async mounted() {},
   methods: {
     async makeDepositToFund(value) {
       const overrides = {

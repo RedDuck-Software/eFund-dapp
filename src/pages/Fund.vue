@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col-lg-4">
           <h1 class="font-weight-bold">{{ fundAddress != null ? fundAddress.substring(0, 10) : "" }}...</h1>
-          <div v-if="fundContractStatus != 'Opened'" v-show="isActive('coins') || isActive('trade')">
+          <div v-if="fundContractStatus == 'Active'" v-show="isActive('coins') || isActive('trade')">
             <Balances />
           </div>
           <div v-if="fundContractStatus != 'Opened'" v-show="isActive('about')">
@@ -330,6 +330,7 @@ export default {
 
   .nav-link.active {
     color: black;
+    background-color: unset !important;
   }
 }
 

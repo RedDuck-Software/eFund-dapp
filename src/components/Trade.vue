@@ -121,6 +121,7 @@ export default {
       "allowedTokensAddresses",
       "cryptoBalance",
       "boughtTokensAddresses",
+      "totalBalance",
     ]),
   },
   data() {
@@ -461,14 +462,13 @@ export default {
           newAmount: swapAmountToParsed,
           newEtherPrice: swapAmountFromParsed,
         });
-        this.$forceUpdate();
       }
 
       this.updateCryptoBalance(this.cryptoBalance - swapAmountFromParsed);
-
+      this.updateTotalBalance();
       return txHash;
     },
-    ...mapMutations(["addBoughtToken", "updateCryptoBalance", "addBoughtTokenAmount"]),
+    ...mapMutations(["addBoughtToken", "updateCryptoBalance", "addBoughtTokenAmount", "updateTotalBalance"]),
   },
 };
 </script>
