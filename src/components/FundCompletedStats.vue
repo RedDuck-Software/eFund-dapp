@@ -6,6 +6,11 @@
       <li>Total swaps: {{ fundInfo.swaps.length }}</li>
       <li>Total deposits: {{ fundInfo.deposits.length }}</li>
       <li>Fund status: {{ isFundSuceed ? "Succeed" : "Failed" }}</li>
+      <li v-if="doesUserHasDepositsIfFund">
+        You made {{ userDeposits.length }} deposits in total amount of
+        {{ userDepositsAmountInTotal }}
+        {{ eFundNetworkSettings.cryptoSign }}
+      </li>
     </ul>
   </div>
 </template>
@@ -23,10 +28,30 @@ export default {
     return {};
   },
   computed: {
-    isFundSuceed() {
-      return this.fundInfo.endBalance > this. fundInfo.baseBalance;
+    userDepositsAmountInTotal() {
+      return this.userDeposits
+        .map((v) => v.amount)
+        .reduce((a, b) => {
+          // preventing float not accurate caluclation (ex: 0.01 + 0.001 = 0.010999999999989);
+          return parseFloat(utils.formatEther(utils.parseEther(a.toString()).add(utils.parseEther(b.toString()))));
+        });
     },
-    ...mapGetters(["fundContractAddress", "boughtTokensAddresses", "eFundNetworkSettings", "fundInfo"]),
+    userDeposits() {
+      return this.fundInfo.deposits.filter((v) => v.owner.toLowerCase() == this.signerAddress.toLowerCase());
+    },
+    doesUserHasDepositsIfFund() {
+      return this.fundInfo.deposits.some((v) => v.owner.toLowerCase() == this.signerAddress.toLowerCase());
+    },
+    isFundSuceed() {
+      return this.fundInfo.endBalance > this.fundInfo.baseBalance;
+    },
+    ...mapGetters([
+      "fundContractAddress",
+      "boughtTokensAddresses",
+      "eFundNetworkSettings",
+      "fundInfo",
+      "signerAddress",
+    ]),
   },
 
   async mounted() {
