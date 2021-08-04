@@ -153,7 +153,11 @@ const store = new Vuex.Store({
         if (state.boughtTokensAddresses[i].address.toLowerCase() == address.toLowerCase()) tokenIndex = i;
       }
 
+<<<<<<< HEAD
+      console.log("Token index, address: ", { tokenIndex, address });
+=======
       console.log("Token index: ", tokenIndex);
+>>>>>>> master
 
       if (!tokenIndex) return;
 
@@ -165,7 +169,11 @@ const store = new Vuex.Store({
 
       val.etherPrice += newEtherPrice;
 
+<<<<<<< HEAD
+      console.log("ADD_BOUGHT_TOKEN_AMOUNT: ", { address, newAmount, newEtherPrice });
+=======
       console.log("addBoughtTokenAmount: ", { address, newAmount, newEtherPrice });
+>>>>>>> master
 
       state.boughtTokensAddresses[tokenIndex].amount = val.amount;
       state.boughtTokensAddresses[tokenIndex].etherPrice = val.etherPrice;

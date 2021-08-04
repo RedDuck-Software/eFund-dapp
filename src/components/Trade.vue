@@ -9,7 +9,7 @@
           <v-select
             v-model="fromSwapCurrLabel"
             :options="fromSwapLabels"
-            @input="handleFromValueChange()"
+            @input="handleFromValueChange"
             class="swap-select mr-md-3 mr-lg-0"
           >
             <template slot="selected-option" slot-scope="option" :value="option.id">
@@ -30,11 +30,11 @@
                 <input
                   v-model="fromSwapValue"
                   type="number"
-                  min="0"
-                  :step="0.1"
-                  :max="fromSwapMaxValue"
+                  :min="0"
+                  :max="fromSwapCurr != null ? fromSwapCurr.amount : 0"
+                  :step="0.01"
                   name="from swap"
-                  v-on:change="handleFromValueChange()"
+                  v-on:change="handleFromInputChange"
                   id="from-swap"
                   class="light-input"
                   placeholder="Type here"
@@ -42,6 +42,7 @@
                 <div class="input-group-append">
                   <span id="basic-addon3" class="">{{ fromSwapCurrLabel }}</span>
                 </div>
+                <span class="label input-from-max" v-on:click="setMaxFrom">max</span>
               </div>
             </div>
           </div>
@@ -60,7 +61,7 @@
           <v-select
             v-model="toSwapCurrLabel"
             :options="toSwapLabels"
-            @input="handleToValueChange()"
+            @input="handleToValueChange"
             class="swap-select ml-md-3 ml-lg-0"
           >
             <template slot="selected-option" slot-scope="option" :value="option.id">
@@ -72,7 +73,7 @@
         </div>
         <div class="trade-inputs d-flex flex-column justify-content-center">
           <div class="">
-            <div class="label">You get</div>
+            <div class="label">You`ll get</div>
             <div class="d-flex">
               <div class="input-group mb-3 font-weight-bold">
                 <input
@@ -80,11 +81,12 @@
                   type="number"
                   min="0"
                   :step="0.1"
-                  v-on:change="handleToValueChange()"
+                  v-on:change="handleToInputChange"
                   id="to-swap"
                   class="light-input"
                   name="profile_name"
                   placeholder="Type here"
+                  readonly
                 />
                 <div class="input-group-append">
                   <span id="basic-addon2" class="">{{ toSwapCurrLabel }}</span>
@@ -184,6 +186,7 @@ export default {
     this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
   },
   methods: {
+    onMaxClick() {},
     addTokenToBoughts(token) {
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
@@ -197,7 +200,7 @@ export default {
     },
     async setMaxFrom() {
       if (this.fromSwapCurr != null) {
-        this.fromSwapValue = await this.getMaxValueOf(this.fromSwapCurr.address);
+        this.fromSwapValue = this.fromSwapCurr.amount;
 
         await this.reCalculateAmountsOut();
       }
@@ -209,6 +212,9 @@ export default {
         return await this.fundService.balanceOfFormatted(tokenAddress, this.fundContractAddress);
       }
     },
+    async handleFromInputChange() {
+      await this.reCalculateAmountsOut();
+    },
     async handleFromValueChange() {
       this.fromSwapCurr = this.fromSwapList[this.fromSwapCurrLabel];
 
@@ -219,8 +225,13 @@ export default {
         this.toSwapValue = 0;
         this.toSwapCurrLabel = null;
       }
-      this.fromSwapMaxValue = this.cryptoBalance;
 
+      this.fromSwapValue = 0;
+      this.toSwapValue = 0;
+
+      await this.reCalculateAmountsOut();
+    },
+    async handleToInputChange() {
       await this.reCalculateAmountsOut();
     },
     async handleToValueChange() {
@@ -232,7 +243,7 @@ export default {
     },
     async reCalculateAmountsOut() {
       console.log("trade: ", {
-        fromVal: this.fromSwapValue,
+        fromVal: this.fromSwapValue.toString(),
         fromSwapCurr: this.fromSwapCurr,
         toSwapCur: this.toSwapCurr,
       });
@@ -242,7 +253,7 @@ export default {
         return;
       }
 
-      const parsedAmount = utils.parseUnits(this.fromSwapValue, this.fromSwapCurr.decimals);
+      const parsedAmount = utils.parseUnits(this.fromSwapValue.toString(), this.fromSwapCurr.decimals);
 
       console.log("before amounts: ", this.fromSwapCurr.address, this.toSwapCurr.address);
 
@@ -256,6 +267,11 @@ export default {
       this.toSwapValue = utils.formatUnits(amounts[1].toString(), this.toSwapCurr.decimals);
     },
     async swap() {
+      if (this.fromSwapCurr.amount < this.fromSwapValue) {
+        alert(`Insufficient amount of ${this.fromSwapCurr.name}`);
+        return;
+      }
+
       asyncLoading(this.sendSwapRequest())
         .then((txHash) => {
           console.log(txHash);
@@ -314,14 +330,7 @@ export default {
       const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
       const tokenTo = this.fundService.getERC20ContractInstance(this.toSwapCurr.address);
 
-      const amount = utils.parseUnits(this.fromSwapValue, await tokenFrom.decimals());
-
-      console.log("amount ", amount);
-
-      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount)) {
-        alert(`You need to get this amount of ${this.fromSwapCurr.name}`);
-        return;
-      }
+      const amount = utils.parseUnits(this.fromSwapValue.toString(), await tokenFrom.decimals());
 
       const tx = await this.fundContract.swapERC20ToERC20(path, amount, 0);
 
@@ -378,22 +387,26 @@ export default {
 
       this.addBoughtTokenAmount({
         address: this.fromSwapCurr.address,
+<<<<<<< HEAD
+        newAmount: swapAmountFromParsed * -1,
+        newEtherPrice: tokenFromEtherPrice * -1,
+=======
         newAmount: -swapAmountFromParsed,
         newEtherPrice: -tokenFromEtherPrice,
+>>>>>>> master
       });
 
       return txHash;
     },
     async swapERCForETH() {
-      console.log("erc to bnb|eth");
+      const amount = utils.parseEther(this.fromSwapValue);
 
-      const tokenFrom = this.fundService.getERC20ContractInstance(this.fromSwapCurr.address);
-
-      const amount = utils.parseEther(this.toSwapValue);
-
+<<<<<<< HEAD
+=======
       if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
         alert(`You need thia amount of ${this.fromSwapCurr.label}`);
 
+>>>>>>> master
       const tx = await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
 
       const txHash = await tx.wait();
@@ -407,9 +420,15 @@ export default {
       const swapAmountToParsed = parseFloat(utils.formatEther(txHash.events[eFundEventIndex].args._amountTo));
 
       this.addBoughtTokenAmount({
+<<<<<<< HEAD
+        address: this.fromSwapCurr.address,
+        newAmount: swapAmountFromParsed * -1,
+        newEtherPrice: swapAmountToParsed * -1,
+=======
         address: this.toSwapCurr.address,
         newAmount: -swapAmountFromParsed,
         newEtherPrice: -swapAmountToParsed,
+>>>>>>> master
       });
 
       this.updateCryptoBalance(this.cryptoBalance + swapAmountToParsed);
@@ -419,7 +438,11 @@ export default {
     async swapETHForTokens() {
       console.log("bnb to erc");
 
+<<<<<<< HEAD
+      const amount = utils.parseEther(this.fromSwapValue.toString());
+=======
       const amount = utils.parseEther(this.fromSwapValue);
+>>>>>>> master
 
       if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
         alert(`You don't have enough ${this.eFundNetworkSettings.cryptoSign}`);
@@ -479,6 +502,7 @@ export default {
   color: black;
   flex-wrap: nowrap;
   max-width: 100%;
+  align-items: center;
 }
 .light-input {
   border: none;
@@ -492,6 +516,10 @@ export default {
 }
 
 .swap-button {
+}
+.input-from-max {
+  cursor: pointer;
+  padding: 5px;
 }
 
 @media screen and (min-width: 768px) {
