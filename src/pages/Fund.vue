@@ -47,13 +47,9 @@
             >
               <h3 class="middle text-white">Set completed</h3>
             </button>
-            <button
-              v-if="fundContractStatus == 'Completed'"
-              class="btn btn-danger box-shadow completed d-none d-md-block"
-              @click="setFundStatusClosed"
-            >
-              <h3 class="middle text-white">Set closed</h3>
-            </button>
+            <div v-if="fundContractStatus == 'Completed'" class="btn btn-danger box-shadow completed d-none d-md-block">
+              <h3 class="middle text-white">This fund is completed</h3>
+            </div>
           </div>
           <div v-show="isActive('coins')">
             <CoinsPriceTab />
