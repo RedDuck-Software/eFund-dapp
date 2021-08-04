@@ -74,7 +74,6 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";

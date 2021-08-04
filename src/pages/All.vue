@@ -141,7 +141,6 @@
 
 <script>
 import _ from "lodash";
-import FundList from "../components/FundList";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
