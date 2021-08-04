@@ -11,6 +11,9 @@
         {{ userDepositsAmountInTotal }}
         {{ eFundNetworkSettings.cryptoSign }}
       </li>
+      <li v-if="doesUserHasDepositsIfFund">
+        You`ll get from fund: {{ userProfitFromFund }} {{ eFundNetworkSettings.cryptoSign }}
+      </li>
     </ul>
   </div>
 </template>
@@ -28,6 +31,14 @@ export default {
     return {};
   },
   computed: {
+    userProfitFromFund() {
+      const totalDepositsAmount = this.userDepositsAmountInTotal;
+      console.log("user deposit total: ", totalDepositsAmount);
+      const userPartPercentage = (totalDepositsAmount / this.baseBalance) * 100;
+      console.log("user part percentage: ", userPartPercentage);
+
+      return (this.endBalance / 100) * userPartPercentage;
+    },
     userDepositsAmountInTotal() {
       return this.userDeposits
         .map((v) => v.amount)
@@ -51,6 +62,8 @@ export default {
       "eFundNetworkSettings",
       "fundInfo",
       "signerAddress",
+      "endBalance",
+      "baseBalance",
     ]),
   },
 
