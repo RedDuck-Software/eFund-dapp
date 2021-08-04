@@ -74,11 +74,10 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
-import { BigNumber, ethers, utils } from "ethers";
+import { utils } from "ethers";
 import Balances from "../components/Balances.vue";
 import CoinsPriceTab from "../components/CoinsPriceTab.vue";
 import TradeHistory from "../components/TradeHistory.vue";
