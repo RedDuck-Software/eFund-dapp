@@ -29,7 +29,7 @@
                 <h2>Your Your avatar (optional)</h2>
                 <div class="text-center">
                   <label class="btn green-button mt-4" style="display: block">
-                    <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+                    <input type="file" id="file" ref="file" v-on:change="handleFileUpload()" />
                     Upload
                   </label>
                 </div>
@@ -61,7 +61,7 @@
                   <div class="text-center">
                     <h2 class="mb-3">Your Profile is successfully filled</h2>
                     <div class="check-filled bg-primary">
-                      <img src="../assets/images/check_white.png"/>
+                      <img src="../assets/images/check_white.png" />
                     </div>
                   </div>
                 </div>
@@ -93,25 +93,22 @@
                       active
                       :title="false"
                       :paragraph="false"
-                      :avatar="{shape: 'circle', size: 100}">
-                      <img class="card-img-top round-img" :src="form.imgLocalPath" alt="test fund"/>
+                      :avatar="{ shape: 'circle', size: 100 }"
+                    >
+                      <img class="card-img-top round-img" :src="form.imgLocalPath" alt="test fund" />
                     </a-skeleton>
                   </div>
                 </div>
 
                 <div class="col-md-8">
-                  <a-skeleton :loading="!form.name" active :title="{width: 200}" :paragraph="{ rows: 1, width: 100 }">
+                  <a-skeleton :loading="!form.name" active :title="{ width: 200 }" :paragraph="{ rows: 1, width: 100 }">
                     <h2 class="card-title pt-2 pb-1">{{ form.name }}</h2>
                     <h3>Manager/investor</h3>
                   </a-skeleton>
                 </div>
               </div>
               <div class="mt-4 mb-3">
-                <a-skeleton
-                  :loading="!form.imgLocalPath || !form.name"
-                  active
-                  :title="false"
-                  :paragraph="{ rows: 3}">
+                <a-skeleton :loading="!form.imgLocalPath || !form.name" active :title="false" :paragraph="{ rows: 3 }">
                   <div class="d-flex flex-wrap">
                     <div class="desc-item label mr-3">
                       Funds count as manager: <span class="text-black">{{ userFundsAsManager.length }}</span>
@@ -135,17 +132,17 @@
             <div class="card-body">
               <div class="select-wrap flex-grow-1">
                 <div>
-                  <v-select v-model="selectedToken" :clearable="false" :options="tokensList" class="token-select"/>
+                  <v-select v-model="selectedToken" :clearable="false" :options="tokensList" class="token-select" />
                   <div class="label">Fund value</div>
                 </div>
               </div>
               <div class="text-center mt-md-0 mt-3">
-                <h2 class="">{{ currentBalance }} {{ selectedToken === 'BNB'? 'BNB':'$' }}</h2>
+                <h2 class="">{{ currentBalance }} {{ selectedToken === "BNB" ? "BNB" : "$" }}</h2>
                 <div class="label">Total Balance</div>
               </div>
               <div class="text-center mt-md-0 mt-3">
-                <h2 class="">{{ currentRevenue }} {{ selectedToken === 'BNB'? 'BNB':'$' }}</h2>
-                <div class="label">Revenue ({{selectedToken}})</div>
+                <h2 class="">{{ currentRevenue }} {{ selectedToken === "BNB" ? "BNB" : "$" }}</h2>
+                <div class="label">Revenue ({{ selectedToken }})</div>
               </div>
               <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
                 <h2 v-if="totalBalance > baseBalance" class="text-primary">&#x2191;{{ currentRoi.toFixed(2) }}</h2>
@@ -158,8 +155,26 @@
           </div>
           <div class="wallet-card box-shadow mt-4">
             <div class="card-body">
-              <h2>Wallet: <span>{{userAddress}}</span></h2>
+              <h2>
+                Wallet: <span>{{ userAddress }}</span>
+              </h2>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3"></div>
+      <div>
+        <div>
+          <h2 v-if="userFundsAsManager.length > 0">Funds as manager:</h2>
+          <div v-for="(fund, index) in userFundsAsManager" :key="index" class="fund-card">
+            <FundCard :fund-info="fund" />
+          </div>
+        </div>
+
+        <div>
+          <h2 v-if="userFundsAsInvestor.length > 0">Funds as investor:</h2>
+          <div v-for="(fund, index) in userFundsAsInvestor" :key="index" class="fund-card">
+            <FundCard :fund-info="fund" />
           </div>
         </div>
       </div>
@@ -168,326 +183,346 @@
 </template>
 
 <script>
-  import {mapGetters, mapMutations} from "vuex";
-  import {getGenericSignNonce, getPercentageDiff, getUserByAddress, registerUser, updateUser} from "../services/helpers";
-  import {currentProvider} from "../services/ether";
-  import {FundService} from "../services/fundService";
-  import {utils} from "ethers";
-  import {DEFAULT_IMG_URL} from "../constants";
-  import vSelect from "vue-select";
+import { mapGetters, mapMutations } from "vuex";
+import {
+  getGenericSignNonce,
+  getPercentageDiff,
+  getUserByAddress,
+  registerUser,
+  updateUser,
+} from "../services/helpers";
+import { currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
+import { utils } from "ethers";
+import { DEFAULT_IMG_URL } from "../constants";
+import vSelect from "vue-select";
+import FundCard from "../components/FundCard.vue";
 
-  export default {
-    name: "Profile",
-    components: {vSelect},
-    data() {
-      return {
-        step: 1,
-        selectedToken: 'USDT',
-        totalSteps: 4,
-        form: {
-          name: "",
-          description: null,
-          image: null,
-          imgLocalPath: null,
-        },
-        currentUserInfo: null,
-        userAddress: null,
-        getUserApiQueryFailed: false,
-        userFundsAsManager: [],
-        userFundsAsInvestor: [],
-        userDeposits: [],
-        fundService: null,
-        isLoading: true,
-        isSuccessAlertVisible: true,
-      };
+export default {
+  name: "Profile",
+  components: { vSelect, FundCard },
+  data() {
+    return {
+      step: 1,
+      selectedToken: "USDT",
+      totalSteps: 4,
+      form: {
+        name: "",
+        description: null,
+        image: null,
+        imgLocalPath: null,
+      },
+      currentUserInfo: null,
+      userAddress: null,
+      getUserApiQueryFailed: false,
+      userFundsAsManager: [],
+      userFundsAsInvestor: [],
+      userDeposits: [],
+      fundService: null,
+      isLoading: true,
+      isSuccessAlertVisible: true,
+    };
+  },
+  computed: {
+    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
+    currentRoi() {
+      return 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
     },
-    computed: {
-      ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
-      currentRoi() {
-        return 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
-      },
-      tokensList() {
-        return [this.eFundNetworkSettings.cryptoSign, "USDT"];
-      },
-      currentRevenue() {
-        return 0
-      },
-      currentBalance(){
-        return 0
-      },
-      DEFAULT_IMG_URL() {
-        return DEFAULT_IMG_URL;
-      },
-      shouldShowProfileEditingForm() {
-        return this.signerAddress == this.userAddress && !this.getUserApiQueryFailed;
-      },
-      userInvestedTotal() {
-        let total = 0;
-
-        this.userDeposits.forEach((deposit) => {
-          console.log("deposit : ", deposit);
-
-          total += parseFloat(utils.formatEther(deposit.depositAmount));
-        });
-
-        return total;
-      },
-      ...mapGetters([
-        "signerAddress",
-        "eFundNetworkSettings",
-        "userProfileData",
-        "myFundsAsInvestor",
-        "myFundsAsManager",
-      ]),
+    tokensList() {
+      return [this.eFundNetworkSettings.cryptoSign, "USDT"];
     },
-    async mounted() {
-      await this.loadProfileData();
-      this.isLoading = false;
+    currentRevenue() {
+      return 0;
     },
-    methods: {
-      async loadProfileData() {
-        this.userAddress = utils.getAddress(this.$route.params.address);
+    currentBalance() {
+      return 0;
+    },
+    DEFAULT_IMG_URL() {
+      return DEFAULT_IMG_URL;
+    },
+    shouldShowProfileEditingForm() {
+      return this.signerAddress == this.userAddress && !this.getUserApiQueryFailed;
+    },
+    userInvestedTotal() {
+      let total = 0;
 
-        this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
+      this.userDeposits.forEach((deposit) => {
+        console.log("deposit : ", deposit);
 
-        console.log(this.eFundNetworkSettings.chainId);
+        total += parseFloat(utils.formatEther(utils.parseEther(deposit.amount.toString())));
 
-        let currentUserInfo;
+        console.log(deposit);
+      });
 
-        if (this.userAddress.toLowerCase() == this.signerAddress.toLowerCase()) {
-          currentUserInfo = this.userProfileData;
-          this.userFundsAsManager = this.myFundsAsManager;
-          this.userFundsAsInvestor = this.myFundsAsInvestor;
-        } else {
-          this.userFundsAsManager = await this.fundService.getAllManagerFunds(this.userAddress);
-          this.userFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.userAddress);
+      return total;
+    },
+    ...mapGetters([
+      "signerAddress",
+      "eFundNetworkSettings",
+      "userProfileData",
+      "myFundsAsInvestor",
+      "myFundsAsManager",
+    ]),
+  },
+  async mounted() {
+    await this.loadProfileData();
+    this.isLoading = false;
+  },
+  methods: {
+    async loadProfileData() {
+      this.userAddress = utils.getAddress(this.$route.params.address);
 
-          console.log("user funds: ", {asManager: this.userFundsAsManager, asInvestor: this.userFundsAsInvestor});
-          try {
-            currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
-          } catch (error) {
-            this.getUserApiQueryFailed = true;
-          }
+      this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
+
+      console.log(this.eFundNetworkSettings.chainId);
+
+      let currentUserInfo;
+
+      let userFundsAsManager;
+      let userFundsAsInvestor;
+      if (this.userAddress.toLowerCase() == this.signerAddress.toLowerCase()) {
+        currentUserInfo = this.userProfileData;
+        userFundsAsManager = this.myFundsAsManager;
+        userFundsAsInvestor = this.myFundsAsInvestor;
+      } else {
+        userFundsAsManager = await this.fundService.getAllManagerFunds(this.userAddress);
+        userFundsAsInvestor = await this.fundService.getAllInvestorsFunds(this.userAddress);
+
+        console.log("user funds: ", { asManager: this.userFundsAsManager, asInvestor: this.userFundsAsInvestor });
+        try {
+          currentUserInfo = await getUserByAddress(this.userAddress, this.eFundNetworkSettings.chainId);
+        } catch (error) {
+          this.getUserApiQueryFailed = true;
         }
+      }
 
-        if (this.userFundsAsInvestor.length != 0) {
-          const [res] = await Promise.all(
-            this.userFundsAsInvestor.map((fund) => {
-              console.log(fund);
-              const fundContract = this.fundService.getFundContractInstance(fund.address);
+      this.userFundsAsManager = await Promise.all(
+        userFundsAsManager.map((v) => this.fundService.getFundDetails(v.address))
+      );
 
-              return fundContract.getAllDeposits();
-            })
-          );
-          res
-            .filter((v) => v.depositOwner.toLowerCase() == this.userAddress.toLowerCase())
-            .forEach((deposit) => {
-              console.log(deposit);
+      this.userFundsAsInvestor = await Promise.all(
+        userFundsAsInvestor.map((v) => this.fundService.getFundDetails(v.address))
+      );
 
-              this.userDeposits.push(deposit);
-            });
-        }
+      if (this.userFundsAsInvestor.length != 0) {
+        const res = this.userFundsAsInvestor.map((v) => v.deposits).flat();
 
-        this.currentUserInfo = currentUserInfo == "" || !currentUserInfo ? null : currentUserInfo;
+        console.log("deposits ", res);
+        res
+          .filter((v) => v.owner.toLowerCase() == this.userAddress.toLowerCase())
+          .forEach((deposit) => {
+            console.log(deposit);
 
-        console.log("current user info: ", this.currentUserInfo);
+            this.userDeposits.push(deposit);
+          });
+      }
 
-        if (this.currentUserInfo != null) {
-          this.form.name = this.currentUserInfo.username;
-          this.form.description = this.currentUserInfo.username;
-          this.form.imgLocalPath = this.currentUserInfo.imageUrl;
-        }
-      },
+      this.currentUserInfo = currentUserInfo == "" || !currentUserInfo ? null : currentUserInfo;
 
-      async nextStep() {
-        if (this.step == 3) {
-          await this.updateProfileInfo();
-        }
+      console.log("current user info: ", this.currentUserInfo);
 
-        this.step++;
-      },
-      async updateProfileInfo() {
-        var newNonce;
+      if (this.currentUserInfo != null) {
+        this.form.name = this.currentUserInfo.username;
+        this.form.description = this.currentUserInfo.username;
+        this.form.imgLocalPath = this.currentUserInfo.imageUrl;
+      }
+    },
 
-        // register user if not registered yet
-        if (this.currentUserInfo == null || !this.currentUserInfo) {
-          const genericNonce = await getGenericSignNonce();
+    async nextStep() {
+      if (this.step == 3) {
+        await this.updateProfileInfo();
+      }
 
-          const signedNonce = await this.fundService.signMessage(genericNonce);
+      this.step++;
+    },
+    async updateProfileInfo() {
+      var newNonce;
 
-          newNonce = await registerUser(
-            {
-              signedNonce: signedNonce,
-              address: this.signerAddress,
-              username: this.form.name,
-              description: this.form.description,
-            },
-            this.form.image,
-            this.eFundNetworkSettings.chainId
-          );
+      // register user if not registered yet
+      if (this.currentUserInfo == null || !this.currentUserInfo) {
+        const genericNonce = await getGenericSignNonce();
 
-          this.currentUserInfo = {
+        const signedNonce = await this.fundService.signMessage(genericNonce);
+
+        newNonce = await registerUser(
+          {
+            signedNonce: signedNonce,
+            address: this.signerAddress,
             username: this.form.name,
-            description: this.description,
-            imageUrl: this.imgLocalPath,
-            singNonce: newNonce,
-          };
-          // update info of already existing user
-        } else {
-          console.log("cur user info: ", this.currentUserInfo);
+            description: this.form.description,
+          },
+          this.form.image,
+          this.eFundNetworkSettings.chainId
+        );
 
-          const signedNonce = await this.fundService.signMessage(this.currentUserInfo.signNonce, "No password required.");
-
-          newNonce = await updateUser(
-            {
-              signedNonce: signedNonce,
-              address: this.signerAddress,
-              username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
-              description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
-            },
-            this.form.image,
-            this.eFundNetworkSettings.chainId
-          );
-        }
-
-        this.updateUserProfileData({
-          address: this.signerAddress,
-          username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
-          description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
-          imageUrl: this.form.imgLocalPath,
-          signNonce: newNonce,
-        });
-
-        setTimeout(() => {
-          this.isSuccessAlertVisible = true;
-        }, 2000);
-        console.log("New nonce is: ", newNonce);
-      },
-      handleFileUpload() {
-        console.log("handled file upload!");
-
-        this.form.image = this.$refs.file.files[0];
-
-        var reader = new FileReader();
-
-        reader.onloadend = (e) => {
-          this.form.imgLocalPath = e.target.result;
-
-          console.log(this.form.imgLocalPath);
+        this.currentUserInfo = {
+          username: this.form.name,
+          description: this.description,
+          imageUrl: this.imgLocalPath,
+          singNonce: newNonce,
         };
+        // update info of already existing user
+      } else {
+        console.log("cur user info: ", this.currentUserInfo);
 
-        reader.readAsDataURL(this.form.image);
-      },
+        const signedNonce = await this.fundService.signMessage(this.currentUserInfo.signNonce, "No password required.");
 
-      ...mapMutations(["updateSignerAddress", "updateUserProfileData"]),
+        newNonce = await updateUser(
+          {
+            signedNonce: signedNonce,
+            address: this.signerAddress,
+            username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
+            description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
+          },
+          this.form.image,
+          this.eFundNetworkSettings.chainId
+        );
+      }
+
+      this.updateUserProfileData({
+        address: this.signerAddress,
+        username: this.form.name == null ? this.currentUserInfo.username : this.form.name,
+        description: this.form.description == null ? this.currentUserInfo.description : this.form.description,
+        imageUrl: this.form.imgLocalPath,
+        signNonce: newNonce,
+      });
+
+      setTimeout(() => {
+        this.isSuccessAlertVisible = true;
+      }, 2000);
+      console.log("New nonce is: ", newNonce);
     },
-  };
+    handleFileUpload() {
+      console.log("handled file upload!");
+
+      this.form.image = this.$refs.file.files[0];
+
+      var reader = new FileReader();
+
+      reader.onloadend = (e) => {
+        this.form.imgLocalPath = e.target.result;
+
+        console.log(this.form.imgLocalPath);
+      };
+
+      reader.readAsDataURL(this.form.image);
+    },
+
+    ...mapMutations(["updateSignerAddress", "updateUserProfileData"]),
+  },
+};
 </script>
 
 <style scoped lang="scss">
-  input[type="file"] {
-    display: none;
-  }
+input[type="file"] {
+  display: none;
+}
 
-  .balance-card {
-    border-radius: 20px;
-    background-color: #ffffff;
+.balance-card {
+  border-radius: 20px;
+  background-color: #ffffff;
 
-    h2 {
-      font-size: 14px;
-      margin: 0;
-      color: #9B9B9B;
-
-      span {
-        color: #000000;
-      }
-    }
-
-
-    .card-body {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-    }
-  }
-
-  .wallet-card {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 30px;
-    background-color: #ffffff;
-
-    h2 {
-      font-size: 14px;
-      margin: 0;
-      color: #9B9B9B;
-
-      span {
-        color: #000000;
-      }
-    }
-
-
-    .card-body {
-      padding: 6px 10px;
-    }
-  }
-
-  .check-filled {
-    border-radius: 50%;
-    width: 87px;
-    height: 87px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-  }
-
-  .form-create {
-    position: relative;
-    padding: 22px 22px 12px 22px;
-    min-height: 237px;
-
-    .form-group {
-      flex: 1 0 100%;
-    }
-  }
-
-  .custom-input {
-    font-size: 16px;
-    border: none;
-    background: #f0eff8;
+  h2 {
+    font-size: 14px;
+    margin: 0;
     color: #9b9b9b;
+
+    span {
+      color: #000000;
+    }
   }
 
-  .line {
-    width: 60px;
-    height: 3px;
-    background: #9b9b9b;
+  .card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+  }
+}
+
+.wallet-card {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 30px;
+  background-color: #ffffff;
+
+  h2 {
+    font-size: 14px;
+    margin: 0;
+    color: #9b9b9b;
+
+    span {
+      color: #000000;
+    }
   }
 
-  .profile-card {
-    border: none;
+  .card-body {
+    padding: 6px 10px;
+  }
+}
 
-    .card-body {
-      padding: 20px 22px 16px 26px;
-    }
+.check-filled {
+  border-radius: 50%;
+  width: 87px;
+  height: 87px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
 
-    .card-img-top {
-      padding-right: 26px;
-    }
+.form-create {
+  position: relative;
+  padding: 22px 22px 12px 22px;
+  min-height: 237px;
+
+  .form-group {
+    flex: 1 0 100%;
+  }
+}
+
+.custom-input {
+  font-size: 16px;
+  border: none;
+  background: #f0eff8;
+  color: #9b9b9b;
+}
+
+.line {
+  width: 60px;
+  height: 3px;
+  background: #9b9b9b;
+}
+
+.profile-card {
+  border: none;
+
+  .card-body {
+    padding: 20px 22px 16px 26px;
   }
 
   .card-img-top {
-    //height: 56px;
-    //width: auto;
+    padding-right: 26px;
   }
+}
 
-  @media screen and (max-width: 768px) {
-    .card-img-top {
-      height: 56px;
-      width: auto;
-    }
+.card-img-top {
+  //height: 56px;
+  //width: auto;
+}
+
+.container-fluid {
+  margin: 0 15px;
+}
+
+.fund-card {
+  margin: 15px 0;
+}
+
+@media screen and (max-width: 768px) {
+  .card-img-top {
+    height: 56px;
+    width: auto;
   }
+}
 </style>

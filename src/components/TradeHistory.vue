@@ -3,6 +3,7 @@
     <h3 class="big text-gray mb-3">Trade history:</h3>
 
     <div v-if="swaps.length == 0">History is empty</div>
+    <div v-else-if="swapsGroupedByTime == null">Loading</div>
     <div v-else v-for="(swapsInGroup, time) in swapsGroupedByTime" :key="time">
       <h3 class="middle day text-gray text-center mt-3 mb-2">{{ time }}</h3>
       <div v-for="(swap, j) in swapsInGroup.slice().reverse()" :key="j" class="single-trade mb-2">
@@ -78,7 +79,7 @@ export default {
     return {
       publicPath: process.env.BASE_URL,
       swaps: [],
-      swapsGroupedByTime: [],
+      swapsGroupedByTime: null,
       fundService: null,
       arrowUp: "&#x2191;",
       arrowDown: "&#x2193;",
