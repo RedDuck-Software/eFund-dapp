@@ -300,15 +300,6 @@ export default {
       balanceBeforeSwap,
       timestamp
     ) {
-      // value must be in presented format:
-      // {
-      //   tokenTo,
-      //   tokenFrom,
-      //   roi,
-      //   balanceAfterSwap,
-      //   balanceBeforeSwap,
-      //   timestamp,
-      // }
       const clonedTokenFrom = JSON.parse(JSON.stringify(tokenFrom));
       clonedTokenFrom.amount = amountFrom;
 
