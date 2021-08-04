@@ -387,13 +387,8 @@ export default {
 
       this.addBoughtTokenAmount({
         address: this.fromSwapCurr.address,
-<<<<<<< HEAD
-        newAmount: swapAmountFromParsed * -1,
-        newEtherPrice: tokenFromEtherPrice * -1,
-=======
         newAmount: -swapAmountFromParsed,
         newEtherPrice: -tokenFromEtherPrice,
->>>>>>> master
       });
 
       return txHash;
@@ -401,12 +396,6 @@ export default {
     async swapERCForETH() {
       const amount = utils.parseEther(this.fromSwapValue);
 
-<<<<<<< HEAD
-=======
-      if ((await tokenFrom.balanceOf(this.fundContractAddress)).lt(amount))
-        alert(`You need thia amount of ${this.fromSwapCurr.label}`);
-
->>>>>>> master
       const tx = await this.fundContract.swapERC20ToETH(this.fromSwapCurr.address, amount, 0);
 
       const txHash = await tx.wait();
@@ -420,15 +409,9 @@ export default {
       const swapAmountToParsed = parseFloat(utils.formatEther(txHash.events[eFundEventIndex].args._amountTo));
 
       this.addBoughtTokenAmount({
-<<<<<<< HEAD
         address: this.fromSwapCurr.address,
         newAmount: swapAmountFromParsed * -1,
         newEtherPrice: swapAmountToParsed * -1,
-=======
-        address: this.toSwapCurr.address,
-        newAmount: -swapAmountFromParsed,
-        newEtherPrice: -swapAmountToParsed,
->>>>>>> master
       });
 
       this.updateCryptoBalance(this.cryptoBalance + swapAmountToParsed);
@@ -438,11 +421,7 @@ export default {
     async swapETHForTokens() {
       console.log("bnb to erc");
 
-<<<<<<< HEAD
       const amount = utils.parseEther(this.fromSwapValue.toString());
-=======
-      const amount = utils.parseEther(this.fromSwapValue);
->>>>>>> master
 
       if ((await this.fundService.getCurrentProvider().getBalance(this.fundContractAddress)).lt(amount))
         alert(`You don't have enough ${this.eFundNetworkSettings.cryptoSign}`);
