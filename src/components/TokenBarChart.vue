@@ -1,6 +1,6 @@
 <template>
   <div v-if="chartLoaded">
-    <bar-chart :data="datacollection"></bar-chart>
+    <bar-chart :data="datacollection" :options="options"></bar-chart>
   </div>
 </template>
 
@@ -36,6 +36,7 @@ export default {
         scales: {
           yAxes: [
             {
+              suggestedMin: 0.2,
               ticks: {
                 beginAtZero: true,
               },
@@ -46,9 +47,6 @@ export default {
           ],
           xAxes: [
             {
-              ticks: {
-                beginAtZero: true,
-              },
               gridLines: {
                 display: false,
               },

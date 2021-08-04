@@ -7,6 +7,10 @@ import router from "./routes";
 import store from "./store";
 import "./icons";
 
+import 'ant-design-vue/dist/antd.css';
+import Skeleton from 'ant-design-vue/lib/skeleton';
+Vue.component(Skeleton.name, Skeleton);
+
 import VueSocialSharing from "vue-social-sharing";
 import PortalVue from "portal-vue";
 import VueLoading from "vuejs-loading-plugin";
