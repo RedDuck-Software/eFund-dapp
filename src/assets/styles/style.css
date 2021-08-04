@@ -1058,33 +1058,33 @@ textarea::placeholder {
 
     /*connect wallet page css end*/
      /*==========dashboard css==========*/
-         .moonkat-sidebar{
+         .eFund-sidebar{
          padding-top: 20px;
          }
-         .moonkat-sidebar .logo-and-buy .logo{
+         .eFund-sidebar .logo-and-buy .logo{
          width: 100px;
          height: 100px;
          }
-         .moonkat-sidebar .logo-and-buy .mrat-text {
+         .eFund-sidebar .logo-and-buy .mrat-text {
          font-size: 20px;
          color: #fff;
          font-weight: 500;
          text-align: center;
          text-transform: uppercase;
          }
-         .moonkat-sidebar .logo-and-buy .mrat-desc {
+         .eFund-sidebar .logo-and-buy .mrat-desc {
          font-size: 18px;
          color: #04abea;
          text-align: center;
          font-weight: 500;
          margin-top: 5px;
          }
-         .moonkat-sidebar .button-buy-mrat {
+         .eFund-sidebar .button-buy-mrat {
          margin-top: 25px;
          text-align: center;
          line-height: 44px;
          }
-         .moonkat-sidebar .button-buy-mrat .button-sidebar {
+         .eFund-sidebar .button-buy-mrat .button-sidebar {
          width: 100%;
          display: block;
          }
@@ -1106,7 +1106,7 @@ textarea::placeholder {
          background-image: -webkit-gradient(linear,left top,right top,from(#ff7657),to(#ff7657));
          background-image: linear-gradient(90deg,#ff7657,#ff7657);
          }
-         .moonkat-sidebar .address-info {
+         .eFund-sidebar .address-info {
          border: 1px solid rgb(255 118 87 / 37%);
          background-color: transparent;
          -webkit-box-sizing: border-box;
@@ -1116,40 +1116,40 @@ textarea::placeholder {
          border-radius: 20px;
          padding: 15px;
          }
-         .moonkat-sidebar .address-info .text-1 {
+         .eFund-sidebar .address-info .text-1 {
          font-size: 20px;
          color: #fff;
          font-weight: 500;
          }
-         .moonkat-sidebar .address-info .text-2 {
+         .eFund-sidebar .address-info .text-2 {
          margin-top: 17px;
          font-size: 13px;
          line-height: 1.5;
          }
-         .moonkat-sidebar .address-info .text-3 {
+         .eFund-sidebar .address-info .text-3 {
          font-size: 14px;
          font-weight: 500;
          }
-         .moonkat-sidebar .address-info .text-4 {
+         .eFund-sidebar .address-info .text-4 {
          font-size: 11px;
          font-weight: 300;
          margin-top: 3px;
          }
-         .moonkat-sidebar .address-info .text-2 {
+         .eFund-sidebar .address-info .text-2 {
          margin-top: 17px;
          font-size: 13px;
          line-height: 1.5;
          }
-         .moonkat-sidebar .address-info .text-3 {
+         .eFund-sidebar .address-info .text-3 {
          font-size: 14px;
          font-weight: 500;
          }
-         .moonkat-sidebar .button-buy-mrat {
+         .eFund-sidebar .button-buy-mrat {
          margin-top: 25px;
          text-align: center;
          line-height: 44px;
          }
-         .moonkat-sidebar .menu-info {
+         .eFund-sidebar .menu-info {
          margin-top: 25px;
          border: 1px solid rgb(255 118 87 / 37%));
          background-color: transparent;
@@ -1157,7 +1157,7 @@ textarea::placeholder {
          box-sizing: border-box;
          border-radius: 20px;
          }
-         .moonkat-sidebar .menu-info .item-menu-info {
+         .eFund-sidebar .menu-info .item-menu-info {
          border-bottom: 1px solid rgb(255 118 87 / 37%);
          padding: 10px 10px 10px 40px;
          display: -webkit-box;
@@ -1170,15 +1170,15 @@ textarea::placeholder {
          -ms-flex-align: center;
          align-items: center;
          }
-         .moonkat-sidebar .menu-info .item-menu-info .p-1 {
+         .eFund-sidebar .menu-info .item-menu-info .p-1 {
          width: 30px;
          }
-         .moonkat-sidebar .menu-info .item-menu-info .p-2 {
+         .eFund-sidebar .menu-info .item-menu-info .p-2 {
          width: calc(100% - 30px);
          padding-left: 13px;
          font-size: 15px;
          }
-         .moonkat-sidebar .menu-info {
+         .eFund-sidebar .menu-info {
          margin-top: 25px;
          border: 1px solid rgb(255 118 87 / 37%);
          background-color: transparent;
@@ -1186,16 +1186,16 @@ textarea::placeholder {
          box-sizing: border-box;
          border-radius: 20px;
          }
-         .moonkat-sidebar .menu-info .item-menu-info:last-child {
+         .eFund-sidebar .menu-info .item-menu-info:last-child {
          border-bottom: none!important;
          }
-         .moonkat-sidebar .button-logout-wrapper {
+         .eFund-sidebar .button-logout-wrapper {
          margin-top: 10px;
          text-align: center;
          color: #fff;
          line-height: 44px;
          }
-         .moonkat-sidebar .button-logout-wrapper .button-sidebar {
+         .eFund-sidebar .button-logout-wrapper .button-sidebar {
          width: 100%;
          display: block;
          }

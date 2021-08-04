@@ -1,4 +1,8 @@
-# moonkat-vue
+# eFund
+
+## Requirements
+- node.js version >= 14
+- python
 
 ## Project setup
 ```

@@ -1,80 +1,150 @@
 <template>
-  <header class="fixed-top bg-secondary">
-    <nav
-      class="navbar navbar-expand-lg navbar-secondary border-bottom border-light navbar-shrink "
-      :class="isSticky ? stickyClass : ''"
-    >
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          Awesome EFund
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="navbarSupportedContent" class="collapse navbar-collapse d-flex justify-content-between min-w-0">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item mx-0 mx-lg-1">
-              <router-link class="nav-link py-3 px-0 px-lg-3 rounded text-white" :to="{ name: 'Home' }">
-                Home
-              </router-link>
+  <header class="bg-secondary ml-2">
+    <b-navbar toggleable="md" class="navbar-secondary navbar-shrink d-flex flex-column px-0 pt-6 position-relative">
+      <b-navbar-toggle target="nav-collapse" class="navbar-toggler text-black"></b-navbar-toggle>
+      <b-collapse id="nav-collapse" is-nav>
+        <div class="d-flex menu-wrap d-flex flex-column">
+          <b-navbar-nav class="navbar-nav ms-auto flex-column bg-darken rounded w-100">
+            <li class="nav-item">
+              <HeaderItem :menu="menu.home" :to="{ name: 'Home' }" :text="'Home'" />
+            </li>
+            <li class="nav-item">
+              <HeaderItem
+                :menu="menu.profile"
+                :to="{ name: 'Profile', params: { address: signerAddress } }"
+                :text="'Profile'"
+              />
+            </li>
+            <li class="nav-item">
+              <HeaderItem :menu="menu.newFund" :to="{ name: 'New Fund' }" :text="'New Fund'" />
+            </li>
+          </b-navbar-nav>
+          <ul class="navbar-nav ms-auto flex-column bg-darken mt-1 rounded w-100">
+            <li class="nav-item">
+              <HeaderItem :menu="menu.newFund" :to="{ name: 'All Funds' }" :text="'All'" />
+            </li>
+            <li v-for="(fund, index) in myFundsAsManager" :key="index" class="nav-item">
+              <HeaderItem
+                :imgSrc="fund.imageUrl != undefined && fund.imageUrl != null ? fund.imageUrl : DEFAULT_IMG_URL"
+                :text="`[m] ${!fund.name || fund.name == null ? 'Unknown' : fund.name}`"
+                :to="{
+                  name: 'Fund',
+                  params: {
+                    address: fund.address,
+                  },
+                }"
+              />
+            </li>
+            <li v-for="(fund, j) in fundAsInvestor" :key="j" class="nav-item">
+              <HeaderItem
+                :imgSrc="fund.imageUrl"
+                :text="`[i] fund${j}`"
+                :to="{
+                  name: 'Fund',
+                  params: {
+                    address: fund.address,
+                  },
+                }"
+              />
             </li>
           </ul>
-          <ConnectWallet v-if="!signerAddress" />
-          <div v-else class="text-gray truncate ml-2">
-            {{ signerAddress }}
-          </div>
         </div>
-      </div>
-    </nav>
+      </b-collapse>
+    </b-navbar>
   </header>
 </template>
-
 <script>
-import { mapGetters } from "vuex";
-import ConnectWallet from "./ConnectWallet";
+// v-on:click="navigateToFund(fund.address, index)"
+import { mapGetters, mapMutations } from "vuex";
+import HeaderItem from "@/components/HeaderItem";
+import { isMetaMaskInstalled, currentProvider } from "../services/ether";
+import { FundService } from "../services/fundService";
+import router from "../routes";
+import { DEFAULT_IMG_URL } from "../constants";
 
 export default {
   name: "Header",
-
-  components: {
-    ConnectWallet,
-  },
+  components: { HeaderItem },
   data() {
     return {
-      isSticky: false,
-      stickyClass: "nav-bg",
       scrollPosition: 0,
+      hover: false,
+      menu: {
+        home: {
+          icon: "menu_home.svg",
+          activeIcon: "menu_active_home.svg",
+        },
+        profile: {
+          icon: "menu_profile.svg",
+          activeIcon: "menu_active_profile.svg",
+        },
+        newFund: {
+          icon: "menu_new.svg",
+          activeIcon: "menu_active_new.svg",
+        },
+        allFunds: {
+          icon: "menu_all.svg",
+          activeIcon: "menu_active_all.svg",
+        },
+        fund: {
+          icon: "menu_fund.svg",
+          activeIcon: "menu_active_fund.svg",
+        },
+      },
     };
   },
+
   computed: {
-    ...mapGetters(["signerAddress"]),
-  },
-  mounted() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.handleScroll);
-  },
-  methods: {
-    handleScroll() {
-      this.scrollPosition = window.scrollY;
-      this.isSticky = this.scrollPosition >= 100;
+    DEFAULT_IMG_URL() {
+      return DEFAULT_IMG_URL;
     },
+    fundAsInvestor() {
+      return this.myFundsAsInvestor.filter((a) => !this.myFundsAsManager.some((b) => a.address == b.address));
+    },
+    ...mapGetters(["signerAddress", "eFundNetworkSettings", "myFundsAsManager", "myFundsAsInvestor"]),
+  },
+  async mounted() {
+    if (this.eFundNetworkSettings == null) return;
+
+    console.log("funds :", this.myFundsAsManager);
+  },
+
+  methods: {
+    navigateToFund(address, index) {
+      router.push({ name: "Fund", params: { address: address } });
+    },
+    ...mapMutations([
+      "logout",
+      "clearFundInfo",
+      "updateSignerAddress",
+      "updateEFundSettings",
+      "updateMyFundsAsManager",
+    ]),
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 header {
-  height: 120px;
+  min-height: 100vh;
+}
+
+.menu-wrap {
+  min-width: 76px;
+}
+
+.navbar {
+  height: 100%;
+}
+
+.navbar-collapse {
+  align-items: flex-start;
+  z-index: 12;
+}
+
+.navbar-toggler {
+  position: absolute;
+  top: 12px;
+  left: 0;
 }
 </style>

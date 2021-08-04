@@ -106,7 +106,7 @@ export default {
     };
   },
   async mounted() {
-    this.fundService = new FundService(this.eFundNetworkSettings.eFundPlatformAddress, currentProvider);
+    this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
     this.swapRouterAddress = await this.fundContract.router();
 
@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     addTokenToBoughts(token) {
-      console.log("token push: ", token.name);
       this.fromSwapList[token.name] = token;
       this.fromSwapLabels.push(token.name);
     },

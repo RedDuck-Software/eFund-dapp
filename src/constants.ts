@@ -1,11 +1,18 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0xf25056e27d74D811b08Beaa9B5686c78eEd6FE2d";
-export const EFUND_TOKEN_BSC = "0xaFFBe0A63337e0B18b44eF835aA649f4baA07dA2";
+export const FUND_PLATFROM_ADDRESS_BSC = "0x5A8165aA00Dfb6857Bd5E0ECCf9a726386304525";
+export const EFUND_TOKEN_BSC = "0xA22d8e3Ed6fF0034F3b7a22194535C755DdF81c6";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
-export const EFUND_TOKEN_ETH = "0x5f1cF81733CA8629dEA34514B0e243F736781C9A";
+export const EFUND_TOKEN_ETH = "";
+
+export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF";
+export const EFUND_TOKEN_LOCALDEV = "0x4826533B4897376654Bb4d4AD88B7faFD0C98528";
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-export const WETH_ADDRESS = "";
+export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+
+
+export const PANCACKE_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
+export const UNISWAP_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -16,6 +23,10 @@ import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Rou
 import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol/IUniswapV2Factory.json";
 import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
+
+export const SERVER_API_URL = "https://efund-server.azurewebsites.net";
+
+export const DEFAULT_IMG_URL = SERVER_API_URL  + '/image/default.jpeg';
 
 export const ABI = JSON.stringify(FundAbi.abi);
 
@@ -31,31 +42,65 @@ export const SWAP_FACTORY_ABI = JSON.stringify(SwapFactory.abi);
 
 export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 
-
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
+export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
 
 
 export const eFundNetworkSettings =
 {
   97: { // BSC Testnet
-    networkName: "BSCT",
+    chainId: 97,
+    networkName: "BSC Testnet",
     cryptoSign: "BNB",
+    cryptoLogo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
     wrappedCryptoAddress: WBNB_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_BSC,
     eFundTokenAddress: EFUND_TOKEN_BSC,
+    router: PANCACKE_ROUTER,
     tokensAddresses: [
       {
         name: "USDT",
         address: "0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684",
+        decimals: 18,
+        logo: "https://cryptologos.cc/logos/tether-usdt-logo.png",
       },
       {
         name: "BUSD",
         address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
+        decimals: 18,
+        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
       },
       {
         name: "DAI",
         address: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        decimals: 18,
+        logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
+      },
+    ],
+  },
+  31337: { // BSC Testnet
+    chainId: 31337,
+    networkName: "ETH HardHat",
+    cryptoSign: "ETH",
+    wrappedCryptoAddress: WETH_ADDRESS,
+    eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
+    eFundTokenAddress: EFUND_TOKEN_LOCALDEV,
+    router: UNISWAP_ROUTER,
+    tokensAddresses: [
+      {
+        name: "USDT",
+        address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      },
+      {
+        name: "USDC",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      },
+      {
+        name: "BUSD",
+        address: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
       },
     ],
   },
