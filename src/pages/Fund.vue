@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col-lg-4">
           <h1 class="font-weight-bold">{{ fundAddress != null ? fundAddress.substring(0, 10) : "" }}...</h1>
-          <div v-if="fundContractStatus != 'Opened'" v-show="isActive('coins') || isActive('trade')">
+          <div v-if="fundContractStatus == 'Active'" v-show="isActive('coins') || isActive('trade')">
             <Balances />
           </div>
           <div v-if="fundContractStatus != 'Opened'" v-show="isActive('about')">
@@ -25,7 +25,7 @@
                   >About</a
                 >
               </li>
-              <li v-if="fundContractStatus != 'Opened'" class="nav-item">
+              <li v-if="fundContractStatus == 'Active'" class="nav-item">
                 <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
                   >Coins Price</a
                 >
@@ -47,13 +47,9 @@
             >
               <h3 class="middle text-white">Set completed</h3>
             </button>
-            <button
-              v-if="fundContractStatus == 'Completed'"
-              class="btn btn-danger box-shadow completed d-none d-md-block"
-              @click="setFundStatusClosed"
-            >
-              <h3 class="middle text-white">Set closed</h3>
-            </button>
+            <div v-if="fundContractStatus == 'Completed'" class="btn btn-danger box-shadow completed d-none d-md-block">
+              <h3 class="middle text-white">This fund is completed</h3>
+            </div>
           </div>
           <div v-show="isActive('coins')">
             <CoinsPriceTab />
@@ -78,11 +74,10 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex";
-import Fund from "../components/Fund";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { fundStatuses, FUND_PLATFROM_ADDRESS_BSC } from "../constants";
-import { BigNumber, ethers, utils } from "ethers";
+import { utils } from "ethers";
 import Balances from "../components/Balances.vue";
 import CoinsPriceTab from "../components/CoinsPriceTab.vue";
 import TradeHistory from "../components/TradeHistory.vue";
@@ -330,6 +325,7 @@ export default {
 
   .nav-link.active {
     color: black;
+    background-color: unset !important;
   }
 }
 

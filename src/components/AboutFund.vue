@@ -44,7 +44,9 @@
                   ></div>
                 </div>
                 <div class="label text-gray mt-1">
-                  Duration: {{ fundDurationMonths }} month ({{ daysTillTheEnd }}d to the end)
+                  Duration: {{ fundDurationMonths }} month ({{
+                    daysTillTheEnd > 0 ? `${daysTillTheEnd}d to the end` : `can be completed now`
+                  }})
                 </div>
               </div>
               <div v-else-if="fundContractStatus == 'Opened'" class="mt-4 token-progress">
@@ -86,6 +88,8 @@
                   <div class="label">Max fund size</div>
                 </div>
               </div>
+              <FundCompletedStats v-if="fundContractStatus == 'Completed'" class="completed-fund-stats" />
+
               <TokenBarChart v-if="fundContractStatus == 'Active'" />
             </div>
             <button
@@ -174,8 +178,6 @@
         </div>
       </div>
 
-      <div></div>
-
       <div
         v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
         class="badge bg-primary text-white"
@@ -191,6 +193,7 @@
 import AllInvestors from "../components/AllInvestors";
 import TokenValues from "@/components/TokenValues";
 import TokenBarChart from "@/components/TokenBarChart";
+import FundCompletedStats from "@/components/FundCompletedStats.vue";
 import { mapGetters, mapMutations } from "vuex";
 import { oneDayDurationInSeconds, formatDuration } from "../services/helpers";
 import { monthNames } from "../constants";
@@ -202,7 +205,7 @@ import router from "../routes";
 
 export default {
   name: "AboutFund",
-  components: { AllInvestors, TokenValues, TokenBarChart },
+  components: { AllInvestors, TokenValues, TokenBarChart, FundCompletedStats },
   computed: {
     isFundBalanceIsLowerThanSoftCap() {
       return this.fundInfo.balance < this.fundInfo.softCap;
@@ -312,13 +315,16 @@ export default {
 
       this.daysTillTheEnd = Math.floor(Math.floor((this.dateEnd - new Date()) / 1000) / oneDayDurationInSeconds);
 
-      this.fundActivePercentage = parseFloat(
-        (
-          ((Math.floor(new Date() / 1000) - this.fundStartTimestamp) /
-            (this.dateEnd / 1000 - this.fundStartTimestamp)) *
-          100
-        ).toFixed(2)
-      );
+      this.fundActivePercentage =
+        this.dateEnd < new Date()
+          ? 100
+          : parseFloat(
+              (
+                ((Math.floor(new Date() / 1000) - this.fundStartTimestamp) /
+                  (this.dateEnd / 1000 - this.fundStartTimestamp)) *
+                100
+              ).toFixed(2)
+            );
 
       console.log("percentage calculation : ", {
         start: this.fundStartTimestamp,
@@ -384,6 +390,11 @@ export default {
   img {
     padding: 2px;
   }
+}
+
+.completed-fund-stats {
+  margin-top: 20px;
+  padding: 0 10px;
 }
 
 .time {

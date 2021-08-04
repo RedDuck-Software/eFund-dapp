@@ -3,6 +3,7 @@
     <h3 class="big text-gray mb-3">Trade history:</h3>
 
     <div v-if="swaps.length == 0">History is empty</div>
+    <div v-else-if="swapsGroupedByTime == null">Loading</div>
     <div v-else v-for="(swapsInGroup, time) in swapsGroupedByTime" :key="time">
       <h3 class="middle day text-gray text-center mt-3 mb-2">{{ time }}</h3>
       <div v-for="(swap, j) in swapsInGroup.slice().reverse()" :key="j" class="single-trade mb-2">
@@ -48,7 +49,7 @@
 
 <script>
 import { utils } from "ethers";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { groupArrayBy, getPercentageDiff } from "../services/helpers";
@@ -57,13 +58,28 @@ import { monthNames } from "../constants";
 export default {
   name: "TradeHistory",
   computed: {
-    ...mapGetters(["fundSwapHistory", "eFundNetworkSettings", "fundContractAddress", "baseBalance"]),
+    ...mapGetters([
+      "fundSwapHistory",
+      "eFundNetworkSettings",
+      "fundContractAddress",
+      "baseBalance",
+      "fundSwapHistoryWithDetails",
+    ]),
   },
+  watch: {
+    fundSwapHistoryWithDetails(history) {
+      console.log("History updated");
+
+      this.swaps = history;
+      this.splitSwapsInChunksByTime();
+    },
+  },
+
   data() {
     return {
       publicPath: process.env.BASE_URL,
       swaps: [],
-      swapsGroupedByTime: [],
+      swapsGroupedByTime: null,
       fundService: null,
       arrowUp: "&#x2191;",
       arrowDown: "&#x2193;",
@@ -145,26 +161,31 @@ export default {
 
     this.swaps.sort(this.sortByDesc);
 
-    for (const swap of this.swaps) {
-      swap.time =
-        new Date(swap.timestamp * 1000).getDate() +
-        " " +
-        monthNames[new Date(swap.timestamp * 1000).getMonth()] +
-        (new Date(swap.timestamp * 1000).getFullYear() == new Date().getFullYear()
-          ? ""
-          : " " + new Date(swap.timestamp * 1000).getFullYear());
-    }
+    this.updateFundSwapHistoryWithDetails(this.swaps);
 
-    this.swapsGroupedByTime = groupArrayBy(this.swaps, "time");
-
-    console.log("swaps grouped by time", this.swapsGroupedByTime);
-
-    for (let swap in this.swapsGroupedByTime) {
-      console.log(this.swapsGroupedByTime[swap]);
-      this.swapsGroupedByTime[swap].reverse();
-    }
+    this.splitSwapsInChunksByTime();
   },
   methods: {
+    splitSwapsInChunksByTime() {
+      for (const swap of this.swaps) {
+        swap.time =
+          new Date(swap.timestamp * 1000).getDate() +
+          " " +
+          monthNames[new Date(swap.timestamp * 1000).getMonth()] +
+          (new Date(swap.timestamp * 1000).getFullYear() == new Date().getFullYear()
+            ? ""
+            : " " + new Date(swap.timestamp * 1000).getFullYear());
+      }
+
+      this.swapsGroupedByTime = groupArrayBy(this.swaps, "time");
+
+      console.log("swaps grouped by time", this.swapsGroupedByTime);
+
+      for (let swap in this.swapsGroupedByTime) {
+        console.log(this.swapsGroupedByTime[swap]);
+        this.swapsGroupedByTime[swap].reverse();
+      }
+    },
     sortByAsc(a, b) {
       if (a.timestamp > b.timestamp) {
         return 1;
@@ -183,6 +204,7 @@ export default {
       }
       return 0;
     },
+    ...mapMutations(["updateFundSwapHistoryWithDetails"]),
   },
 };
 </script>

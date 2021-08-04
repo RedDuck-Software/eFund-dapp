@@ -17,6 +17,7 @@ const store = new Vuex.Store({
     eFundNetworkSettings: null,
     boughtTokensAddresses: [],
     allowedTokensAddresses: [],
+    fundSwapHistoryWithDetails: [],
     swaps: [],
     deposits: [],
     totalBalance: null,
@@ -146,6 +147,21 @@ const store = new Vuex.Store({
     addFundDeposit(state, newDeposit) {
       state.deposits.push(newDeposit);
     },
+    updateFundSwapHistoryWithDetails(state, history) {
+      state.fundSwapHistoryWithDetails = history;
+    },
+    addFundSwapHistoryWithDetails(state, value) {
+      // value must be in presented format: 
+      // {
+      //   tokenTo,
+      //   tokenFrom,
+      //   roi,
+      //   balanceAfterSwap,
+      //   balanceBeforeSwap,
+      //   timestamp,
+      // }
+      state.fundSwapHistoryWithDetails.unshift(value);
+    },
     addBoughtTokenAmount(state, { address, newAmount, newEtherPrice }) {
       let tokenIndex;
 
@@ -226,6 +242,7 @@ const store = new Vuex.Store({
     fundCreatedAt: state => state.fundCreatedAt,
     totalBalance: state => state.totalBalance,
     cryptoBalance: state => state.balance,
+    fundSwapHistoryWithDetails: state => state.fundSwapHistoryWithDetails,
 
     piNoncesData: state => state.apiNoncesData,
     userProfileData: state => state.userProfileData,

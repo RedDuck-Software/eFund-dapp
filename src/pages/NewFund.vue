@@ -137,6 +137,12 @@
               <div class="label">Max trading time</div>
 
               <div class="d-flex flex-wrap pt-2">
+                <!-- 0 months only for testing  -->
+                <!-- todo: remove 0 months -->
+                <ToggleBtn :should-auto-togle="false" :togled="form.duration == 0" @click="form.duration = 0"
+                  >0 month (testing purpose)</ToggleBtn
+                >
+
                 <ToggleBtn :should-auto-togle="false" :togled="form.duration == 1" @click="form.duration = 1"
                   >1 month</ToggleBtn
                 >
@@ -271,7 +277,7 @@
                 Max: <span class="text-black">{{ form.maxSize }}</span>
               </div>
               <div class="desc-item label">
-                Fee: <span class="text-black">{{ form.fee }}</span>
+                Fee: <span class="text-black">{{ form.fee }}%</span>
               </div>
             </div>
             <div class="d-flex flex-wrap pt-2">

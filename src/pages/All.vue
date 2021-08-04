@@ -48,7 +48,7 @@
             </div>
             <vue-slider
               v-model="filters.minTime"
-              :min="1"
+              :min="0"
               :max="6"
               :step="1"
               :marks="marks"
@@ -64,7 +64,7 @@
           </div>
           <div class="sliders mb-4">
             <div class="d-flex justify-content-between align-items-center">
-              <div class="label">Current cap</div>
+              <div class="label">Current balance</div>
               <div class="badge bg-black text-white">{{ filters.cap }} BNB</div>
             </div>
             <vue-slider
@@ -141,7 +141,6 @@
 
 <script>
 import _ from "lodash";
-import FundList from "../components/FundList";
 import { FundService } from "../services/fundService";
 import { currentProvider } from "../services/ether";
 
@@ -167,6 +166,7 @@ export default {
       allFunds: [],
       filteredFunds: [],
       marks: {
+        0: 0,
         1: 1,
         2: 2,
         3: 3,

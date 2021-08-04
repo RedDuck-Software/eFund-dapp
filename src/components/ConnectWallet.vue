@@ -1,5 +1,5 @@
 <template>
-  <div class="connect-wrap d-flex bg-lightest rounded ">
+  <div class="connect-wrap d-flex bg-lightest rounded">
     <div v-if="networkError" class="alert alert-warning alert-dismissible fade show" role="alert">
       {{ networkError }}
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -57,6 +57,9 @@ export default {
 
 <style scoped>
 .connect-wrap {
-  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  width: 300px;
+  padding: 20px 0;
 }
 </style>

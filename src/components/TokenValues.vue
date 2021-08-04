@@ -8,7 +8,7 @@
     </div>
     <div class="text-center mt-md-0 mt-3">
       <h2 class="">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-      <div class="label">Total Balance</div>
+      <div class="label">{{ fundContractStatus == "Completed" ? "End" : "Total" }} Balance</div>
     </div>
     <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
       <h2 v-if="totalBalance > baseBalance" class="text-primary">&#x2191;{{ currentRoi.toFixed(2) }}</h2>
@@ -30,30 +30,39 @@ export default {
   components: { vSelect },
   computed: {
     ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
-    currentRoi() {
-      let roi;
-
-      if (this.fundContractStatus == `Active`) {
-        roi = 100 + getPercentageDiff( this.baseBalance, this.totalBalance);
-      } else {
-        roi = 100 + getPercentageDiff(this.startBalance, this.endBalance );
-      }
-
-      return roi;
-    },
     tokensList() {
       return [this.eFundNetworkSettings.cryptoSign, "USDT"];
     },
   },
+  watch: {
+    totalBalance() {
+      this.recalulateCurrentRoi();
+    },
+  },
   data() {
     return {
+      currentRoi: 0,
       selectedToken: "",
     };
   },
   created() {
     this.selectedToken = this.tokensList[0];
+    this.recalulateCurrentRoi();
   },
-  mounted() {},
+  methods: {
+    recalulateCurrentRoi() {
+      this.currentRoi = this.calculateCurrentRoi();
+    },
+
+    calculateCurrentRoi() {
+      let roi;
+
+      if (this.fundContractStatus == `Active`) roi = 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
+      else roi = 100 + getPercentageDiff(this.baseBalance, this.endBalance);
+
+      return roi;
+    },
+  },
 };
 </script>
 
