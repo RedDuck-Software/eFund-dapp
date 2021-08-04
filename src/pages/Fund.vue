@@ -25,7 +25,7 @@
                   >About</a
                 >
               </li>
-              <li v-if="fundContractStatus != 'Opened'" class="nav-item">
+              <li v-if="fundContractStatus == 'Active'" class="nav-item">
                 <a class="nav-link" href="#" :class="{ 'active show': isActive('coins') }" @click="setActive('coins')"
                   >Coins Price</a
                 >
