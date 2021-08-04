@@ -15,7 +15,7 @@
           <div class="author text-truncate font-weight-bold">by {{ fundInfo.author }}</div>
 
           <div class="balance mt-auto">
-            Balance: <span class="text-black">{{ fundInfo.balance.toFixed(2) }}</span>
+            Balance: <span class="text-black">{{ fundInfo.balance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign}} </span>
           </div>
         </div>
         <div v-if="fundInfo.status == 'Opened'" class="col-sm-3">
@@ -153,7 +153,9 @@ export default {
   font-size: 13px;
   line-height: 16px;
 }
-
+.card {
+  max-width: 500px;
+}
 .card-img-top {
   margin-right: 12px;
 }

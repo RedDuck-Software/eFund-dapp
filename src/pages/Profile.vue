@@ -166,15 +166,19 @@
       <div>
         <div>
           <h2 v-if="userFundsAsManager.length > 0">Funds as manager:</h2>
-          <div v-for="(fund, index) in userFundsAsManager" :key="index" class="fund-card">
-            <FundCard :fund-info="fund" />
+          <div class="c-row">
+            <div v-for="(fund, index) in userFundsAsManager" :key="index" class="fund-card">
+              <FundCard :fund-info="fund" />
+            </div>
           </div>
         </div>
 
         <div>
           <h2 v-if="userFundsAsInvestor.length > 0">Funds as investor:</h2>
-          <div v-for="(fund, index) in userFundsAsInvestor" :key="index" class="fund-card">
-            <FundCard :fund-info="fund" />
+          <div class="c-row">
+            <div v-for="(fund, index) in userFundsAsInvestor" :key="index" class="fund-card">
+              <FundCard :fund-info="fund" />
+            </div>
           </div>
         </div>
       </div>
@@ -460,6 +464,11 @@ input[type="file"] {
     padding: 6px 10px;
   }
 }
+.c-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 
 .check-filled {
   border-radius: 50%;
@@ -516,7 +525,7 @@ input[type="file"] {
 }
 
 .fund-card {
-  margin: 15px 0;
+  margin: 15px;
 }
 
 @media screen and (max-width: 768px) {
