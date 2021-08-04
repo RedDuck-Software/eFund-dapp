@@ -15,7 +15,8 @@
           <div class="author text-truncate font-weight-bold">by {{ fundInfo.author }}</div>
 
           <div class="balance mt-auto">
-            Balance: <span class="text-black">{{ fundInfo.balance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign}} </span>
+            Balance:
+            <span class="text-black">{{ fundInfo.balance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign }} </span>
           </div>
         </div>
         <div v-if="fundInfo.status == 'Opened'" class="col-sm-3">
@@ -57,18 +58,18 @@
         </div>
         <div v-else class="badge bg-warning text-white">Status: {{ fundInfo.status }}</div>
 
-        <div class="badge bg-black text-white">
-          <router-link
-            class="no-link-styles"
-            :to="{
-              name: 'Fund',
-              params: {
-                address: fundInfo.address,
-              },
-            }"
-            >About</router-link
-          >
-        </div>
+        <router-link
+          class="no-link-styles badge bg-black text-white"
+          style="margin-left:5px;"
+          :to="{
+            name: 'Fund',
+            params: {
+              address: fundInfo.address,
+            },
+          }"
+        >
+          About
+        </router-link>
       </div>
     </div>
   </div>

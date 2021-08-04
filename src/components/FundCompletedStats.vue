@@ -12,7 +12,7 @@
         {{ eFundNetworkSettings.cryptoSign }}
       </li>
       <li v-if="doesUserHasDepositsIfFund">
-        You`ll get from fund: {{ userProfitFromFund }} {{ eFundNetworkSettings.cryptoSign }}
+        You`ll after withdrawal: {{ userProfitFromFund }} {{ eFundNetworkSettings.cryptoSign }}
       </li>
     </ul>
   </div>
