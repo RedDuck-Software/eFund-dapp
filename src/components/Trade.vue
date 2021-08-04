@@ -9,6 +9,7 @@
           <v-select
             v-model="fromSwapCurrLabel"
             :options="fromSwapLabels"
+            :clearable="false"
             @input="handleFromValueChange"
             class="swap-select mr-md-3 mr-lg-0"
           >
@@ -61,6 +62,7 @@
           <v-select
             v-model="toSwapCurrLabel"
             :options="toSwapLabels"
+            :clearable="false"
             @input="handleToValueChange"
             class="swap-select ml-md-3 ml-lg-0"
           >
@@ -110,6 +112,7 @@ import { FundService } from "../services/fundService";
 import { mapGetters, mapMutations } from "vuex";
 import { asyncLoading } from "vuejs-loading-plugin";
 import vSelect from "vue-select";
+import { getPercentageDiff } from "../services/helpers";
 
 export default {
   name: "FundTrade",
@@ -122,6 +125,7 @@ export default {
       "cryptoBalance",
       "boughtTokensAddresses",
       "totalBalance",
+      "baseBalance",
     ]),
   },
   data() {
@@ -287,6 +291,39 @@ export default {
       this.toSwapValue = 0;
       this.fromSwapValue = 0;
     },
+    async addSwapToTradeHistory(
+      tokenFrom,
+      tokenTo,
+      amountFrom,
+      amountTo,
+      balanceAfterSwap,
+      balanceBeforeSwap,
+      timestamp
+    ) {
+      // value must be in presented format:
+      // {
+      //   tokenTo,
+      //   tokenFrom,
+      //   roi,
+      //   balanceAfterSwap,
+      //   balanceBeforeSwap,
+      //   timestamp,
+      // }
+      const clonedTokenFrom = JSON.parse(JSON.stringify(tokenFrom));
+      clonedTokenFrom.amount = amountFrom;
+
+      const clonedTokenTo = JSON.parse(JSON.stringify(tokenTo));
+      clonedTokenTo.amount = amountTo;
+
+      this.addFundSwapHistoryWithDetails({
+        tokenTo: clonedTokenTo,
+        tokenFrom: clonedTokenFrom,
+        roi: 100 + getPercentageDiff(this.baseBalance, this.totalBalance),
+        balanceAfterSwap: balanceAfterSwap,
+        balanceBeforeSwap: balanceBeforeSwap,
+        timestamp: timestamp,
+      });
+    },
     async sendSwapRequest() {
       const wCrypto = this.eFundNetworkSettings.wrappedCryptoAddress;
 
@@ -299,7 +336,7 @@ export default {
       console.log("available tokens: ", availableTokenAddresses);
 
       if (this.fromSwapCurr.address == wCrypto) {
-        return await this.swapETHForTokens();
+        return await this.swapETHForERC();
       } else if (this.toSwapCurr.address == wCrypto) {
         return await this.swapERCForETH();
       } else {
@@ -379,18 +416,23 @@ export default {
         });
       }
 
-      console.log({
-        fromSwapCurr: this.fromSwapCurr,
-        toSwapCurr: this.toSwapCurr,
-        etherPriceFrom: tokenFromEtherPrice,
-        etherPriceTO: tokenToEtherPrice,
-      });
-
       this.addBoughtTokenAmount({
         address: this.fromSwapCurr.address,
         newAmount: -swapAmountFromParsed,
         newEtherPrice: -tokenFromEtherPrice,
       });
+
+      var amountFromInETH = await this.fundService.getTokenPriceInETH(
+        this.fromSwapCurr.address,
+        utils.parseUnits(swapAmountFromParsed.toString(), this.fromSwapCurr.decimals)
+      );
+
+      var amountToInETH = await this.fundService.getTokenPriceInETH(
+        this.toSwapCurr.address,
+        utils.parseUnits(swapAmountToParsed.toString(), this.toSwapCurr.decimals)
+      );
+
+      this.updateTotalBalance(this.totalBalance - amountFromInETH + amountToInETH);
 
       return txHash;
     },
@@ -417,9 +459,25 @@ export default {
 
       this.updateCryptoBalance(this.cryptoBalance + swapAmountToParsed);
 
+      var amountFromInETH = await this.fundService.getTokenPriceInETH(
+        this.fromSwapCurr.address,
+        utils.parseUnits(swapAmountFromParsed.toString(), this.fromSwapCurr.decimals)
+      );
+
+      this.updateTotalBalance(this.totalBalance - amountFromInETH + swapAmountToParsed);
+
+      this.addSwapToTradeHistory(
+        this.fromSwapCurr,
+        this.toSwapCurr,
+        swapAmountFromParsed,
+        swapAmountToParsed,
+        this.totalBalance,
+        0,
+        new Date() / 1000
+      );
       return txHash;
     },
-    async swapETHForTokens() {
+    async swapETHForERC() {
       console.log("bnb to erc");
 
       const amount = utils.parseEther(this.fromSwapValue.toString());
@@ -465,10 +523,33 @@ export default {
       }
 
       this.updateCryptoBalance(this.cryptoBalance - swapAmountFromParsed);
-      this.updateTotalBalance();
+
+      var amountToInETH = await this.fundService.getTokenPriceInETH(
+        this.toSwapCurr.address,
+        utils.parseUnits(swapAmountToParsed.toString(), this.toSwapCurr.decimals)
+      );
+
+      this.updateTotalBalance(this.totalBalance - swapAmountFromParsed + amountToInETH);
+
+      this.addSwapToTradeHistory(
+        this.fromSwapCurr,
+        this.toSwapCurr,
+        swapAmountFromParsed,
+        swapAmountToParsed,
+        this.totalBalance,
+        0,
+        new Date() / 1000
+      );
+
       return txHash;
     },
-    ...mapMutations(["addBoughtToken", "updateCryptoBalance", "addBoughtTokenAmount", "updateTotalBalance"]),
+    ...mapMutations([
+      "addBoughtToken",
+      "updateCryptoBalance",
+      "addBoughtTokenAmount",
+      "updateTotalBalance",
+      "addFundSwapHistoryWithDetails",
+    ]),
   },
 };
 </script>

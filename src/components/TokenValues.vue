@@ -30,33 +30,39 @@ export default {
   components: { vSelect },
   computed: {
     ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
-    currentRoi() {
-      let roi;
-
-      console.log("End balance: ", this.endBalance);
-      console.log("Start balance: ", this.baseBalance);
-
-      if (this.fundContractStatus == `Active`) {
-        roi = 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
-      } else {
-        roi = 100 + getPercentageDiff(this.baseBalance, this.endBalance);
-      }
-
-      return roi;
-    },
     tokensList() {
       return [this.eFundNetworkSettings.cryptoSign, "USDT"];
     },
   },
+  watch: {
+    totalBalance() {
+      this.recalulateCurrentRoi();
+    },
+  },
   data() {
     return {
+      currentRoi: 0,
       selectedToken: "",
     };
   },
   created() {
     this.selectedToken = this.tokensList[0];
+    this.recalulateCurrentRoi();
   },
-  mounted() {},
+  methods: {
+    recalulateCurrentRoi() {
+      this.currentRoi = this.calculateCurrentRoi();
+    },
+
+    calculateCurrentRoi() {
+      let roi;
+
+      if (this.fundContractStatus == `Active`) roi = 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
+      else roi = 100 + getPercentageDiff(this.baseBalance, this.endBalance);
+
+      return roi;
+    },
+  },
 };
 </script>
 
