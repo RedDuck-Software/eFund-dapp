@@ -128,7 +128,7 @@
 <script>
 import { getSigner, isMetaMaskInstalled } from "@/services/ether";
 import { mapGetters, mapMutations } from "vuex";
-import { getUserByAddress, registerUser, updateUser, getGenericSignNonce } from "../services/helpers";
+import { getUserByAddress, registerUser, updateUserProfileInfo, getGenericSignNonce } from "../services/helpers";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import { utils } from "ethers";
@@ -282,7 +282,7 @@ export default {
 
         const signedNonce = await this.fundService.signMessage(this.currentUserInfo.signNonce, "No password required.");
 
-        newNonce = await updateUser(
+        newNonce = await updateUserProfileInfo(
           {
             signedNonce: signedNonce,
             address: this.signerAddress,

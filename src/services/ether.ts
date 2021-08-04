@@ -12,7 +12,7 @@ export const walletProvider = {
   currentProvider: (window.ethereum ? new providers.Web3Provider(ethereum) : undefined),
 };
 
-export const currentProvider =  () => walletProvider.currentProvider;
+export const currentProvider = () => walletProvider.currentProvider;
 
 export const createWeb3Provider = (wallet) => new providers.Web3Provider(wallet);
 
@@ -27,7 +27,7 @@ export const getSigner = async (): Promise<{
 };
 
 export const isMetaMaskInstalled = () => {
-  return Boolean(window.ethereum && window.ethereum.isMetaMask);
+  return Boolean(window.ethereum);
 };
 
 export const startApp = async (): Promise<string[] | void> => {

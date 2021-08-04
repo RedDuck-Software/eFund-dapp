@@ -36,6 +36,8 @@ export default {
       return;
     }
 
+    console.log("network settings is not null");
+
     const currentUserInfo = await getUserByAddress(this.signerAddress, this.eFundNetworkSettings.chainId);
 
     this.updateUserProfileData(currentUserInfo == "" || currentUserInfo == undefined ? null : currentUserInfo);

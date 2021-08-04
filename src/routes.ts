@@ -11,6 +11,7 @@ import ConnectWalletPage from "./pages/ConnectWallet.vue";
 import store from "./store/index";
 import { eFundNetworkSettings as networkSettings } from "./constants";
 import { walletProvider, isMetaMaskInstalled } from "./services/ether";
+import { getPlatformContractAddress } from "./services/helpers";
 
 Vue.use(VueRouter);
 
@@ -73,14 +74,15 @@ router.beforeEach(async (to, from, next) => {
     store.state.eFundNetworkSettings == undefined ||
     !isMetaMaskInstalled() ||
     networkSettings[(await walletProvider.currentProvider.getNetwork()).chainId] === undefined ||
-    (await walletProvider.currentProvider.getNetwork()).chainId != store.state.eFundNetworkSettings.chainId
+    (await walletProvider.currentProvider.getNetwork()).chainId != store.state.eFundNetworkSettings.chainId ||
+    store.state.eFundNetworkSettings.eFundPlatformAddress.toLowerCase() != (await getPlatformContractAddress(store.state.eFundNetworkSettings.chainId)).toLowerCase()
   ) {
     store.commit("logout");
     next({ name: "ConnectWalletPage" });
   } else {
     store.commit("clearFundInfo");
     console.log("NEXT!");
-    
+
     next();
   }
 });
