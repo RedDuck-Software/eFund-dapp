@@ -127,26 +127,26 @@ export default {
       "fundDurationMonths",
     ]),
   },
-  async mounted() {
-    await this.loadContractInfo();
-
-    this.isLoading = false;
-  },
   watch: {
     $route(to, from) {
       if (to.name == from.name && to.name == "Fund" && to.params.address != from.params.address) {
         this.isLoading = true;
-        this.loadContractInfo().then((v) => (this.isLoading = false));
+        this.loadContractInfo().then(v => (this.isLoading = false));
       }
     },
+  },
+  async mounted() {
+    await this.loadContractInfo();
+
+    this.isLoading = false;
   },
   methods: {
     async loadContractInfo() {
       this.priceInValues = [
         { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
         {
-          name: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].name,
-          address: this.eFundNetworkSettings.tokensAddresses.filter((v) => v.name == "USDT")[0].address,
+          name: this.eFundNetworkSettings.tokensAddresses.filter(v => v.name == "USDT")[0].name,
+          address: this.eFundNetworkSettings.tokensAddresses.filter(v => v.name == "USDT")[0].address,
         },
       ];
 
@@ -251,11 +251,11 @@ export default {
           // this.updateFundStatus(fundStatuses[1].value);
           // this.updateFundStartTimestamp(new Date() / 1000);
 
-          asyncLoading(this.loadContractInfo()).catch((ex) => {
+          asyncLoading(this.loadContractInfo()).catch(ex => {
             console.error(ex);
           });
         })
-        .catch((ex) => {
+        .catch(ex => {
           alert("Cannot change status: ", ex);
           console.error(ex);
         });
@@ -266,7 +266,7 @@ export default {
         .then(() => {
           this.updateFundStatus(fundStatuses[2].value);
         })
-        .catch((ex) => {
+        .catch(ex => {
           alert("Cannot change status: ", ex);
           console.error(ex);
         });
@@ -277,7 +277,7 @@ export default {
         .then(() => {
           this.updateFundStatus(fundStatuses[3].value);
         })
-        .catch((ex) => {
+        .catch(ex => {
           alert("Cannot change status: ", ex);
           console.error(ex);
         });

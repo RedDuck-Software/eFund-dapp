@@ -1,190 +1,195 @@
 <template>
-  <div class="bg-lightest p-4 rounded box-shadow">
-    <div>
-      <div class="row">
-        <div class="col-md-8">
-          <TokenValues :show-roi="true" class="mb-4" />
-        </div>
-        <div class="col-md-4">
-          <div
-            class="d-flex text-gray"
-            v-on:click="
+  <div>
+    <DepositAmountCard v-if="showDepositCard" :setShowDepositCard="setShowDepositCard"/>
+    <div class="layer" v-if="showDepositCard"></div>
+    <div :class="`bg-lightest p-4 rounded box-shadow ${showDepositCard && 'showed-deposit-card'}`">
+      <div>
+        <div class="row">
+          <div class="col-md-8">
+            <TokenValues :show-roi="true" class="mb-4" />
+          </div>
+          <div class="col-md-4">
+            <div
+              class="d-flex text-gray"
+              v-on:click="
               () => {
                 router.push({ name: 'Profile', params: { address: fundInfo.managerAddress } });
               }
             "
-          >
-            <div class="circular-croper">
-              <img :src="fundInfo.authorProfileImageUrl" alt="swap" class="round-img" />
-            </div>
+            >
+              <div class="circular-croper">
+                <img :src="fundInfo.authorProfileImageUrl" alt="swap" class="round-img" />
+              </div>
 
-            <div class="flex-grow-1">
-              <h2 class="text-black">{{ fundInfo.author }}</h2>
-              <div class="label">Manager</div>
+              <div class="flex-grow-1">
+                <h2 class="text-black">{{ fundInfo.author }}</h2>
+                <div class="label">Manager</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-if="showAllInvestors">
-        <AllInvestors @hideInvestors="showAllInvestors = false" />
-      </div>
-      <div v-else class="row">
-        <div class="col-md-8">
-          <div class="row no-gutters">
-            <div class="col-sm-9">
-              <div v-if="fundContractStatus == 'Active'" class="mt-4 token-progress">
-                <div class="progress" style="height: 9px">
-                  <div
-                    class="progress-bar"
-                    role="progressbar"
-                    :style="`width: ${fundActivePercentage}%;`"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  ></div>
+        <div v-if="showAllInvestors">
+          <AllInvestors @hideInvestors="showAllInvestors = false" />
+        </div>
+        <div v-else class="row">
+          <div class="col-md-8">
+            <div class="row no-gutters">
+              <div class="col-sm-9">
+                <div v-if="fundContractStatus == 'Active'" class="mt-4 token-progress">
+                  <div class="progress" style="height: 9px">
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      :style="`width: ${fundActivePercentage}%;`"
+                      aria-valuenow="25"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                  <div class="label text-gray mt-1">
+                    Duration: {{ fundDurationMonths }} month ({{ daysTillTheEnd }}d to the end)
+                  </div>
                 </div>
-                <div class="label text-gray mt-1">
-                  Duration: {{ fundDurationMonths }} month ({{ daysTillTheEnd }}d to the end)
-                </div>
-              </div>
-              <div v-else-if="fundContractStatus == 'Opened'" class="mt-4 token-progress">
-                <div class="progress" style="height: 9px">
-                  <div
-                    class="progress-bar"
-                    role="progressbar"
-                    :style="`width: ${fundOpenedPercentage}%;${
+                <div v-else-if="fundContractStatus == 'Opened'" class="mt-4 token-progress">
+                  <div class="progress" style="height: 9px">
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      :style="`width: ${fundOpenedPercentage}%;${
                       isFundBalanceIsLowerThanSoftCap ? 'background: red;' : ''
                     }`"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                  ></div>
+                      aria-valuenow="25"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+
+                  <div v-if="isFundBalanceIsLowerThanSoftCap" class="label text-gray mt-1">
+                    Fund cannot be started till it balance is lower than fund`s min size
+                  </div>
+                  <div v-else-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">
+                    Fund can be started
+                  </div>
+
+                  <div v-else class="label text-gray mt-1">Fund starts in: {{ fundCanBeStartedInDays }} days</div>
                 </div>
 
-                <div v-if="isFundBalanceIsLowerThanSoftCap" class="label text-gray mt-1">
-                  Fund cannot be started till it balance is lower than fund`s min size
-                </div>
-                <div v-else-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">
-                  Fund can be started
-                </div>
+                <div class="row text-center mt-4 pt-2">
+                  <div class="col-sm-6">
+                    <h2 class="text-black">{{ minDepositAmount }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+                    <div class="label">Min deposit amount</div>
+                  </div>
 
-                <div v-else class="label text-gray mt-1">Fund starts in: {{ fundCanBeStartedInDays }} days</div>
+                  <div class="col-sm-6">
+                    <h2 class="text-black">{{ softCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+                    <div class="label">Min fund size</div>
+                  </div>
+                  <div class="col-sm-6">
+                    <h2 class="text-black">{{ hardCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+                    <div class="label">Max fund size</div>
+                  </div>
+                </div>
+                <TokenBarChart v-if="fundContractStatus == 'Active'" />
               </div>
-
-              <div class="row text-center mt-4 pt-2">
-                <div class="col-sm-6">
-                  <h2 class="text-black">{{ minDepositAmount }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-                  <div class="label">Min deposit amount</div>
-                </div>
-
-                <div class="col-sm-6">
-                  <h2 class="text-black">{{ softCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-                  <div class="label">Min fund size</div>
-                </div>
-                <div class="col-sm-6">
-                  <h2 class="text-black">{{ hardCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-                  <div class="label">Max fund size</div>
-                </div>
-              </div>
-              <TokenBarChart v-if="fundContractStatus == 'Active'" />
-            </div>
-            <button
-              v-if="
+              <button
+                v-if="
                 fundContractStatus == 'Completed' &&
                 fundContractStatus == 'Closed' &&
                 fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000 &&
                 !isDepositsWithdrawed
               "
-              class="btn btn-primary box-shadow completed d-none d-md-block"
-              @click="setFundStatusCompleted"
-            >
-              <h3 class="middle text-white">Withdraw all funds</h3>
-            </button>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div v-if="fundContractStatus != 'Opened'" class="start-end-dates row text-center mt-4 pt-2">
-            <div class="col-sm-6">
-              <h2 class="text-black">{{ monthNames[dateStart.getMonth()] }} {{ dateStart.getDate() }}</h2>
-              <div class="time text-black">
-                {{ dateStart.getYear() == new Date().getYear() ? "" : dateStart.getYear() }}
-                {{ dateStart.getHours() }}:{{ dateStart.getMinutes() }} {{ dateStart.getTimezoneOffset() / 60 }} GMT
-              </div>
-              <div class="label">Fund start</div>
-            </div>
-            <div class="col-sm-6">
-              <h2 class="text-black">{{ monthNames[dateEnd.getMonth()] }} {{ dateEnd.getDate() }}</h2>
-              <div class="time text-black">
-                {{ dateEnd.getYear() == new Date().getYear() ? "" : dateEnd.getYear() }} {{ dateEnd.getHours() }}:{{
-                  dateEnd.getMinutes()
-                }}
-                {{ dateEnd.getTimezoneOffset() / 60 }} GMT
-              </div>
-              <div class="label">Fund end</div>
+                class="btn btn-primary box-shadow completed d-none d-md-block"
+                @click="setFundStatusCompleted"
+              >
+                <h3 class="middle text-white">Withdraw all funds</h3>
+              </button>
             </div>
           </div>
-          <div class="investors-list mt-3 pt-2">
-            <h2 class="text-gray font-weight-bold">Deposits</h2>
-            <div class="row flex-wrap no-gutters mb-3">
-              <div v-if="fundDeposits.length == 0">Fund has no deposits yet</div>
-              <div
-                v-else
-                v-for="(deposit, index) in fundDeposits.length > 6 ? fundDeposits.slice(0, 6) : fundDeposits"
-                :key="index"
-                class="investor-item col-sm-6 d-flex justify-content-start"
-                v-on:click="
+          <div class="col-md-4">
+            <div v-if="fundContractStatus != 'Opened'" class="start-end-dates row text-center mt-4 pt-2">
+              <div class="col-sm-6">
+                <h2 class="text-black">{{ monthNames[dateStart.getMonth()] }} {{ dateStart.getDate() }}</h2>
+                <div class="time text-black">
+                  {{ dateStart.getYear() == new Date().getYear() ? "" : dateStart.getYear() }}
+                  {{ dateStart.getHours() }}:{{ dateStart.getMinutes() }} {{ dateStart.getTimezoneOffset() / 60 }} GMT
+                </div>
+                <div class="label">Fund start</div>
+              </div>
+              <div class="col-sm-6">
+                <h2 class="text-black">{{ monthNames[dateEnd.getMonth()] }} {{ dateEnd.getDate() }}</h2>
+                <div class="time text-black">
+                  {{ dateEnd.getYear() == new Date().getYear() ? "" : dateEnd.getYear() }} {{ dateEnd.getHours() }}:{{
+                    dateEnd.getMinutes()
+                  }}
+                  {{ dateEnd.getTimezoneOffset() / 60 }} GMT
+                </div>
+                <div class="label">Fund end</div>
+              </div>
+            </div>
+            <div class="investors-list mt-3 pt-2">
+              <h2 class="text-gray font-weight-bold">Deposits</h2>
+              <div class="row flex-wrap no-gutters mb-3">
+                <div v-if="fundDeposits.length == 0">Fund has no deposits yet</div>
+                <div
+                  v-else
+                  v-for="(deposit, index) in fundDeposits.length > 6 ? fundDeposits.slice(0, 6) : fundDeposits"
+                  :key="index"
+                  class="investor-item col-sm-6 d-flex justify-content-start"
+                  v-on:click="
                   () => {
                     router.push({ name: 'Profile', params: { address: deposit.owner } });
                   }
                 "
-              >
-                <div class="token-icon profile small d-flex mr-1">
-                  <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
+                >
+                  <div class="token-icon profile small d-flex mr-1">
+                    <img :src="`${publicPath}img/profile.svg`" alt="swap" class="image-fluid p-2" />
+                  </div>
+                  <div class="text-center">
+                    <h5>{{ deposit.owner != null ? deposit.owner.substring(0, 5) : `` }}..</h5>
+                    <h5 class="sum text-gray font-weight-bold">
+                      {{ deposit.amount }} {{ eFundNetworkSettings.cryptoSign }}
+                    </h5>
+                  </div>
                 </div>
-                <div class="text-center">
-                  <h5>{{ deposit.owner != null ? deposit.owner.substring(0, 5) : `` }}..</h5>
-                  <h5 class="sum text-gray font-weight-bold">
-                    {{ deposit.amount }} {{ eFundNetworkSettings.cryptoSign }}
-                  </h5>
-                </div>
+
+                <button
+                  v-if="fundDeposits.length > 6"
+                  class="btn btn-light box-shadow py-1 px-3 mx-auto d-block"
+                  @click="showAllInvestors = true"
+                >
+                  <h5>See all investors</h5>
+                </button>
               </div>
+            </div>
 
-              <button
-                v-if="fundDeposits.length > 6"
-                class="btn btn-light box-shadow py-1 px-3 mx-auto d-block"
-                @click="showAllInvestors = true"
+            <div>
+              <div
+                class="btn btn-danger text-white withdraw-fund-before-started-btn"
+                v-on:click="withdrawFundsBeforeStart()"
+                v-if="fundContractStatus == 'Opened' && fundDeposits.some((v) => v.owner == this.signerAddress)"
               >
-                <h5>See all investors</h5>
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div
-              class="btn btn-danger text-white withdraw-fund-before-started-btn"
-              v-on:click="withdrawFundsBeforeStart()"
-              v-if="fundContractStatus == 'Opened' && fundDeposits.some((v) => v.owner == this.signerAddress)"
-            >
-              Withdraw my funds
-            </div>
-            <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="invest()">
-              Invest
+                Withdraw my funds
+              </div>
+              <div v-if="fundContractStatus == 'Opened'" class="badge bg-primary text-white" v-on:click="setShowDepositCard(true)">
+                Invest
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div></div>
+        <div></div>
 
-      <div
-        v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
-        class="badge bg-primary text-white"
-        v-on:click="withdrawAllFunds()"
-      >
-        Withdraw all funds
+        <div
+          v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
+          class="badge bg-primary text-white"
+          v-on:click="withdrawAllFunds()"
+        >
+          Withdraw all funds
+        </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -199,10 +204,11 @@ import { asyncLoading } from "vuejs-loading-plugin";
 import { currentProvider } from "../services/ether";
 import { FundService } from "../services/fundService";
 import router from "../routes";
+import DepositAmountCard from "./DepositAmountCard";
 
 export default {
   name: "AboutFund",
-  components: { AllInvestors, TokenValues, TokenBarChart },
+  components: { AllInvestors, TokenValues, TokenBarChart, DepositAmountCard },
   computed: {
     isFundBalanceIsLowerThanSoftCap() {
       return this.fundInfo.balance < this.fundInfo.softCap;
@@ -243,6 +249,7 @@ export default {
       monthNames: monthNames,
       daysTillTheEnd: 0,
       fundService: null,
+      showDepositCard: false,
     };
   },
 
@@ -341,18 +348,8 @@ export default {
         })
         .catch((ex) => console.error(ex));
     },
-    async invest() {
-      const amount = prompt("How much ether you want to invest?");
-
-      const tx = await this.fundService.makeDeposit(this.fundContractAddress, utils.parseEther(amount.toString()));
-
-      console.log(tx);
-
-      asyncLoading(tx.wait())
-        .then(async (v) => {
-          this.addFundDeposit({ amount: amount, owner: await this.fundService.getCurrentSigner() });
-        })
-        .catch((ex) => console.error(ex));
+    setShowDepositCard(bol){
+      this.showDepositCard = bol;
     },
     ...mapMutations(["addFundDeposit", "updateFundDeposits"]),
   },
@@ -360,6 +357,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.showed-deposit-card{
+  opacity: 0.1;
+}
+.layer{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+}
 .withdraw-fund-before-started-btn {
   font-weight: 600;
   font-size: 13px;
@@ -383,6 +391,23 @@ export default {
 
   img {
     padding: 2px;
+  }
+}
+.deposit-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  background-color: #ffffff;
+  z-index: 1000;
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
   }
 }
 

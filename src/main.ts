@@ -7,6 +7,16 @@ import router from "./routes";
 import store from "./store";
 import "./icons";
 
+Vue.directive('click-outside', {
+  bind(el, binding) {
+    el.addEventListener('click', e => e.stopPropagation());
+    document.body.addEventListener('click', binding.value);
+  },
+  unbind(el, binding) {
+    document.body.removeEventListener('click', binding.value);
+  },
+});
+
 import 'ant-design-vue/dist/antd.css';
 import Skeleton from 'ant-design-vue/lib/skeleton';
 Vue.component(Skeleton.name, Skeleton);

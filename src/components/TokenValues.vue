@@ -74,7 +74,7 @@ export default {
   }
 }
 .token-select {
-  display: inline-block;
+  display: block;
 
   .vs__dropdown-toggle {
     border: none;
