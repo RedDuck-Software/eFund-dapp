@@ -266,10 +266,11 @@ export default {
     async withdrawFundsBeforeStart() {
       const fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-      var tx = await fundContract.withdrawBeforeFundStarted();
+      var tx = await fundContract.withdrawDepositsBeforeFundStarted();
 
       const that = this;
 
+      
       asyncLoading(tx.wait())
         .then((_) => {
           console.log({ deposits: this.fundDeposits });
@@ -335,7 +336,7 @@ export default {
     async withdrawAllFunds() {
       const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
 
-      const tx = await fundContract.withdrawDeposits();
+      const tx = await fundContract.withdrawDepositsOf(this.signerAddress);
 
       console.log(tx);
 
