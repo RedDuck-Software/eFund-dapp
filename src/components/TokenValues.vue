@@ -7,7 +7,9 @@
       </div>
     </div>
     <div class="text-center mt-md-0 mt-3">
-      <h2 class="">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 v-if="fundContractStatus == 'Opened'">{{ fundInfo.balance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 v-else>{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+
       <div class="label">{{ fundContractStatus == "Completed" ? "End" : "Total" }} Balance</div>
     </div>
     <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
@@ -29,7 +31,14 @@ export default {
   name: "TokenValues",
   components: { vSelect },
   computed: {
-    ...mapGetters(["totalBalance", "eFundNetworkSettings", "fundContractStatus", "endBalance", "baseBalance"]),
+    ...mapGetters([
+      "totalBalance",
+      "eFundNetworkSettings",
+      "fundContractStatus",
+      "endBalance",
+      "baseBalance",
+      "fundInfo",
+    ]),
     tokensList() {
       return [this.eFundNetworkSettings.cryptoSign, "USDT"];
     },

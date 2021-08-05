@@ -180,17 +180,21 @@ export class FundService {
       isDepositsWithdrawed,
       allowedTokensAddresses,
       boughtTokensAddresses,
-      deposits,
       swapHistory,
       fundCreatedAt,
+      isFundProfitWitdrawed,
+      lockedFundProfit,
+      userDeposits,
     ] = await Promise.all([
       this.getFundDetails(address),
       fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
-      fundContract.getAllDeposits(),
       fundContract.getAllSwaps(),
       fundContract.fundCreatedAt(),
+      fundContract.fundProfitWitdrawed(),
+      fundContract.lockedFundProfit(),
+      fundContract.userDeposits(signerAddress),
     ]);
 
     return {
@@ -200,7 +204,9 @@ export class FundService {
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses.filter(v => v != ZERO_ADDRESS),
-
+      isFundProfitWitdrawed: Boolean(isFundProfitWitdrawed),
+      lockedFundProfit: parseFloat(utils.formatEther(lockedFundProfit)),
+      userHasDepositsInFund: parseFloat(userDeposits) != 0,
       swaps: swapHistory.map(v => {
         return {
           amountFrom: v.amountFrom,
@@ -297,7 +303,7 @@ export class FundService {
     const infoFromServer = await getFundInfoByAddress(fundAddress, this.networkSettings.chainId);
     const userInfoFromServer = await getUserByAddress(info._fundManager, this.networkSettings.chainId);
 
-    console.log("info from server: ", userInfoFromServer);
+    console.log("info from server: ", userInfoFromServer, info);
 
     return {
       fundDurationInMonths: parseFloat(info._fundDurationInMonths),
@@ -314,10 +320,11 @@ export class FundService {
       balance: parseFloat(utils.formatEther(info._currentBalance)),
       investorsAmount: info._deposits.length,
       deposits: info._deposits
-        .filter(v => v.depositOwner != ZERO_ADDRESS && !v.depositAmount.isZero())
+        .filter(v => v.depositOwner != ZERO_ADDRESS && !v.depositAmount.isZero() )
         .map(d => {
-          return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner };
+          return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner, isWithdrawed : d.isWithdrawed };
         }),
+
       description: infoFromServer?.description,
       title: infoFromServer?.name,
       author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,

@@ -179,11 +179,19 @@
       </div>
 
       <div
-        v-if="(fundContractStatus == 'Completed' || fundContractStatus == 'Closed') && !fundInfo.isDepositsWithdrawed"
+        v-if="fundContractStatus == 'Completed' && fundInfo.userHasDepositsInFund"
         class="badge bg-primary text-white"
-        v-on:click="withdrawAllFunds()"
+        v-on:click="withdrawMyFunds()"
       >
-        Withdraw all funds
+        Withdraw my funds
+      </div>
+
+      <div
+        v-if="fundContractStatus == 'Completed' && !fundInfo.isFundProfitWitdrawed"
+        class="badge bg-warning text-white"
+        v-on:click="withdrawFundProfit()"
+      >
+        Withdraw my manager profit
       </div>
     </div>
   </div>
@@ -266,9 +274,7 @@ export default {
     async withdrawFundsBeforeStart() {
       const fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-      var tx = await fundContract.withdrawBeforeFundStarted();
-
-      const that = this;
+      var tx = await fundContract.withdrawDepositsBeforeFundStarted();
 
       asyncLoading(tx.wait())
         .then((_) => {
@@ -277,6 +283,13 @@ export default {
           const newDepositsList = this.fundDeposits.filter(
             (v) => v.owner.toLowerCase() != this.signerAddress.toLowerCase()
           );
+
+          this.fundInfo.balance -= this.fundDeposits
+            .filter(v=> v.owner == this.signerAddress)
+            .map((v) => v.amount)
+            .reduce((a, b) => {
+              return a + b;
+            });
 
           this.updateFundDeposits(newDepositsList);
         })
@@ -332,18 +345,29 @@ export default {
         now: Math.floor(new Date() / 1000),
       });
     },
-    async withdrawAllFunds() {
+    async withdrawFundProfit() {
       const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
 
-      const tx = await fundContract.withdrawDeposits();
+      const tx = await fundContract.withdrawFundProfit();
 
       console.log(tx);
 
-      const that = this;
+      asyncLoading(tx.wait())
+        .then(async (v) => {
+          this.fundInfo.isFundProfitWitdrawed = true;
+        })
+        .catch((ex) => console.error(ex));
+    },
+    async withdrawMyFunds() {
+      const fundContract = this.fundService.getFundContractInstance(this.fundContractAddress);
+
+      const tx = await fundContract.withdrawDepositsOf(this.signerAddress);
+
+      console.log(tx);
 
       asyncLoading(tx.wait())
         .then(async (v) => {
-          this.updateFundDeposits([]);
+          this.fundInfo.userHasDepositsInFund = false;
         })
         .catch((ex) => console.error(ex));
     },
@@ -357,6 +381,7 @@ export default {
       asyncLoading(tx.wait())
         .then(async (v) => {
           this.addFundDeposit({ amount: amount, owner: await this.fundService.getCurrentSigner() });
+          this.fundInfo.balance += parseFloat(amount);
         })
         .catch((ex) => console.error(ex));
     },

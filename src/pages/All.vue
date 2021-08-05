@@ -120,7 +120,7 @@
               name="manager_name"
               placeholder="Enter name (or address)"
               class="form-control custom-input"
-              v-on:change="getAllFilteredFunds"
+              v-on:change="getAllFilteredFunds" 
             />
           </div>
         </div>
