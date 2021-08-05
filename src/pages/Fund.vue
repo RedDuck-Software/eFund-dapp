@@ -85,6 +85,7 @@ import AboutFund from "../components/AboutFund.vue";
 import { asyncLoading } from "vuejs-loading-plugin";
 import Trade from "../components/Trade.vue";
 import { oneDayDurationInSeconds } from "../services/helpers";
+import { JumbotronPlugin } from "bootstrap-vue";
 
 export default {
   name: "Fund",
@@ -136,6 +137,9 @@ export default {
     },
   },
   methods: {
+    findFirstOccurenceIndexArray(arr, pred) {
+      for (let i = 0; i < arr.length; i++) if (pred(arr[i], i) == true) return i;
+    },
     async loadContractInfo() {
       this.priceInValues = [
         { name: this.eFundNetworkSettings.cryptoSign, address: this.eFundNetworkSettings.wrappedCryptoAddress },
@@ -151,8 +155,6 @@ export default {
 
       this.fundAddress = this.$route.params.address;
 
-      console.log("fund address: ", this.fundAddress);
-
       this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
       this.fundContract = this.fundService.getFundContractInstance(this.fundAddress);
       const platform = this.fundService.getFundPlatformContractInstance(this.fundAddress);
@@ -166,6 +168,46 @@ export default {
 
       const fundInfo = await this.fundService.getFundDetailedInfo(this.fundAddress);
       this.fundInfo = fundInfo;
+
+      const wDepositsBeforeStartEventArgs = Array.from(
+        await this.fundContract.queryFilter("DepositWithdrawedBeforeActiveState")
+      ).map((v) => v.args);
+
+      console.log("args: ", wDepositsBeforeStartEventArgs);
+
+      let filteredCount = 0;
+
+      const excludedIndexes = []; // JSON.parse(JSON.stringify(this.fundInfo.deposits));
+
+      for (let i = 0; i < wDepositsBeforeStartEventArgs.length; i++) {
+        const element = wDepositsBeforeStartEventArgs[i];
+
+        const firstOccurance = this.findFirstOccurenceIndexArray(this.fundInfo.deposits, (el, j) => {
+          el.owner == element._depositOwner &&
+            el.amount == parseFloat(utils.formatEther(element._amount)) &&
+            !excludedIndexes.includes(j);
+        });
+
+        if (firstOccurance) excludedIndexes.push(firstOccurance);
+      }
+
+      console.log("excluded indexes: ", excludedIndexes);
+
+      const depositsWithoutExcluded = [];
+
+      for (let i = 0; i < this.fundInfo.deposits.length; i++) {
+        if (excludedIndexes.includes(i)) continue;
+
+        depositsWithoutExcluded.push(this.fundInfo.deposits[i]);
+      }
+
+      console.log("deposits without excluded: ", depositsWithoutExcluded);
+
+      this.fundInfo.deposits = JSON.parse(JSON.stringify(depositsWithoutExcluded));
+
+
+      console.log("deposits after update: ", this.fundInfo.deposits);
+
 
       const allowedTokens = [];
       const boughtTokens = [];
