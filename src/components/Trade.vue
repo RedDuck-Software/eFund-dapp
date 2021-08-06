@@ -126,6 +126,7 @@ export default {
       "boughtTokensAddresses",
       "totalBalance",
       "baseBalance",
+      "fundInfo",
     ]),
   },
   data() {
@@ -164,7 +165,7 @@ export default {
     const wCryptoObj = {
       name: wCrypto,
       address: wCryptoAddress,
-      amount: this.cryptoBalance,
+      amount: this.fundInfo.balance,
       decimals: 18,
     };
 
