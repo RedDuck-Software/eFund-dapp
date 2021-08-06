@@ -229,13 +229,21 @@ export class FundService {
   }
 
   async getAllManagerFunds(address) {
-    const data = await this.platformContract.getManagerFunds(address);
-
-    return data.slice().map(v => {
+    const data = (await this.platformContract.getManagerFunds(address)).slice().map(v => {
       return {
         address: v,
       };
     });
+
+    const res = [];
+
+    for (const val of data) {
+      res.push({
+        ...val,
+        ...(await getFundInfoByAddress(val.address, this.networkSettings.chainId)),
+      });
+    }
+    return data;
   }
 
   async getAllManagerFundsWithDetails(address) {

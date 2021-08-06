@@ -10,12 +10,10 @@
 <script>
 import Header from "./components/Header";
 import { mapGetters, mapMutations } from "vuex";
-import { eFundNetworkSettings as networkSettings } from "./constants";
 import "./App.scss";
-import router from "./routes";
-import { isMetaMaskInstalled, currentProvider } from "./services/ether";
+import { currentProvider } from "./services/ether";
 import { FundService } from "./services/fundService";
-import { getGenericSignNonce, getUserByAddress, getFundInfoByAddress } from "./services/helpers";
+import { getUserByAddress, getFundInfoByAddress } from "./services/helpers";
 
 export default {
   name: "App",
@@ -104,8 +102,5 @@ body {
   .header {
     width: 8%;
   }
-}
-
-.main {
 }
 </style>
