@@ -216,15 +216,6 @@ export class FundService {
           from: v.from,
         };
       }),
-      baseBalance: fundInfo.status == "Opened" ? null : parseFloat(utils.formatEther(await fundContract.baseBalance())),
-      endBalance:
-        fundInfo.status == "Opened" || fundInfo.status == "Active"
-          ? null
-          : parseFloat(utils.formatEther(await fundContract.endBalance())),
-      originalEndBalance:
-        fundInfo.status == "Opened" || fundInfo.status == "Active"
-          ? null
-          : parseFloat(utils.formatEther(await fundContract.originalEndBalance())),
     };
   }
 
@@ -315,9 +306,7 @@ export class FundService {
     const infoFromServer = await getFundInfoByAddress(fundAddress, this.networkSettings.chainId);
     const userInfoFromServer = await getUserByAddress(info._fundManager, this.networkSettings.chainId);
 
-    console.log("info from server: ", userInfoFromServer, info);
-
-    return {
+    const fundInfo = {
       fundDurationInMonths: parseFloat(info._fundDurationInMonths),
       managerAddress: info._fundManager,
       address: fundContract.address,
@@ -341,12 +330,27 @@ export class FundService {
             isWithdrawed: d.isWithdrawed,
           };
         }),
+    };
 
-      description: infoFromServer?.description,
-      title: infoFromServer?.name,
-      author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,
-      imgUrl: infoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : infoFromServer?.imageUrl,
-      authorProfileImageUrl: userInfoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : userInfoFromServer?.imageUrl,
+    return {
+      ...fundInfo,
+      ...{
+        baseBalance:
+          fundInfo.status == "Opened" ? null : parseFloat(utils.formatEther(await fundContract.baseBalance())),
+        endBalance:
+          fundInfo.status == "Opened" || fundInfo.status == "Active"
+            ? null
+            : parseFloat(utils.formatEther(await fundContract.endBalance())),
+        originalEndBalance:
+          fundInfo.status == "Opened" || fundInfo.status == "Active"
+            ? null
+            : parseFloat(utils.formatEther(await fundContract.originalEndBalance())),
+        description: infoFromServer?.description,
+        title: infoFromServer?.name,
+        author: userInfoFromServer?.username == null ? info._fundManager : userInfoFromServer?.username,
+        imgUrl: infoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : infoFromServer?.imageUrl,
+        authorProfileImageUrl: userInfoFromServer?.imageUrl == null ? DEFAULT_IMG_URL : userInfoFromServer?.imageUrl,
+      },
     };
   }
 

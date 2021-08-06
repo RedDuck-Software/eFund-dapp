@@ -14,7 +14,21 @@
 
           <div class="author text-truncate font-weight-bold">by {{ fundInfo.author }}</div>
 
-          <div class="balance mt-auto">
+          <div v-if="fundInfo.status == 'Completed'">
+            <div class="balance mt-auto">
+              Start Balance:
+              <span class="text-black"
+                >{{ fundInfo.baseBalance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign }}
+              </span>
+            </div>
+            <div class="balance mt-auto">
+              End Balance:
+              <span class="text-black"
+                >{{ fundInfo.originalEndBalance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign }}
+              </span>
+            </div>
+          </div>
+          <div v-else class="balance mt-auto">
             Balance:
             <span class="text-black">{{ fundInfo.balance.toFixed(2) }} {{ eFundNetworkSettings.cryptoSign }} </span>
           </div>
@@ -27,7 +41,7 @@
           <div class="schedule pl-2">Duration {{ fundInfo.fundDurationInMonths }} months</div>
         </div>
       </div>
-      <div class="progress" style="height: 17px">
+      <div v-show="fundInfo.status == 'Opened'" class="progress" style="height: 17px">
         <div
           class="progress-bar"
           role="progressbar"
@@ -48,7 +62,7 @@
           Max: <span class="text-black">{{ fundInfo.hardCap }} {{ eFundNetworkSettings.cryptoSign }}</span>
         </div>
         <div class="desc-item label">
-          Fee: <span class="text-black">{{ fundInfo.profitFee }}%</span>
+          Profit fee: <span class="text-black">{{ fundInfo.profitFee }}%</span>
         </div>
       </div>
       <div class="d-flex flex-wrap">
@@ -60,7 +74,7 @@
 
         <router-link
           class="no-link-styles badge bg-black text-white"
-          style="margin-left:5px;"
+          style="margin-left: 5px"
           :to="{
             name: 'Fund',
             params: {
