@@ -8,7 +8,7 @@
 
     <h4>Current platform fee: {{ currentPlatformFee }}%</h4>
 
-    <ul v-if="isCurrentUserDepositsWithdrawed" class="stats-list">
+    <ul v-if="fundInfo.userHasDepositsInFund && isCurrentUserDepositsWithdrawed" class="stats-list">
       <li>Fund startBalance: {{ fundInfo.baseBalance }} {{ eFundNetworkSettings.cryptoSign }}</li>
       <li>Total swaps: {{ fundInfo.swaps.length }}</li>
       <li>Total deposits: {{ fundInfo.deposits.length }}</li>
@@ -36,7 +36,6 @@ export default {
   name: "FundCompletedStats",
   data() {
     return {
-      isUserHaveDepositsInFund: false,
       isCurrentUserDepositsWithdrawed: true,
     };
   },
@@ -87,11 +86,7 @@ export default {
     this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
 
-    this.isUserHaveDepositsInFund = this.fundInfo.deposits.some((v) => {
-      return v.owner.toLowerCase() == this.signerAddress.toLowerCase();
-    });
-
-    if (this.isUserHaveDepositsInFund) {
+    if (this.fundInfo.userHasDepositsInFund) {
       const withdrawEvents = Array.from(await this.fundContract.queryFilter("DepositsWitdrawed")).map((v) => v.args);
 
       console.log("withdrawEvents: ", withdrawEvents);
