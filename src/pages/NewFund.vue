@@ -274,10 +274,11 @@
               </div>
             </div>
             <div class="progress" style="height: 17px">
+              <!-- 'width: ${(100 / form.maxSize) * form.collateral}%;' -->
               <div
                 class="progress-bar"
                 role="progressbar"
-                :style="`width: ${(100 / form.maxSize) * form.collateral}%;`"
+                :style="'width:25%;'"
                 :aria-valuenow="form.collateral"
                 aria-valuemin="0"
                 :aria-valuemax="form.maxSize"
@@ -314,7 +315,7 @@ import { getSigner, isMetaMaskInstalled } from "@/services/ether";
 import { mapGetters, mapMutations } from "vuex";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
-import { oneDayDurationInSeconds, createFundInfo } from "../services/helpers";
+import { oneDayDurationInSeconds, createFundInfo, getFundInfoByAddress } from "../services/helpers";
 import ToggleBtn from "../components/ToggleBtn.vue";
 import { ethers, utils } from "ethers";
 import { asyncLoading } from "vuejs-loading-plugin";
@@ -335,7 +336,7 @@ export default {
 
       return false;
     },
-    ...mapGetters(["platformSettings", "eFundNetworkSettings", "signerAddress"]),
+    ...mapGetters(["platformSettings", "eFundNetworkSettings", "signerAddress", "myFundsAsManager"]),
   },
   data() {
     return {
@@ -418,7 +419,22 @@ export default {
           .then(async (v) => {
             this.step++;
             const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
-            this.updateMyFundsAsManager(curUserFundsAsManager);
+            const createdFund = curUserFundsAsManager.filter((v) => {
+              console.log("v:", v);
+              return this.myFundsAsManager.some((d) => {
+                console.log("d:", d);
+                return d.address != v.address;
+              });
+            })[0];
+
+            console.log("createdFund: ", createdFund);
+
+            this.addMyFundsAsManager({
+              address: createdFund.address,
+              imageUrl: this.fundBaseInfo.imageLocalPath,
+              name: this.fundBaseInfo.name,
+              description: this.fundBaseInfo.description,
+            });
 
             createFundInfo(
               {
@@ -479,7 +495,7 @@ export default {
       this.fundPresetIndex = index;
       this.form = JSON.parse(JSON.stringify(this.fundPreset[index]));
     },
-    ...mapMutations(["updateMyFundsAsManager"]),
+    ...mapMutations(["updateMyFundsAsManager", "addMyFundsAsManager"]),
   },
 };
 </script>

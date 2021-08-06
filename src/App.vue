@@ -47,7 +47,7 @@ export default {
       this.updatePlatformSettings(platformSettings);
     }
 
-    const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
+    const curUserFundsAsManager = await this.fundService.getAllManagerFundsWithServerInfo(this.signerAddress);
 
     console.log("user funds as manager: ", curUserFundsAsManager);
 
