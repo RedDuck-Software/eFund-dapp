@@ -23,7 +23,6 @@ const store = new Vuex.Store({
     totalBalance: null,
     fundCreatedAt: null,
     fundStartTimestamp: null,
-    isDepositsWithdrawed: false,
     hardCap: null,
     baseBalance: null,
     endBalance: null,
@@ -86,9 +85,6 @@ const store = new Vuex.Store({
     },
     updateFundStartTimestamp(state, time) {
       state.fundStartTimestamp = time;
-    },
-    updateIsDepositsWithdrawed(state, isDepositsWithdrawed) {
-      state.isDepositsWithdrawed = isDepositsWithdrawed;
     },
     updateSoftCap(state, softCap) {
       state.softCap = softCap;
@@ -197,7 +193,6 @@ const store = new Vuex.Store({
       state.boughtTokensAddresses = [];
       state.allowedTokensAddresses = [];
       state.fundStartTimestamp = null;
-      state.isDepositsWithdrawed = false;
       state.hardCap = null;
       state.softCap = null;
       state.swaps = [];
@@ -224,7 +219,6 @@ const store = new Vuex.Store({
     boughtTokensAddresses: state => state.boughtTokensAddresses,
     allowedTokensAddresses: state => state.allowedTokensAddresses,
     fundStartTimestamp: state => state.fundStartTimestamp,
-    isDepositsWithdrawed: state => state.isDepositsWithdrawed,
     softCap: state => state.softCap,
     hardCap: state => state.hardCap,
     funds: state => state.funds,

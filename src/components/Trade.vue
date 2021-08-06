@@ -274,7 +274,7 @@ export default {
     },
     async swap() {
       if (this.fromSwapCurr.amount < this.fromSwapValue) {
-        alert(`Insufficient amount of ${this.fromSwapCurr.name}`);
+        alert(`Insufficient amount of ${this.fromSwapCurr.name}. Current amount: ${this.fromSwapCurr.amount}, provided: ${this.fromSwapValue} `);
         return;
       }
 

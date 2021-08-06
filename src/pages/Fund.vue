@@ -263,7 +263,6 @@ export default {
       this.updateFundManager(fundInfo.managerAddress);
       this.updateFundStatus(fundInfo.status);
       this.updateFundStartTimestamp(fundInfo.fundStartTimestamp);
-      this.updateIsDepositsWithdrawed(fundInfo.isDepositsWithdrawed);
       this.updateHardCap(fundInfo.hardCap);
       this.updateSoftCap(fundInfo.softCap);
       this.updateMinDepositAmount(fundInfo.minDepositAmount);
@@ -342,7 +341,6 @@ export default {
       "updateBoughtTokensAddresses",
       "updateIsInfoLoaded",
       "updateFundStartTimestamp",
-      "updateIsDepositsWithdrawed",
       "updateHardCap",
       "updateSoftCap",
       "updateMinDepositAmount",
