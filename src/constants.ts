@@ -1,15 +1,14 @@
-export const FUND_PLATFROM_ADDRESS_BSC = "0x687bB309b2213973F188F9470647799E686fa3D2";
-export const EFUND_TOKEN_BSC = "0x92Ce2D7781db1d1f59eDCf89aD3C91d7058E14dA";
+export const FUND_PLATFROM_ADDRESS_BSC = "0xAeA6C262F8e163889e924460D34DEdF47AB9a022";
+export const EFUND_TOKEN_BSC = "0x7d2120bc175f20dbb805738144d1Cf4826Eb554c";
 
 export const FUND_PLATFROM_ADDRESS_ETH = "";
 export const EFUND_TOKEN_ETH = "";
 
-export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x49fd2BE640DB2910c2fAb69bB8531Ab6E76127ff";
-export const EFUND_TOKEN_LOCALDEV = "0x4C2F7092C2aE51D986bEFEe378e50BD4dB99C901";
+export const FUND_PLATFROM_ADDRESS_LOCALDEV = "0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00";
+export const EFUND_TOKEN_LOCALDEV = "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf";
 
 export const WBNB_ADDRESS = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 export const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-
 
 export const PANCACKE_ROUTER = "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3";
 export const UNISWAP_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
@@ -23,10 +22,9 @@ import SwapRouter from "./artifacts/@uniswap/v2-periphery/contracts/UniswapV2Rou
 import SwapFactory from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol/IUniswapV2Factory.json";
 import SwapPair from "./artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json";
 
-
 export const SERVER_API_URL = "https://efund-server.azurewebsites.net";
 
-export const DEFAULT_IMG_URL = SERVER_API_URL  + '/image/default.jpeg';
+export const DEFAULT_IMG_URL = SERVER_API_URL + "/image/default.jpeg";
 
 export const ABI = JSON.stringify(FundAbi.abi);
 
@@ -44,14 +42,11 @@ export const SWAP_PAIR_ABI = JSON.stringify(SwapPair.abi);
 
 export const fundStatuses = [{ value: "Opened" }, { value: "Active" }, { value: "Completed" }, { value: "Closed" }];
 
-export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
+export const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-
-export const eFundNetworkSettings =
-{
-  97: { // BSC Testnet
+export const eFundNetworkSettings = {
+  97: {
+    // BSC Testnet
     chainId: 97,
     networkName: "BSC Testnet",
     cryptoSign: "BNB",
@@ -71,7 +66,8 @@ export const eFundNetworkSettings =
         name: "BUSD",
         address: "0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7",
         decimals: 18,
-        logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
+        logo:
+          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
       },
       {
         name: "DAI",
@@ -81,7 +77,8 @@ export const eFundNetworkSettings =
       },
     ],
   },
-  31337: { // BSC Testnet
+  31337: {
+    // BSC Testnet
     chainId: 31337,
     networkName: "ETH HardHat",
     cryptoSign: "ETH",
@@ -105,7 +102,6 @@ export const eFundNetworkSettings =
     ],
   },
 };
-
 
 export const pancakeRouterContractAbi = [
   {

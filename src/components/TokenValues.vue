@@ -8,9 +8,10 @@
     </div>
     <div class="text-center mt-md-0 mt-3">
       <h2 v-if="fundContractStatus == 'Opened'">{{ fundInfo.balance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-      <h2 v-else>{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 v-else-if="fundContractStatus == 'Active'">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 v-else>{{ fundInfo.endBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
 
-      <div class="label">{{ fundContractStatus == "Completed" ? "End" : "Total" }} Balance</div>
+      <div class="label">{{ fundContractStatus == "Completed" ? "End" : "Current" }} Balance</div>
     </div>
     <div v-if="fundContractStatus != 'Opened'" class="text-center mt-md-0 mt-3 ml-4 ml-md-0">
       <h2 v-if="totalBalance > baseBalance" class="text-primary">&#x2191;{{ currentRoi.toFixed(2) }}</h2>
@@ -66,8 +67,9 @@ export default {
     calculateCurrentRoi() {
       let roi;
 
-      if (this.fundContractStatus == `Active`) roi = 100 + getPercentageDiff(this.baseBalance, this.totalBalance);
-      else roi = 100 + getPercentageDiff(this.baseBalance, this.endBalance);
+      if (this.fundContractStatus == `Active`)
+        roi = 100 + getPercentageDiff(this.fundInfo.baseBalance, this.totalBalance);
+      else roi = 100 + getPercentageDiff(this.fundInfo.baseBalance, this.fundInfo.originalEndBalance);
 
       return roi;
     },

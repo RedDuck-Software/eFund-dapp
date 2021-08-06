@@ -87,23 +87,15 @@
                   <h2 class="text-black">{{ hardCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
                   <div class="label">Max fund size</div>
                 </div>
+                <div class="col-sm-6">
+                  <h2 class="text-black">{{ fundInfo.collateral }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+                  <div class="label">Manager collateral</div>
+                </div>
               </div>
               <FundCompletedStats v-if="fundContractStatus == 'Completed'" class="completed-fund-stats" />
 
               <TokenBarChart v-if="fundContractStatus == 'Active'" />
             </div>
-            <button
-              v-if="
-                fundContractStatus == 'Completed' &&
-                fundContractStatus == 'Closed' &&
-                fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000 &&
-                !isDepositsWithdrawed
-              "
-              class="btn btn-primary box-shadow completed d-none d-md-block"
-              @click="setFundStatusCompleted"
-            >
-              <h3 class="middle text-white">Withdraw all funds</h3>
-            </button>
           </div>
         </div>
         <div class="col-md-4">
@@ -256,7 +248,13 @@ export default {
       fundService: null,
     };
   },
-
+  watch: {
+    fundContractStatus(v) {
+      if (v == "Active") {
+        this.updateInfoOnStatusActive();
+      }
+    },
+  },
   mounted: function () {
     console.log("fund info : ", this.fundInfo);
 
@@ -285,7 +283,7 @@ export default {
           );
 
           this.fundInfo.balance -= this.fundDeposits
-            .filter(v=> v.owner == this.signerAddress)
+            .filter((v) => v.owner == this.signerAddress)
             .map((v) => v.amount)
             .reduce((a, b) => {
               return a + b;

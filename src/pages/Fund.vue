@@ -86,6 +86,7 @@ import { asyncLoading } from "vuejs-loading-plugin";
 import Trade from "../components/Trade.vue";
 import { oneDayDurationInSeconds } from "../services/helpers";
 import { JumbotronPlugin } from "bootstrap-vue";
+import { parseEther } from "@ethersproject/units";
 
 export default {
   name: "Fund",
@@ -175,20 +176,31 @@ export default {
 
       console.log("args: ", wDepositsBeforeStartEventArgs);
 
-      let filteredCount = 0;
-
       const excludedIndexes = []; // JSON.parse(JSON.stringify(this.fundInfo.deposits));
 
       for (let i = 0; i < wDepositsBeforeStartEventArgs.length; i++) {
         const element = wDepositsBeforeStartEventArgs[i];
 
         const firstOccurance = this.findFirstOccurenceIndexArray(this.fundInfo.deposits, (el, j) => {
-          el.owner == element._depositOwner &&
-            el.amount == parseFloat(utils.formatEther(element._amount)) &&
-            !excludedIndexes.includes(j);
+          console.log("state: ", {
+            elOwner: el.owner,
+            elAmount: el.amount.toString(),
+
+            elementAmount: element._amount,
+            elementOwner: element._depositOwner,
+            isExcluded: excludedIndexes.includes(j),
+          });
+
+          return (
+            el.owner.toLowerCase() == element._depositOwner.toLowerCase() &&
+            el.amount.toFixed(2) == parseFloat(utils.formatEther(element._amount)).toFixed(2) &&
+            !excludedIndexes.includes(j)
+          );
         });
 
-        if (firstOccurance) excludedIndexes.push(firstOccurance);
+        console.log("occurance: ", firstOccurance);
+
+        if (firstOccurance != undefined) excludedIndexes.push(firstOccurance);
       }
 
       console.log("excluded indexes: ", excludedIndexes);
@@ -205,9 +217,7 @@ export default {
 
       this.fundInfo.deposits = JSON.parse(JSON.stringify(depositsWithoutExcluded));
 
-
       console.log("deposits after update: ", this.fundInfo.deposits);
-
 
       const allowedTokens = [];
       const boughtTokens = [];
@@ -302,6 +312,8 @@ export default {
       asyncLoading(tx.wait())
         .then(() => {
           this.updateFundStatus(fundStatuses[2].value);
+          this.fundInfo.originalEndBalance = this.fundInfo.balance;
+          this.activeItem = 'about';
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);

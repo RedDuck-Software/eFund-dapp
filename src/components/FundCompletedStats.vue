@@ -1,7 +1,14 @@
 <template>
   <div>
     <h2>Fund stats</h2>
-    <ul class="stats-list">
+
+    <h3 v-if="fundInfo.endBalance > fundInfo.originalEndBalance" style="color: red">
+      Manager collateral is using for repaying investments!
+    </h3>
+
+    <h4>Current platform fee: {{ currentPlatformFee }}%</h4>
+
+    <ul v-if="fundInfo.userHasDepositsInFund && isCurrentUserDepositsWithdrawed" class="stats-list">
       <li>Fund startBalance: {{ fundInfo.baseBalance }} {{ eFundNetworkSettings.cryptoSign }}</li>
       <li>Total swaps: {{ fundInfo.swaps.length }}</li>
       <li>Total deposits: {{ fundInfo.deposits.length }}</li>
@@ -12,7 +19,7 @@
         {{ eFundNetworkSettings.cryptoSign }}
       </li>
       <li v-if="doesUserHasDepositsIfFund">
-        You`ll after withdrawal: {{ userProfitFromFund }} {{ eFundNetworkSettings.cryptoSign }}
+        You`ll after withdrawal: ~{{ userProfitWithFundFeesIncluded }} {{ eFundNetworkSettings.cryptoSign }}
       </li>
     </ul>
   </div>
@@ -28,9 +35,17 @@ import { currentProvider } from "@/services/ether";
 export default {
   name: "FundCompletedStats",
   data() {
-    return {};
+    return {
+      isCurrentUserDepositsWithdrawed: true,
+    };
   },
   computed: {
+    userProfitWithFundFeesIncluded() {
+      return this.userProfitFromFund - (this.userProfitFromFund * this.currentPlatformFee) / 100;
+    },
+    currentPlatformFee() {
+      return this.fundInfo.originalEndBalance >= this.fundInfo.baseBalance ? this.fundInfo.profitFee : 3;
+    },
     userProfitFromFund() {
       const totalDepositsAmount = this.userDepositsAmountInTotal;
       console.log("user deposit total: ", totalDepositsAmount);
@@ -70,6 +85,16 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    if (this.fundInfo.userHasDepositsInFund) {
+      const withdrawEvents = Array.from(await this.fundContract.queryFilter("DepositsWitdrawed")).map((v) => v.args);
+
+      console.log("withdrawEvents: ", withdrawEvents);
+
+      this.isCurrentUserDepositsWithdrawed = !this.fundInfo.deposits.some((v) =>
+        withdrawEvents.some((d) => d._depositor.toLowerCase() == v.owner.toLowerCase())
+      );
+    }
   },
 };
 </script>
