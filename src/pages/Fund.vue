@@ -134,6 +134,7 @@ export default {
       if (to.name == from.name && to.name == "Fund" && to.params.address != from.params.address) {
         this.isLoading = true;
         this.loadContractInfo().then((v) => (this.isLoading = false));
+        this.activeItem = "about";
       }
     },
   },
@@ -313,7 +314,7 @@ export default {
         .then(() => {
           this.updateFundStatus(fundStatuses[2].value);
           this.fundInfo.originalEndBalance = this.fundInfo.balance;
-          this.activeItem = 'about';
+          this.activeItem = "about";
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);

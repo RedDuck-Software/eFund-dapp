@@ -82,6 +82,8 @@ export const eFundNetworkSettings = {
     chainId: 31337,
     networkName: "ETH HardHat",
     cryptoSign: "ETH",
+    cryptoLogo:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/1200px-Ethereum_logo_2014.svg.png",
     wrappedCryptoAddress: WETH_ADDRESS,
     eFundPlatformAddress: FUND_PLATFROM_ADDRESS_LOCALDEV,
     eFundTokenAddress: EFUND_TOKEN_LOCALDEV,
