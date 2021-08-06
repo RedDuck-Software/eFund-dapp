@@ -73,7 +73,7 @@
             <div class="sliders pt-3 mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Collateral</div>
-                <div class="badge bg-black text-white">{{ form.collateral }} ETH</div>
+                <div class="badge bg-black text-white">{{ form.collateral }} {{ eFundNetworkSettings.cryptoSign }}</div>
               </div>
               <vue-slider
                 v-model="form.collateral"
@@ -92,7 +92,7 @@
             <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Min starting fund size</div>
-                <div class="badge bg-black text-white">{{ form.minSize }}ETH</div>
+                <div class="badge bg-black text-white">{{ form.minSize }} {{ eFundNetworkSettings.cryptoSign }}</div>
               </div>
               <vue-slider
                 v-model="form.minSize"
@@ -111,7 +111,7 @@
             <div class="sliders mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="label">Max fund size</div>
-                <div class="badge bg-black text-white">{{ form.maxSize }}ETH</div>
+                <div class="badge bg-black text-white">{{ form.maxSize }} {{ eFundNetworkSettings.cryptoSign }}</div>
               </div>
 
               <vue-slider
@@ -124,7 +124,24 @@
                 :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
               ></vue-slider>
             </div>
+            <div class="sliders mb-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="label">Minimal deposit amount</div>
+                <div class="badge bg-black text-white">
+                  {{ form.minimalDepositAmount }} {{ eFundNetworkSettings.cryptoSign }}
+                </div>
+              </div>
 
+              <vue-slider
+                v-model="form.minimalDepositAmount"
+                :interval="0.01"
+                :min="0.01"
+                :max="parseFloat((form.maxSize / 10).toFixed(2))"
+                :tooltip="'none'"
+                :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"
+                :tooltip-style="{ backgroundColor: 'black', borderColor: 'black' }"
+              ></vue-slider>
+            </div>
             <div class="mt-3 mb-2"></div>
 
             <div class="mt-auto text-center">
@@ -335,6 +352,7 @@ export default {
       fundPresetIndex: 0,
       platformContract: null,
       fundService: null,
+
       fundPreset: [
         {
           collateral: 2,
@@ -343,6 +361,7 @@ export default {
           tillStart: 1,
           fee: 2,
           duration: 1,
+          minimalDepositAmount: 0.1,
         },
         {
           collateral: 4,
@@ -351,6 +370,7 @@ export default {
           tillStart: 6,
           fee: 5,
           duration: 3,
+          minimalDepositAmount: 0.1,
         },
         {
           collateral: 7,
@@ -359,6 +379,7 @@ export default {
           tillStart: 10,
           fee: 8,
           duration: 6,
+          minimalDepositAmount: 0.1,
         },
       ],
     };
@@ -432,7 +453,7 @@ export default {
         utils.parseEther(this.form.minSize.toString()),
         utils.parseEther(this.form.maxSize.toString()),
         this.form.fee,
-        utils.parseEther("0.0000001"), //this.minimalDepositAmount,
+        utils.parseEther(this.form.minimalDepositAmount.toString()),
         this.form.tillStart * oneDayDurationInSeconds,
         [],
         overrides
