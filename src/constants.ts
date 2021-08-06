@@ -90,14 +90,20 @@ export const eFundNetworkSettings = {
       {
         name: "USDT",
         address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        decimals: 18,
+        logo: "https://cryptologos.cc/logos/tether-usdt-logo.png",
       },
       {
         name: "USDC",
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        decimals: 18,
       },
       {
         name: "BUSD",
         address: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        decimals: 18,
+        logo:
+          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56/logo.png",
       },
     ],
   },
