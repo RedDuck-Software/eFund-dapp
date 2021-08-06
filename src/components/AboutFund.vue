@@ -55,7 +55,7 @@
                     class="progress-bar"
                     role="progressbar"
                     :style="`width: ${fundOpenedPercentage}%;${
-                      isFundBalanceIsLowerThanSoftCap ? 'background: red;' : ''
+                      new Date() / 1000 > this.fundCanBeStartedAt && isFundBalanceIsLowerThanSoftCap ? 'background: red;' : ''
                     }`"
                     aria-valuenow="25"
                     aria-valuemin="0"
@@ -63,14 +63,13 @@
                   ></div>
                 </div>
 
-                <div v-if="isFundBalanceIsLowerThanSoftCap" class="label text-gray mt-1">
-                  Fund cannot be started till it balance is lower than fund`s min size
-                </div>
-                <div v-else-if="new Date() / 1000 > this.fundCanBeStartedAt" class="label text-gray mt-1">
+                <div v-if="new Date() / 1000 < this.fundCanBeStartedAt" class="label text-gray mt-1">Fund starts in: {{ fundCanBeStartedInDays }} days</div>
+                <div v-else-if="new Date() / 1000 > this.fundCanBeStartedAt && !isFundBalanceIsLowerThanSoftCap" class="label text-gray mt-1">
                   Fund can be started
                 </div>
-
-                <div v-else class="label text-gray mt-1">Fund starts in: {{ fundCanBeStartedInDays }} days</div>
+                <div v-else class="label text-gray mt-1">
+                  Fund cannot be started till it balance is lower than fund`s min size
+                </div>
               </div>
 
               <div class="row text-center mt-4 pt-2">

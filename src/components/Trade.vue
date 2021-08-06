@@ -165,7 +165,11 @@ export default {
     const wCryptoObj = {
       name: wCrypto,
       address: wCryptoAddress,
+<<<<<<< HEAD
       amount: this.cryptoBalance - this.fundInfo.collateral,
+=======
+      amount: this.fundInfo.balance,
+>>>>>>> master
       decimals: 18,
     };
 
