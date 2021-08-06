@@ -165,11 +165,7 @@ export default {
     const wCryptoObj = {
       name: wCrypto,
       address: wCryptoAddress,
-<<<<<<< HEAD
-      amount: this.cryptoBalance - this.fundInfo.collateral,
-=======
       amount: this.fundInfo.balance,
->>>>>>> master
       decimals: 18,
     };
 
@@ -278,7 +274,7 @@ export default {
     },
     async swap() {
       if (this.fromSwapCurr.amount < this.fromSwapValue) {
-        alert(`Insufficient amount of ${this.fromSwapCurr.name}`);
+        alert(`Insufficient amount of ${this.fromSwapCurr.name}. Current amount: ${this.fromSwapCurr.amount}, provided: ${this.fromSwapValue} `);
         return;
       }
 

@@ -419,22 +419,16 @@ export default {
           .then(async (v) => {
             this.step++;
 
-            // const createdFund = curUserFundsAsManager.filter((v) => {
-            //   console.log("v:", v);
-            //   return this.myFundsAsManager.some((d) => {
-            //     console.log("d:", d);
-            //     return d.address != v.address;
-            //   });
-            // })[0];
+            const curUserFundsAsManager = await this.fundService.getAllManagerFunds(this.signerAddress);
 
-            // console.log("createdFund: ", createdFund);
+            const createdFund = curUserFundsAsManager[curUserFundsAsManager.length - 1];
 
-            // this.addMyFundsAsManager({
-            //   address: createdFund.address,
-            //   imageUrl: this.fundBaseInfo.imageLocalPath,
-            //   name: this.fundBaseInfo.name,
-            //   description: this.fundBaseInfo.description,
-            // });
+            this.addMyFundsAsManager({
+              address: createdFund.address,
+              imageUrl: this.fundBaseInfo.imageLocalPath,
+              name: this.fundBaseInfo.name,
+              description: this.fundBaseInfo.description,
+            });
 
             createFundInfo(
               {
@@ -446,11 +440,6 @@ export default {
               this.eFundNetworkSettings.chainId
             ).then(async (v) => {
               console.log("Fund created successfully!");
-              const curUserFundsAsManager = await this.fundService.getAllManagerFundsWithServerDetails(
-                this.signerAddress
-              );
-
-              this.updateMyFundsAsManager(curUserFundsAsManager);
             });
           })
           .catch((ex) => console.error(ex));

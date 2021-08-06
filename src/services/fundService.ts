@@ -177,7 +177,6 @@ export class FundService {
 
     const [
       fundInfo,
-      isDepositsWithdrawed,
       allowedTokensAddresses,
       boughtTokensAddresses,
       swapHistory,
@@ -187,7 +186,6 @@ export class FundService {
       userDeposits,
     ] = await Promise.all([
       this.getFundDetails(address),
-      fundContract.isDepositsWithdrawed(),
       fundContract.getAllowedTokensAddresses(),
       fundContract.getBoughtTokensAddresses(),
       fundContract.getAllSwaps(),
@@ -200,7 +198,6 @@ export class FundService {
     return {
       ...fundInfo,
       fundCreatedAt: parseFloat(fundCreatedAt.toString()),
-      isDepositsWithdrawed: isDepositsWithdrawed,
       isManager: fundInfo.managerAddress == signerAddress,
       allowedTokensAddresses: allowedTokensAddresses,
       boughtTokensAddresses: boughtTokensAddresses.filter(v => v != ZERO_ADDRESS),
