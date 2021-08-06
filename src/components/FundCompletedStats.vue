@@ -19,7 +19,7 @@
         {{ eFundNetworkSettings.cryptoSign }}
       </li>
       <li v-if="doesUserHasDepositsIfFund">
-        You`ll after withdrawal: ~{{ userProfitWithFundFeesIncluded.toFixed(4) }} {{ eFundNetworkSettings.cryptoSign }}
+        You`ll after withdrawal: ~{{ userProfitWithFundFeesIncluded }} {{ eFundNetworkSettings.cryptoSign }}
       </li>
     </ul>
   </div>
@@ -90,8 +90,6 @@ export default {
     this.isUserHaveDepositsInFund = this.fundInfo.deposits.some((v) => {
       return v.owner.toLowerCase() == this.signerAddress.toLowerCase();
     });
-
-    console.log("this.isUserHaveDepositsInFund", this.isUserHaveDepositsInFund);
 
     if (this.isUserHaveDepositsInFund) {
       const withdrawEvents = Array.from(await this.fundContract.queryFilter("DepositsWitdrawed")).map((v) => v.args);

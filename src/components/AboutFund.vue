@@ -96,7 +96,6 @@
 
               <TokenBarChart v-if="fundContractStatus == 'Active'" />
             </div>
-
           </div>
         </div>
         <div class="col-md-4">
@@ -249,7 +248,13 @@ export default {
       fundService: null,
     };
   },
-
+  watch: {
+    fundContractStatus(v) {
+      if (v == "Active") {
+        this.updateInfoOnStatusActive();
+      }
+    },
+  },
   mounted: function () {
     console.log("fund info : ", this.fundInfo);
 

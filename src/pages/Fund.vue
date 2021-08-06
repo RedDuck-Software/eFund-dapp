@@ -313,6 +313,7 @@ export default {
         .then(() => {
           this.updateFundStatus(fundStatuses[2].value);
           this.fundInfo.originalEndBalance = this.fundInfo.balance;
+          this.activeItem = 'about';
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);

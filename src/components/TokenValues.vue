@@ -9,7 +9,7 @@
     <div class="text-center mt-md-0 mt-3">
       <h2 v-if="fundContractStatus == 'Opened'">{{ fundInfo.balance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
       <h2 v-else-if="fundContractStatus == 'Active'">{{ totalBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
-      <h2 v-els>{{ fundInfo.endBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+      <h2 v-else>{{ fundInfo.endBalance }} {{ eFundNetworkSettings.cryptoSign }}</h2>
 
       <div class="label">{{ fundContractStatus == "Completed" ? "End" : "Current" }} Balance</div>
     </div>
