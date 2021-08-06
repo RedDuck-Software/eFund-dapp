@@ -192,9 +192,9 @@ export default {
           });
 
           return (
-            (el.owner.toLowerCase() == element._depositOwner.toLowerCase()) &&
-            (el.amount.toFixed(2) == parseFloat(utils.formatEther(element._amount)).toFixed(2)) &&
-            (!excludedIndexes.includes(j))
+            el.owner.toLowerCase() == element._depositOwner.toLowerCase() &&
+            el.amount.toFixed(2) == parseFloat(utils.formatEther(element._amount)).toFixed(2) &&
+            !excludedIndexes.includes(j)
           );
         });
 
@@ -312,6 +312,7 @@ export default {
       asyncLoading(tx.wait())
         .then(() => {
           this.updateFundStatus(fundStatuses[2].value);
+          this.fundInfo.originalEndBalance = this.fundInfo.balance;
         })
         .catch((ex) => {
           alert("Cannot change status: ", ex);

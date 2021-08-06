@@ -3,12 +3,12 @@
     <h2>Fund stats</h2>
 
     <h3 v-if="fundInfo.endBalance > fundInfo.originalEndBalance" style="color: red">
-      Using manager collateral to repay your investments!
+      Manager collateral is using for repaying investments!
     </h3>
 
     <h4>Current platform fee: {{ currentPlatformFee }}%</h4>
-    
-    <ul class="stats-list">
+
+    <ul v-if="isCurrentUserDepositsWithdrawed" class="stats-list">
       <li>Fund startBalance: {{ fundInfo.baseBalance }} {{ eFundNetworkSettings.cryptoSign }}</li>
       <li>Total swaps: {{ fundInfo.swaps.length }}</li>
       <li>Total deposits: {{ fundInfo.deposits.length }}</li>
@@ -35,7 +35,10 @@ import { currentProvider } from "@/services/ether";
 export default {
   name: "FundCompletedStats",
   data() {
-    return {};
+    return {
+      isUserHaveDepositsInFund: false,
+      isCurrentUserDepositsWithdrawed: true,
+    };
   },
   computed: {
     userProfitWithFundFeesIncluded() {
@@ -83,6 +86,22 @@ export default {
   async mounted() {
     this.fundService = new FundService(this.eFundNetworkSettings, currentProvider());
     this.fundContract = await this.fundService.getFundContractInstance(this.fundContractAddress);
+
+    this.isUserHaveDepositsInFund = this.fundInfo.deposits.some((v) => {
+      return v.owner.toLowerCase() == this.signerAddress.toLowerCase();
+    });
+
+    console.log("this.isUserHaveDepositsInFund", this.isUserHaveDepositsInFund);
+
+    if (this.isUserHaveDepositsInFund) {
+      const withdrawEvents = Array.from(await this.fundContract.queryFilter("DepositsWitdrawed")).map((v) => v.args);
+
+      console.log("withdrawEvents: ", withdrawEvents);
+
+      this.isCurrentUserDepositsWithdrawed = !this.fundInfo.deposits.some((v) =>
+        withdrawEvents.some((d) => d._depositor.toLowerCase() == v.owner.toLowerCase())
+      );
+    }
   },
 };
 </script>

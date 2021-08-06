@@ -96,18 +96,7 @@
 
               <TokenBarChart v-if="fundContractStatus == 'Active'" />
             </div>
-            <button
-              v-if="
-                fundContractStatus == 'Completed' &&
-                fundContractStatus == 'Closed' &&
-                fundStartTimestamp + fundDurationMonths * 30 * oneDayDurationInSeconds < new Date() / 1000 &&
-                !isDepositsWithdrawed
-              "
-              class="btn btn-primary box-shadow completed d-none d-md-block"
-              @click="setFundStatusCompleted"
-            >
-              <h3 class="middle text-white">Withdraw all funds</h3>
-            </button>
+
           </div>
         </div>
         <div class="col-md-4">
