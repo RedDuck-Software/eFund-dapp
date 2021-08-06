@@ -1,6 +1,13 @@
 <template>
   <div>
     <h2>Fund stats</h2>
+
+    <h3 v-if="fundInfo.endBalance > fundInfo.originalEndBalance" style="color: red">
+      Using manager collateral to repay your investments!
+    </h3>
+
+    <h4>Current platform fee: {{ currentPlatformFee }}%</h4>
+    
     <ul class="stats-list">
       <li>Fund startBalance: {{ fundInfo.baseBalance }} {{ eFundNetworkSettings.cryptoSign }}</li>
       <li>Total swaps: {{ fundInfo.swaps.length }}</li>
@@ -12,7 +19,7 @@
         {{ eFundNetworkSettings.cryptoSign }}
       </li>
       <li v-if="doesUserHasDepositsIfFund">
-        You`ll after withdrawal: {{ userProfitFromFund }} {{ eFundNetworkSettings.cryptoSign }}
+        You`ll after withdrawal: ~{{ userProfitWithFundFeesIncluded.toFixed(4) }} {{ eFundNetworkSettings.cryptoSign }}
       </li>
     </ul>
   </div>
@@ -31,6 +38,12 @@ export default {
     return {};
   },
   computed: {
+    userProfitWithFundFeesIncluded() {
+      return this.userProfitFromFund - (this.userProfitFromFund * this.currentPlatformFee) / 100;
+    },
+    currentPlatformFee() {
+      return this.fundInfo.originalEndBalance >= this.fundInfo.baseBalance ? this.fundInfo.profitFee : 3;
+    },
     userProfitFromFund() {
       const totalDepositsAmount = this.userDepositsAmountInTotal;
       console.log("user deposit total: ", totalDepositsAmount);

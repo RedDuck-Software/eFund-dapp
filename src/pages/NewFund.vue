@@ -78,7 +78,7 @@
               <vue-slider
                 v-model="form.collateral"
                 :interval="0.1"
-                :min="platformSettings.softCap"
+                :min="platformSettings.minimalManagerCollateral"
                 :max="platformSettings.hardCap - 0.1"
                 :tooltip="'none'"
                 :process-style="{ backgroundColor: 'rgb(3, 166, 120, 1)' }"

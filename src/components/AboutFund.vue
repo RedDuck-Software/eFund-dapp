@@ -87,6 +87,10 @@
                   <h2 class="text-black">{{ hardCap }} {{ eFundNetworkSettings.cryptoSign }}</h2>
                   <div class="label">Max fund size</div>
                 </div>
+                <div class="col-sm-6">
+                  <h2 class="text-black">{{ fundInfo.collateral }} {{ eFundNetworkSettings.cryptoSign }}</h2>
+                  <div class="label">Manager collateral</div>
+                </div>
               </div>
               <FundCompletedStats v-if="fundContractStatus == 'Completed'" class="completed-fund-stats" />
 
@@ -285,7 +289,7 @@ export default {
           );
 
           this.fundInfo.balance -= this.fundDeposits
-            .filter(v=> v.owner == this.signerAddress)
+            .filter((v) => v.owner == this.signerAddress)
             .map((v) => v.amount)
             .reduce((a, b) => {
               return a + b;

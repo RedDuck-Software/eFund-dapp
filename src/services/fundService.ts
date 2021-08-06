@@ -122,9 +122,8 @@ export class FundService {
   }
 
   async getPlatformSettings() {
-    console.log(this.platformContract);
-
     const res = await this.platformContract.getPlatformData();
+    console.log("platform settings: ", res);
 
     return {
       softCap: parseFloat(utils.formatEther(res._softCap)),
@@ -133,6 +132,7 @@ export class FundService {
       maximumTimeUntillFundStart: parseFloat(res._maximumTimeUntillFundStart),
       minimumProfitFee: parseFloat(res._minimumProfitFee),
       maximumProfitFee: parseFloat(res._maximumProfitFee),
+      minimalManagerCollateral: parseFloat(utils.formatEther(res._minimalManagerCollateral)),
     };
   }
 
@@ -221,6 +221,10 @@ export class FundService {
         fundInfo.status == "Opened" || fundInfo.status == "Active"
           ? null
           : parseFloat(utils.formatEther(await fundContract.endBalance())),
+      originalEndBalance:
+        fundInfo.status == "Opened" || fundInfo.status == "Active"
+          ? null
+          : parseFloat(utils.formatEther(await fundContract.originalEndBalance())),
     };
   }
 
@@ -317,12 +321,17 @@ export class FundService {
       softCap: parseFloat(utils.formatEther(info._softCap)),
       profitFee: parseFloat(info._profitFee),
       collateral: parseFloat(utils.formatEther(info._managerCollateral)),
-      balance: parseFloat(utils.formatEther(info._currentBalance)),
+      balance:
+        parseFloat(utils.formatEther(info._currentBalance)) - parseFloat(utils.formatEther(info._managerCollateral)),
       investorsAmount: info._deposits.length,
       deposits: info._deposits
-        .filter(v => v.depositOwner != ZERO_ADDRESS && !v.depositAmount.isZero() )
+        .filter(v => v.depositOwner != ZERO_ADDRESS && !v.depositAmount.isZero())
         .map(d => {
-          return { amount: parseFloat(utils.formatEther(d.depositAmount)), owner: d.depositOwner, isWithdrawed : d.isWithdrawed };
+          return {
+            amount: parseFloat(utils.formatEther(d.depositAmount)),
+            owner: d.depositOwner,
+            isWithdrawed: d.isWithdrawed,
+          };
         }),
 
       description: infoFromServer?.description,
