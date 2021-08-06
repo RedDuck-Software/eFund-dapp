@@ -273,10 +273,10 @@ export default {
       this.toSwapValue = utils.formatUnits(amounts[1].toString(), this.toSwapCurr.decimals);
     },
     async swap() {
-      if (this.fromSwapCurr.amount < this.fromSwapValue) {
-        alert(`Insufficient amount of ${this.fromSwapCurr.name}. Current amount: ${this.fromSwapCurr.amount}, provided: ${this.fromSwapValue} `);
-        return;
-      }
+     // if (this.fromSwapCurr.amount < this.fromSwapValue) {
+     //   alert(`Insufficient amount of ${this.fromSwapCurr.name}. Current amount: ${this.fromSwapCurr.amount}, provided: ${this.fromSwapValue} `);
+     //   return;
+     // }
 
       asyncLoading(this.sendSwapRequest())
         .then((txHash) => {
